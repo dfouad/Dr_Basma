@@ -34,19 +34,19 @@ const CourseCard = ({ id, title, description, duration, videoCount, thumbnail }:
         </p>
 
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
             <span>{duration}</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <PlayCircle className="h-4 w-4" />
-            <span>{videoCount} videos</span>
+            <span>{videoCount} فيديو</span>
           </div>
         </div>
 
         <Link to={`/courses/${id}`}>
           <Button className="w-full" variant="default">
-            View Course
+            عرض الدورة
           </Button>
         </Link>
       </div>

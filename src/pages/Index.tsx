@@ -3,39 +3,39 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
-import { ArrowRight, CheckCircle, Star } from "lucide-react";
+import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
   const featuredCourses = [
     {
       id: 1,
-      title: "Leadership Mastery",
-      description: "Develop essential leadership skills to inspire and guide your team to success.",
-      duration: "6 weeks",
+      title: "إتقان القيادة",
+      description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح.",
+      duration: "6 أسابيع",
       videoCount: 24,
     },
     {
       id: 2,
-      title: "Communication Excellence",
-      description: "Master the art of effective communication in personal and professional settings.",
-      duration: "4 weeks",
+      title: "التميز في التواصل",
+      description: "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية.",
+      duration: "4 أسابيع",
       videoCount: 18,
     },
     {
       id: 3,
-      title: "Mindset & Performance",
-      description: "Unlock your potential through proven mindset strategies and performance techniques.",
-      duration: "8 weeks",
+      title: "العقلية والأداء",
+      description: "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة.",
+      duration: "8 أسابيع",
       videoCount: 32,
     },
   ];
 
   const benefits = [
-    "Expert-led video lessons",
-    "Lifetime access to course materials",
-    "Downloadable resources and worksheets",
-    "Certificate of completion",
+    "دروس فيديو من خبراء متخصصين",
+    "وصول مدى الحياة لمحتوى الدورة",
+    "موارد وأوراق عمل قابلة للتحميل",
+    "شهادة إتمام الدورة",
   ];
 
   return (
@@ -48,22 +48,22 @@ const Index = () => {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
-                Transform Your Life Through
-                <span className="text-primary"> Expert Coaching</span>
+                حوّل حياتك من خلال
+                <span className="text-primary"> التدريب الاحترافي</span>
               </h1>
               <p className="text-lg text-muted-foreground">
-                Access world-class courses designed to unlock your potential and accelerate your personal and professional growth.
+                احصل على دورات عالمية المستوى مصممة لإطلاق إمكاناتك وتسريع نموك الشخصي والمهني.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Link to="/courses">
                   <Button size="lg" variant="hero">
-                    Browse Courses
-                    <ArrowRight className="ml-2 h-5 w-5" />
+                    تصفح الدورات
+                    <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/auth">
                   <Button size="lg" variant="outline">
-                    Get Started Free
+                    ابدأ مجاناً
                   </Button>
                 </Link>
               </div>
@@ -71,16 +71,16 @@ const Index = () => {
 
             <div className="relative">
               <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <img src={heroImage} alt="Online learning" className="w-full h-auto" />
+                <img src={heroImage} alt="التعليم الإلكتروني" className="w-full h-auto" />
               </div>
-              <div className="absolute -bottom-6 -left-6 bg-card p-6 rounded-xl shadow-lg border border-border">
+              <div className="absolute -bottom-6 -right-6 bg-card p-6 rounded-xl shadow-lg border border-border">
                 <div className="flex items-center gap-3">
                   <div className="bg-secondary/10 p-3 rounded-full">
                     <Star className="h-6 w-6 text-secondary fill-secondary" />
                   </div>
                   <div>
                     <p className="font-bold text-2xl">4.9/5</p>
-                    <p className="text-sm text-muted-foreground">Student Rating</p>
+                    <p className="text-sm text-muted-foreground">تقييم الطلاب</p>
                   </div>
                 </div>
               </div>
@@ -93,9 +93,9 @@ const Index = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Courses</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Explore our most popular courses, carefully crafted to help you achieve your goals.
+              اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
             </p>
           </div>
 
@@ -108,7 +108,7 @@ const Index = () => {
           <div className="text-center mt-12">
             <Link to="/courses">
               <Button variant="outline" size="lg">
-                View All Courses
+                عرض جميع الدورات
               </Button>
             </Link>
           </div>
@@ -120,9 +120,9 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">Why Choose Our Courses?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختار دوراتنا؟</h2>
               <p className="text-lg text-muted-foreground">
-                Everything you need to succeed, all in one place.
+                كل ما تحتاجه للنجاح، في مكان واحد.
               </p>
             </div>
 
@@ -142,15 +142,15 @@ const Index = () => {
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <h2 className="text-3xl md:text-4xl font-bold">About Your Coach</h2>
+            <h2 className="text-3xl md:text-4xl font-bold">عن المدربة</h2>
             <p className="text-lg text-muted-foreground leading-relaxed">
-              With over 15 years of experience in coaching and personal development, I've helped thousands of individuals
-              transform their lives and achieve extraordinary results. My mission is to provide you with the tools, strategies,
-              and support you need to unlock your full potential.
+              مع أكثر من 15 عاماً من الخبرة في التدريب والتطوير الشخصي، ساعدت آلاف الأفراد
+              على تحويل حياتهم وتحقيق نتائج استثنائية. مهمتي هي تزويدك بالأدوات والاستراتيجيات
+              والدعم الذي تحتاجه لإطلاق إمكاناتك الكاملة.
             </p>
             <Link to="/auth">
               <Button size="lg" variant="default">
-                Start Your Journey Today
+                ابدأ رحلتك اليوم
               </Button>
             </Link>
           </div>

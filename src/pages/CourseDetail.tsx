@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Clock, PlayCircle, CheckCircle, ArrowLeft } from "lucide-react";
+import { Clock, PlayCircle, CheckCircle, ArrowRight } from "lucide-react";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -10,9 +10,9 @@ const CourseDetail = () => {
   // Mock course data - in real app, fetch based on id
   const course = {
     id: Number(id),
-    title: "Leadership Mastery",
-    description: "Develop essential leadership skills to inspire and guide your team to success through proven frameworks and real-world strategies. This comprehensive course covers everything from foundational leadership principles to advanced team management techniques.",
-    duration: "6 weeks",
+    title: "إتقان القيادة",
+    description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح من خلال أطر عمل مثبتة واستراتيجيات واقعية. تغطي هذه الدورة الشاملة كل شيء من مبادئ القيادة الأساسية إلى تقنيات إدارة الفريق المتقدمة.",
+    duration: "6 أسابيع",
     videoCount: 24,
     enrolled: false,
   };
@@ -20,29 +20,29 @@ const CourseDetail = () => {
   const modules = [
     {
       id: 1,
-      title: "Foundations of Leadership",
+      title: "أساسيات القيادة",
       videos: [
-        { id: 1, title: "What Makes a Great Leader?", duration: "12:34" },
-        { id: 2, title: "Leadership vs Management", duration: "10:21" },
-        { id: 3, title: "Your Leadership Style", duration: "15:45" },
+        { id: 1, title: "ما الذي يجعل القائد عظيماً؟", duration: "12:34" },
+        { id: 2, title: "القيادة مقابل الإدارة", duration: "10:21" },
+        { id: 3, title: "أسلوب قيادتك", duration: "15:45" },
       ],
     },
     {
       id: 2,
-      title: "Building Effective Teams",
+      title: "بناء الفرق الفعّالة",
       videos: [
-        { id: 4, title: "Team Dynamics & Psychology", duration: "14:22" },
-        { id: 5, title: "Hiring & Onboarding", duration: "18:30" },
-        { id: 6, title: "Conflict Resolution", duration: "16:15" },
+        { id: 4, title: "ديناميكيات الفريق وعلم النفس", duration: "14:22" },
+        { id: 5, title: "التوظيف والتأهيل", duration: "18:30" },
+        { id: 6, title: "حل النزاعات", duration: "16:15" },
       ],
     },
     {
       id: 3,
-      title: "Communication Mastery",
+      title: "إتقان التواصل",
       videos: [
-        { id: 7, title: "Active Listening Skills", duration: "11:40" },
-        { id: 8, title: "Giving Effective Feedback", duration: "13:25" },
-        { id: 9, title: "Difficult Conversations", duration: "17:10" },
+        { id: 7, title: "مهارات الاستماع النشط", duration: "11:40" },
+        { id: 8, title: "تقديم الملاحظات الفعّالة", duration: "13:25" },
+        { id: 9, title: "المحادثات الصعبة", duration: "17:10" },
       ],
     },
   ];
@@ -56,8 +56,8 @@ const CourseDetail = () => {
         <section className="bg-gradient-to-br from-primary/5 to-accent/5 py-12">
           <div className="container mx-auto px-4">
             <Link to="/courses" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Courses
+              <ArrowRight className="h-4 w-4" />
+              العودة للدورات
             </Link>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -74,11 +74,11 @@ const CourseDetail = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <PlayCircle className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{course.videoCount} videos</span>
+                    <span className="font-medium">{course.videoCount} فيديو</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Certificate included</span>
+                    <span className="font-medium">شهادة متضمنة</span>
                   </div>
                 </div>
               </div>
@@ -89,10 +89,10 @@ const CourseDetail = () => {
                     <PlayCircle className="h-16 w-16 text-muted-foreground/30" />
                   </div>
                   <Button className="w-full mb-3" size="lg" variant="hero">
-                    {course.enrolled ? "Continue Learning" : "Enroll Now"}
+                    {course.enrolled ? "متابعة التعلم" : "التسجيل الآن"}
                   </Button>
                   <Button className="w-full" variant="outline">
-                    Preview Course
+                    معاينة الدورة
                   </Button>
                 </div>
               </div>
@@ -103,7 +103,7 @@ const CourseDetail = () => {
         {/* Course Content */}
         <section className="py-16">
           <div className="container mx-auto px-4 max-w-5xl">
-            <h2 className="text-3xl font-bold mb-8">Course Content</h2>
+            <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>
 
             <div className="space-y-4">
               {modules.map((module) => (

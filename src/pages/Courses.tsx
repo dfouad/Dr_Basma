@@ -8,44 +8,44 @@ const Courses = () => {
   const courses = [
     {
       id: 1,
-      title: "Leadership Mastery",
-      description: "Develop essential leadership skills to inspire and guide your team to success through proven frameworks and real-world strategies.",
-      duration: "6 weeks",
+      title: "إتقان القيادة",
+      description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح من خلال أطر عمل مثبتة واستراتيجيات واقعية.",
+      duration: "6 أسابيع",
       videoCount: 24,
     },
     {
       id: 2,
-      title: "Communication Excellence",
-      description: "Master the art of effective communication in personal and professional settings. Learn to connect, persuade, and inspire.",
-      duration: "4 weeks",
+      title: "التميز في التواصل",
+      description: "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية. تعلّم كيفية التواصل والإقناع والإلهام.",
+      duration: "4 أسابيع",
       videoCount: 18,
     },
     {
       id: 3,
-      title: "Mindset & Performance",
-      description: "Unlock your potential through proven mindset strategies and performance techniques used by top achievers.",
-      duration: "8 weeks",
+      title: "العقلية والأداء",
+      description: "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة التي يستخدمها المتفوقون.",
+      duration: "8 أسابيع",
       videoCount: 32,
     },
     {
       id: 4,
-      title: "Time Management Pro",
-      description: "Learn advanced time management techniques to maximize productivity and achieve more in less time.",
-      duration: "3 weeks",
+      title: "إدارة الوقت الاحترافية",
+      description: "تعلّم تقنيات إدارة الوقت المتقدمة لتحقيق أقصى قدر من الإنتاجية وإنجاز المزيد في وقت أقل.",
+      duration: "3 أسابيع",
       videoCount: 15,
     },
     {
       id: 5,
-      title: "Emotional Intelligence",
-      description: "Develop emotional intelligence skills to improve relationships, decision-making, and overall well-being.",
-      duration: "5 weeks",
+      title: "الذكاء العاطفي",
+      description: "طوّر مهارات الذكاء العاطفي لتحسين العلاقات واتخاذ القرارات والرفاهية العامة.",
+      duration: "5 أسابيع",
       videoCount: 20,
     },
     {
       id: 6,
-      title: "Goal Setting & Achievement",
-      description: "Master the science of goal setting and learn proven methods to turn your dreams into reality.",
-      duration: "4 weeks",
+      title: "وضع الأهداف وتحقيقها",
+      description: "أتقن علم وضع الأهداف وتعلّم الطرق المثبتة لتحويل أحلامك إلى حقيقة.",
+      duration: "4 أسابيع",
       videoCount: 16,
     },
   ];
@@ -59,17 +59,17 @@ const Courses = () => {
         <section className="bg-gradient-to-br from-primary/5 to-accent/5 py-16">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center space-y-6">
-              <h1 className="text-4xl md:text-5xl font-bold">All Courses</h1>
+              <h1 className="text-4xl md:text-5xl font-bold">جميع الدورات</h1>
               <p className="text-lg text-muted-foreground">
-                Explore our comprehensive library of courses designed to help you grow and succeed.
+                استكشف مكتبتنا الشاملة من الدورات المصممة لمساعدتك على النمو والنجاح.
               </p>
 
               <div className="relative max-w-xl mx-auto">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Search courses..."
-                  className="pl-10 h-12"
+                  placeholder="ابحث عن الدورات..."
+                  className="pr-10 h-12"
                 />
               </div>
             </div>

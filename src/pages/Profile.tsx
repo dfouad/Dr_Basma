@@ -7,26 +7,26 @@ import { Link } from "react-router-dom";
 const Profile = () => {
   // Mock user data
   const user = {
-    name: "John Doe",
-    email: "john.doe@example.com",
+    name: "أحمد محمد",
+    email: "ahmed.mohammed@example.com",
     enrolledCourses: [
       {
         id: 1,
-        title: "Leadership Mastery",
+        title: "إتقان القيادة",
         progress: 45,
-        lastWatched: "Module 2: Building Effective Teams",
+        lastWatched: "الوحدة 2: بناء الفرق الفعّالة",
       },
       {
         id: 2,
-        title: "Communication Excellence",
+        title: "التميز في التواصل",
         progress: 78,
-        lastWatched: "Module 3: Advanced Communication",
+        lastWatched: "الوحدة 3: التواصل المتقدم",
       },
       {
         id: 3,
-        title: "Mindset & Performance",
+        title: "العقلية والأداء",
         progress: 23,
-        lastWatched: "Module 1: Growth Mindset Fundamentals",
+        lastWatched: "الوحدة 1: أساسيات عقلية النمو",
       },
     ],
   };
@@ -47,14 +47,14 @@ const Profile = () => {
                 <div className="flex-grow">
                   <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
                   <p className="text-muted-foreground mb-4">{user.email}</p>
-                  <Button variant="outline">Edit Profile</Button>
+                  <Button variant="outline">تعديل الملف الشخصي</Button>
                 </div>
               </div>
             </div>
 
             {/* Enrolled Courses */}
             <div>
-              <h2 className="text-2xl font-bold mb-6">My Courses</h2>
+              <h2 className="text-2xl font-bold mb-6">دوراتي</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {user.enrolledCourses.map((course) => (
                   <div key={course.id} className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
@@ -66,7 +66,7 @@ const Profile = () => {
                       
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Progress</span>
+                          <span className="text-muted-foreground">التقدم</span>
                           <span className="font-medium">{course.progress}%</span>
                         </div>
                         <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
@@ -79,11 +79,11 @@ const Profile = () => {
 
                       <div className="pt-2 border-t border-border">
                         <p className="text-sm text-muted-foreground mb-3">
-                          Last watched: {course.lastWatched}
+                          آخر مشاهدة: {course.lastWatched}
                         </p>
                         <Link to={`/courses/${course.id}`}>
                           <Button className="w-full" variant="default">
-                            Continue Learning
+                            متابعة التعلم
                           </Button>
                         </Link>
                       </div>
@@ -95,13 +95,13 @@ const Profile = () => {
 
             {/* Browse More */}
             <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4">Ready to Learn More?</h2>
+              <h2 className="text-2xl font-bold mb-4">مستعد لتعلم المزيد؟</h2>
               <p className="text-muted-foreground mb-6">
-                Explore our full catalog of courses to continue your growth journey.
+                استكشف كتالوجنا الكامل من الدورات لمواصلة رحلة نموك.
               </p>
               <Link to="/courses">
                 <Button size="lg" variant="hero">
-                  Browse All Courses
+                  تصفح جميع الدورات
                 </Button>
               </Link>
             </div>

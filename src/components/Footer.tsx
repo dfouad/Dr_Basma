@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-import logo from "@/assets/logo.jpg";
+import logo from "@/assets/logo.png";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -11,8 +11,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link to="/" className="flex items-center gap-3">
-              <img src={logo} alt="سنوات" className="h-12 w-auto" />
-              <span className="text-xl font-bold text-foreground">سنوات</span>
+              <img src={logo} alt="د. بسمة كمال" className="h-12 w-auto" />
             </Link>
             <p className="text-sm text-muted-foreground">
               منصة تعليمية متميزة تقدم دورات تدريبية احترافية لتطوير مهاراتك وتحقيق أهدافك.
@@ -82,7 +81,7 @@ const Footer = () => {
 
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-sm text-muted-foreground">
-            © {currentYear} سنوات. جميع الحقوق محفوظة.
+            © {currentYear} د. بسمة كمال. جميع الحقوق محفوظة.
           </p>
         </div>
       </div>

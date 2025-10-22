@@ -10,24 +10,27 @@ const Index = () => {
   const featuredCourses = [
     {
       id: 1,
-      title: "إتقان القيادة",
+      title: "يوميات زوجه واعية",
       description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح.",
       duration: "6 أسابيع",
       videoCount: 24,
+      thumbnail: "/courses/wayaa.jpg",
     },
     {
       id: 2,
-      title: "التميز في التواصل",
+      title: "عطاء أمن",
       description: "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية.",
       duration: "4 أسابيع",
       videoCount: 18,
+      thumbnail: "/courses/Ataa.jpeg",
     },
     {
       id: 3,
-      title: "العقلية والأداء",
+      title: "ستوب ووتش",
       description: "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة.",
       duration: "8 أسابيع",
       videoCount: 32,
+      thumbnail: "/courses/stop.jpg",
     },
   ];
 
@@ -44,16 +47,14 @@ const Index = () => {
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto px-4 py-20 md:py-32">
+        <div className="container mx-auto px-4 py-20 md:py-15">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h1 className="text-4xl md:text-6xl font-bold leading-tight text-foreground">
-                حوّل حياتك من خلال
-                <span className="text-primary"> التدريب الاحترافي</span>
+            <div className="space-y-20">
+              <h1 className="text-3xl md:text-4xl font-bold leading-tight text-foreground">
+            تواصلي مع نفسك و أحبائك بطريقة أكثر وعيًا و راحة مع
+              دكتورة السعادة
               </h1>
-              <p className="text-lg text-muted-foreground">
-                احصل على دورات عالمية المستوى مصممة لإطلاق إمكاناتك وتسريع نموك الشخصي والمهني.
-              </p>
+              
               <div className="flex flex-wrap gap-4">
                 <Link to="/courses">
                   <Button size="lg" variant="hero">
@@ -73,17 +74,7 @@ const Index = () => {
               <div className="rounded-2xl overflow-hidden shadow-2xl">
                 <img src={heroImage} alt="التعليم الإلكتروني" className="w-full h-auto" />
               </div>
-              <div className="absolute -bottom-6 -right-6 bg-card p-6 rounded-xl shadow-lg border border-border">
-                <div className="flex items-center gap-3">
-                  <div className="bg-secondary/10 p-3 rounded-full">
-                    <Star className="h-6 w-6 text-secondary fill-secondary" />
-                  </div>
-                  <div>
-                    <p className="font-bold text-2xl">4.9/5</p>
-                    <p className="text-sm text-muted-foreground">تقييم الطلاب</p>
-                  </div>
-                </div>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -144,7 +135,7 @@ const Index = () => {
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <div className="text-6xl text-primary mb-6">"</div>
             <blockquote className="text-2xl md:text-3xl font-bold text-foreground leading-relaxed">
-              النجاح ليس وجهة، بل رحلة مستمرة من التطور والنمو
+              لا امنحك السعادة فقط .. بل اقدم لك الإلهام لتصبحين افضل نسخة منك
             </blockquote>
             <div className="pt-6">
               <p className="text-lg font-semibold text-primary">د. بسمة كمال</p>

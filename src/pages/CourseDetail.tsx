@@ -10,7 +10,7 @@ const CourseDetail = () => {
   // Mock course data - in real app, fetch based on id
   const course = {
     id: Number(id),
-    title: "إتقان القيادة",
+    title: "يوميات زوجة واعية",
     description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح من خلال أطر عمل مثبتة واستراتيجيات واقعية. تغطي هذه الدورة الشاملة كل شيء من مبادئ القيادة الأساسية إلى تقنيات إدارة الفريق المتقدمة.",
     duration: "6 أسابيع",
     videoCount: 24,

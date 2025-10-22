@@ -8,27 +8,45 @@ interface CourseCardProps {
   description: string;
   duration: string;
   videoCount: number;
-  thumbnail?: string;
+  thumbnail?: string; // optional image
 }
 
-const CourseCard = ({ id, title, description, duration, videoCount, thumbnail }: CourseCardProps) => {
+const CourseCard = ({
+  id,
+  title,
+  description,
+  duration,
+  videoCount,
+  thumbnail,
+}: CourseCardProps) => {
   return (
     <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
-      <div className="relative overflow-hidden bg-muted aspect-video">
-        {thumbnail ? (
-          <img src={thumbnail} alt={title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <PlayCircle className="h-16 w-16 text-muted-foreground/30" />
+      {/* 🖼 Course image area */}
+      <div className="relative overflow-hidden bg-muted aspect-[16/9]">
+        <img
+         src={thumbnail || "/assets/default-course.jpg"}
+         
+          //alt={title || "Course placeholder"}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-100"
+        />
+
+        {/* 🌗 Always-visible gradient overlay for contrast */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
+
+        {/* 📝 Optional fallback text if no thumbnail */}
+        {!thumbnail && (
+          <div className="absolute inset-0 flex items-center justify-center text-white text-sm font-medium bg-black/30">
+            لا توجد صورة متاحة
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </div>
 
+      {/* 📋 Course info */}
       <div className="p-6 space-y-4">
         <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
           {title}
         </h3>
+
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}
         </p>

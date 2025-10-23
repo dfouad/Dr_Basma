@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
+import certifiedBadge from "@/assets/certified-badge.png";
 
 const Index = () => {
   const featuredCourses = [
@@ -35,10 +36,10 @@ const Index = () => {
   ];
 
   const benefits = [
-    "دروس فيديو من خبراء متخصصين",
-    "وصول مدى الحياة لمحتوى الدورة",
-    "موارد وأوراق عمل قابلة للتحميل",
-    "شهادة إتمام الدورة",
+    "الصحة النفسية: نصائح وإرشادات تعزز الاستقرار النفسي",
+    "الإرشاد الأسري: حلول عملية للتعامل مع التحديات الأسرية",
+    "مهارات الحياة: أفكار مبتكرة لتطوير الذات وبناء علاقات صحية",
+    "دعم الأمهات: نصائح للتعامل مع المراهقين وتربية جيل واثق ومبدع",
   ];
 
   return (
@@ -50,7 +51,7 @@ const Index = () => {
         <div className="container mx-auto px-4 py-20 md:py-15">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-20">
-              <h1 className="text-3xl md:text-4xl font-bold leading-tight text-foreground">
+              <h1 className="text-2xl md:text-2xl font-bold leading-tight text-foreground">
             تواصلي مع نفسك و أحبائك بطريقة أكثر وعيًا و راحة مع
               دكتورة السعادة
               </h1>
@@ -74,7 +75,10 @@ const Index = () => {
               <div className="rounded-2xl overflow-hidden shadow-2xl">
                 <img src={heroImage} alt="التعليم الإلكتروني" className="w-full h-auto" />
               </div>
-              
+              {/* Certified Badge */}
+              <div className="absolute -bottom-9 -right-4 w-16 h-16 md:w-20 md:h-20 animate-float">
+                <img src={certifiedBadge} alt="Certified Happiness Life Coach" className="w-full h-full object-contain drop-shadow-2xl opacity-90" />
+              </div>
             </div>
           </div>
         </div>
@@ -113,7 +117,7 @@ const Index = () => {
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختار دوراتنا؟</h2>
               <p className="text-lg text-muted-foreground">
-                كل ما تحتاجه للنجاح، في مكان واحد.
+              نقدم لك محتوى مميز يهتم بدعم الأمهات والنساء في رحلتهن اليومية
               </p>
             </div>
 
@@ -169,8 +173,8 @@ const Index = () => {
                   <span className="text-primary font-bold">م.س</span>
                 </div>
                 <div>
-                  <p className="font-semibold">محمد السعيد</p>
-                  <p className="text-sm text-muted-foreground">رائد أعمال</p>
+                  <p className="font-semibold">أميرة إبراهيم</p>
+                  <p className="text-sm text-muted-foreground">رائدة أعمال</p>
                 </div>
               </div>
             </div>
@@ -209,8 +213,8 @@ const Index = () => {
                   <span className="text-primary font-bold">ع.م</span>
                 </div>
                 <div>
-                  <p className="font-semibold">علي المطيري</p>
-                  <p className="text-sm text-muted-foreground">مهندس برمجيات</p>
+                  <p className="font-semibold">دعاء فؤاد</p>
+                  <p className="text-sm text-muted-foreground">مهندسة برمجيات</p>
                 </div>
               </div>
             </div>

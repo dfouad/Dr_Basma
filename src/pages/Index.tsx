@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
-import certifiedBadge from "@/assets/certified-badge.jpg";
+import certifiedBadge from "@/assets/certified-badge.png";
 
 const Index = () => {
   const featuredCourses = [

@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
+import certifiedBadge from "@/assets/certified-badge.jpg";
 
 const Index = () => {
   const featuredCourses = [
@@ -74,7 +75,10 @@ const Index = () => {
               <div className="rounded-2xl overflow-hidden shadow-2xl">
                 <img src={heroImage} alt="التعليم الإلكتروني" className="w-full h-auto" />
               </div>
-              
+              {/* Certified Badge */}
+              <div className="absolute -bottom-6 -left-6 w-32 h-32 md:w-40 md:h-40 animate-float">
+                <img src={certifiedBadge} alt="Certified Happiness Life Coach" className="w-full h-full object-contain drop-shadow-2xl" />
+              </div>
             </div>
           </div>
         </div>

@@ -77,7 +77,7 @@ const Index = () => {
               </div>
               {/* Certified Badge */}
               <div className="absolute -bottom-6 -right-6 w-16 h-16 md:w-20 md:h-20 animate-float">
-                <img src={certifiedBadge} alt="Certified Happiness Life Coach" className="w-full h-full object-contain drop-shadow-2xl" />
+                <img src={certifiedBadge} alt="Certified Happiness Life Coach" className="w-full h-full object-contain drop-shadow-2xl opacity-90" />
               </div>
             </div>
           </div>

@@ -1,0 +1,79 @@
+from django.db import models
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+
+class Category(models.Model):
+    """Course category model."""
+    
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name_plural = 'Categories'
+        ordering = ['name']
+    
+    def __str__(self):
+        return self.name
+
+
+class Course(models.Model):
+    """Course model."""
+    
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    thumbnail = models.ImageField(upload_to='course_thumbnails/', blank=True, null=True)
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
+    duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    is_published = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return self.title
+    
+    @property
+    def video_count(self):
+        """Return the number of videos in this course."""
+        return self.videos.count()
+
+
+class Video(models.Model):
+    """Video model."""
+    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    video_file = models.FileField(upload_to='course_videos/', blank=True, null=True)
+    video_url = models.URLField(blank=True, help_text='Alternative to uploading file')
+    duration = models.CharField(max_length=20, help_text='e.g., 15:30')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+    
+    def __str__(self):
+        return f'{self.course.title} - {self.title}'
+
+
+class Enrollment(models.Model):
+    """Enrollment model to track user course enrollments."""
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='enrollments')
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    progress = models.PositiveIntegerField(default=0, help_text='Progress percentage (0-100)')
+    last_watched = models.ForeignKey(Video, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_watched_by')
+    
+    class Meta:
+        unique_together = ('user', 'course')
+        ordering = ['-enrolled_at']
+    
+    def __str__(self):
+        return f'{self.user.email} enrolled in {self.course.title}'

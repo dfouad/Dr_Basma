@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 const Courses = () => {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-
+       
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/courses/")
       .then((res) => res.json())

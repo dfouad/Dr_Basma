@@ -1,66 +1,50 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
+import { coursesAPI } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  duration: string;
+  video_count: number;
+  thumbnail: string;
+}
 
 const Courses = () => {
-  const courses = [
-    {
-      id: 1,
-      title: "يوميات زوجة واعية",
-      description:
-        "رحلة عملية للوعي الذاتي والعلاقات الزوجية تساعدك على تطوير وعيك وفهم احتياجاتك بعمق أكبر.",
-      duration: "6 أسابيع",
-      videoCount: 24,
-      thumbnail: "/courses/wayaa.jpg",
-    },
-    {
-      id: 2,
-      title: "عطاء أمن",
-      description:
-        "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية. تعلّم كيفية التواصل والإقناع والإلهام.",
-      duration: "4 أسابيع",
-      videoCount: 18,
-      thumbnail: "/courses/Ataa.jpeg",
-    },
-    {
-      id: 3,
-      title: "العقلية والأداء",
-      description:
-        "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة التي يستخدمها المتفوقون.",
-      duration: "8 أسابيع",
-      videoCount: 32,
-      thumbnail: "/courses/stop.jpg",
-    },
-    {
-      id: 4,
-      title: "إدارة الوقت الاحترافية",
-      description:
-        "تعلّم تقنيات إدارة الوقت المتقدمة لتحقيق أقصى قدر من الإنتاجية وإنجاز المزيد في وقت أقل.",
-      duration: "3 أسابيع",
-      videoCount: 15,
-      thumbnail: "/courses/time.jpg",
-    },
-    {
-      id: 5,
-      title: "الذكاء العاطفي",
-      description:
-        "طوّر مهارات الذكاء العاطفي لتحسين العلاقات واتخاذ القرارات والرفاهية العامة.",
-      duration: "5 أسابيع",
-      videoCount: 20,
-      thumbnail: "/courses/emotional.jpg",
-    },
-    {
-      id: 6,
-      title: "وضع الأهداف وتحقيقها",
-      description:
-        "أتقن علم وضع الأهداف وتعلّم الطرق المثبتة لتحويل أحلامك إلى حقيقة.",
-      duration: "4 أسابيع",
-      videoCount: 16,
-      thumbnail: "/courses/goals.jpg",
-    },
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await coursesAPI.getAll();
+        setCourses(response.data);
+      } catch (error) {
+        toast({
+          title: "خطأ في تحميل الدورات",
+          description: "حاول مرة أخرى لاحقاً",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [toast]);
+
+  const filteredCourses = courses.filter(course =>
+    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -84,6 +68,8 @@ const Courses = () => {
                   type="search"
                   placeholder="ابحث عن الدورات..."
                   className="pr-10 h-12"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
@@ -93,11 +79,29 @@ const Courses = () => {
         {/* 🎓 Courses Grid */}
         <section className="py-16">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {courses.map((course) => (
-                <CourseCard key={course.id} {...course} />
-              ))}
-            </div>
+            {loading ? (
+              <div className="flex justify-center items-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredCourses.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-lg text-muted-foreground">لا توجد دورات متاحة حالياً</p>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {filteredCourses.map((course) => (
+                  <CourseCard
+                    key={course.id}
+                    id={course.id}
+                    title={course.title}
+                    description={course.description}
+                    duration={course.duration}
+                    videoCount={course.video_count}
+                    thumbnail={course.thumbnail}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </section>
       </main>

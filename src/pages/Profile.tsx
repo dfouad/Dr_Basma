@@ -1,35 +1,50 @@
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { PlayCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { enrollmentsAPI } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
+
+interface EnrolledCourse {
+  id: number;
+  course: {
+    id: number;
+    title: string;
+    thumbnail: string;
+  };
+  progress: number;
+  last_watched_video: {
+    title: string;
+  } | null;
+}
 
 const Profile = () => {
-  // Mock user data
-  const user = {
-    name: "أحمد محمد",
-    email: "ahmed.mohammed@example.com",
-    enrolledCourses: [
-      {
-        id: 1,
-        title: "إتقان القيادة",
-        progress: 45,
-        lastWatched: "الوحدة 2: بناء الفرق الفعّالة",
-      },
-      {
-        id: 2,
-        title: "التميز في التواصل",
-        progress: 78,
-        lastWatched: "الوحدة 3: التواصل المتقدم",
-      },
-      {
-        id: 3,
-        title: "العقلية والأداء",
-        progress: 23,
-        lastWatched: "الوحدة 1: أساسيات عقلية النمو",
-      },
-    ],
-  };
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      try {
+        const response = await enrollmentsAPI.getAll();
+        setEnrolledCourses(response.data);
+      } catch (error) {
+        toast({
+          title: "خطأ في تحميل الدورات",
+          description: "حاول مرة أخرى لاحقاً",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchEnrollments();
+  }, [toast]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -45,8 +60,12 @@ const Profile = () => {
                   <User className="h-12 w-12 text-primary" />
                 </div>
                 <div className="flex-grow">
-                  <h1 className="text-3xl font-bold mb-2">{user.name}</h1>
-                  <p className="text-muted-foreground mb-4">{user.email}</p>
+                  <h1 className="text-3xl font-bold mb-2">
+                    {user?.first_name && user?.last_name 
+                      ? `${user.first_name} ${user.last_name}`
+                      : user?.first_name || "المستخدم"}
+                  </h1>
+                  <p className="text-muted-foreground mb-4">{user?.email}</p>
                   <Button variant="outline">تعديل الملف الشخصي</Button>
                 </div>
               </div>
@@ -55,42 +74,65 @@ const Profile = () => {
             {/* Enrolled Courses */}
             <div>
               <h2 className="text-2xl font-bold mb-6">دوراتي</h2>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {user.enrolledCourses.map((course) => (
-                  <div key={course.id} className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
-                    <div className="aspect-video bg-muted flex items-center justify-center">
-                      <PlayCircle className="h-12 w-12 text-muted-foreground/30" />
-                    </div>
-                    <div className="p-6 space-y-4">
-                      <h3 className="font-semibold text-lg">{course.title}</h3>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">التقدم</span>
-                          <span className="font-medium">{course.progress}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
-                          <div
-                            className="bg-primary h-full rounded-full transition-all duration-300"
-                            style={{ width: `${course.progress}%` }}
+              {loading ? (
+                <div className="flex justify-center items-center min-h-[200px]">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : enrolledCourses.length === 0 ? (
+                <div className="text-center py-16 bg-card rounded-lg border border-border">
+                  <p className="text-lg text-muted-foreground mb-4">لم تسجل في أي دورة بعد</p>
+                  <Link to="/courses">
+                    <Button>تصفح الدورات</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {enrolledCourses.map((enrollment) => (
+                    <div key={enrollment.id} className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
+                      <div className="aspect-video bg-muted flex items-center justify-center">
+                        {enrollment.course.thumbnail ? (
+                          <img 
+                            src={enrollment.course.thumbnail} 
+                            alt={enrollment.course.title}
+                            className="w-full h-full object-cover"
                           />
+                        ) : (
+                          <PlayCircle className="h-12 w-12 text-muted-foreground/30" />
+                        )}
+                      </div>
+                      <div className="p-6 space-y-4">
+                        <h3 className="font-semibold text-lg">{enrollment.course.title}</h3>
+                        
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">التقدم</span>
+                            <span className="font-medium">{enrollment.progress}%</span>
+                          </div>
+                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                            <div
+                              className="bg-primary h-full rounded-full transition-all duration-300"
+                              style={{ width: `${enrollment.progress}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="pt-2 border-t border-border">
+                          {enrollment.last_watched_video && (
+                            <p className="text-sm text-muted-foreground mb-3">
+                              آخر مشاهدة: {enrollment.last_watched_video.title}
+                            </p>
+                          )}
+                          <Link to={`/courses/${enrollment.course.id}`}>
+                            <Button className="w-full" variant="default">
+                              متابعة التعلم
+                            </Button>
+                          </Link>
                         </div>
                       </div>
-
-                      <div className="pt-2 border-t border-border">
-                        <p className="text-sm text-muted-foreground mb-3">
-                          آخر مشاهدة: {course.lastWatched}
-                        </p>
-                        <Link to={`/courses/${course.id}`}>
-                          <Button className="w-full" variant="default">
-                            متابعة التعلم
-                          </Button>
-                        </Link>
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Browse More */}

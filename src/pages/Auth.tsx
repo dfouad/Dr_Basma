@@ -1,23 +1,51 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.jpg";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
-    name: "",
+    firstName: "",
+    lastName: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { login, register, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/profile');
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle authentication logic here
-    console.log("Form submitted:", formData);
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await login(formData.email, formData.password);
+        navigate('/profile');
+      } else {
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error("كلمات المرور غير متطابقة");
+        }
+        await register(formData.email, formData.password, formData.firstName, formData.lastName);
+        navigate('/profile');
+      }
+    } catch (error) {
+      console.error("Authentication error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,18 +69,30 @@ const Auth = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="name">الاسم الكامل</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder="اسمك الكامل"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="firstName">الاسم الأول</Label>
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    type="text"
+                    placeholder="الاسم الأول"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastName">اسم العائلة</Label>
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    type="text"
+                    placeholder="اسم العائلة"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                  />
+                </div>
+              </>
             )}
 
             <div className="space-y-2">
@@ -96,8 +136,8 @@ const Auth = () => {
               </div>
             )}
 
-            <Button type="submit" className="w-full" size="lg">
-              {isLogin ? "تسجيل الدخول" : "إنشاء حساب"}
+            <Button type="submit" className="w-full" size="lg" disabled={loading}>
+              {loading ? "جاري التحميل..." : isLogin ? "تسجيل الدخول" : "إنشاء حساب"}
             </Button>
           </form>
 

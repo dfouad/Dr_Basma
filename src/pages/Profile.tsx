@@ -31,8 +31,11 @@ const Profile = () => {
     const fetchEnrollments = async () => {
       try {
         const response = await enrollmentsAPI.getAll();
-        setEnrolledCourses(response.data);
+        const data = response.data;
+        // Ensure data is an array before setting state
+        setEnrolledCourses(Array.isArray(data) ? data : []);
       } catch (error) {
+        console.error("Failed to fetch enrollments:", error);
         toast({
           title: "خطأ في تحميل الدورات",
           description: "حاول مرة أخرى لاحقاً",

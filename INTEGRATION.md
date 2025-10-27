@@ -67,6 +67,34 @@ npm run dev
 **Files:**
 - `src/pages/Profile.tsx` - User profile and enrolled courses
 
+### ✅ Staff Dashboard Access Control
+- **Role-based Access**: Dashboard only accessible to staff members
+- **Staff Detection**: User's `is_staff` status is fetched from backend
+- **Auto-redirect**: Non-staff users are redirected if they try to access dashboard
+- **UI Conditional Rendering**: Dashboard link only shown to staff in navbar
+
+**Creating a Staff User:**
+```bash
+# Access Django shell
+cd backend
+python manage.py shell
+
+# Create a staff user
+from django.contrib.auth import get_user_model
+User = get_user_model()
+user = User.objects.get(email='your_email@example.com')
+user.is_staff = True
+user.save()
+```
+
+Or use Django admin to make an existing user a staff member.
+
+**Files:**
+- `src/pages/Dashboard.tsx` - Staff dashboard with access control
+- `src/components/Navbar.tsx` - Conditional dashboard link rendering
+- `backend/users/serializers.py` - Includes `is_staff` in user data
+- `backend/courses/permissions.py` - Staff permission class
+
 ### ✅ Navigation & UI
 - **Dynamic Navbar**: Shows different options for authenticated/unauthenticated users
 - **User Info Display**: Shows user name in navbar when logged in
@@ -81,7 +109,9 @@ npm run dev
 - `POST /api/auth/register/` - User registration
 - `POST /api/auth/login/` - User login (returns JWT tokens)
 - `POST /api/auth/token/refresh/` - Refresh access token
-- `GET /api/auth/profile/` - Get current user profile
+- `GET /api/auth/profile/` - Get current user profile (includes `is_staff` status)
+- `PATCH /api/auth/profile/` - Update user profile
+- `PUT /api/auth/change-password/` - Change user password
 
 ### Courses
 - `GET /api/courses/` - List all published courses

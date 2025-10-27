@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -6,8 +8,24 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Upload, Users, Video } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Dashboard = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (user && !user.is_staff) {
+      toast({
+        title: "غير مصرح",
+        description: "ليس لديك صلاحية الوصول إلى لوحة التحكم",
+        variant: "destructive",
+      });
+      navigate("/");
+    }
+  }, [user, navigate, toast]);
   const handleVideoUpload = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle video upload logic

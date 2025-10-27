@@ -35,11 +35,13 @@ const Navbar = () => {
                     <User className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link to="/dashboard">
-                  <Button variant="outline" size="sm">
-                    لوحة التحكم
-                  </Button>
-                </Link>
+                {user?.is_staff && (
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="sm">
+                      لوحة التحكم
+                    </Button>
+                  </Link>
+                )}
                 <Button variant="ghost" size="sm" onClick={logout}>
                   <LogOut className="h-4 w-4" />
                 </Button>

@@ -14,6 +14,7 @@ interface Course {
   duration: string;
   video_count: number;
   thumbnail: string;
+  thumbnail_url?: string;  // Add this if API sends thumbnail_url
 }
 
 const Courses = () => {
@@ -26,8 +27,15 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         const response = await coursesAPI.getAll();
-        setCourses(response.data);
+         console.log('API Response:', response); // Add this line
+        console.log('Response data:', response.data); // Add this line
+        
+          const data = response.data;
+        const list = Array.isArray(data) ? data : data.results ?? [];
+        setCourses(list);
+
       } catch (error) {
+        console.error('Error fetching courses:', error); // Add this line
         toast({
           title: "خطأ في تحميل الدورات",
           description: "حاول مرة أخرى لاحقاً",
@@ -41,7 +49,9 @@ const Courses = () => {
     fetchCourses();
   }, [toast]);
 
-  const filteredCourses = courses.filter(course =>
+
+
+    const filteredCourses = (Array.isArray(courses) ? courses : []).filter(course =>
     course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     course.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -97,7 +107,7 @@ const Courses = () => {
                     description={course.description}
                     duration={course.duration}
                     videoCount={course.video_count}
-                    thumbnail={course.thumbnail}
+                    thumbnail={course.thumbnail_url || `http://localhost:8000${course.thumbnail}`}
                   />
                 ))}
               </div>

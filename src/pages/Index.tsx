@@ -7,6 +7,8 @@ import { ArrowLeft, CheckCircle, Star } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
 
+
+
 const Index = () => {
   const featuredCourses = [
     {

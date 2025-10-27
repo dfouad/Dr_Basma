@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { PlayCircle, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { enrollmentsAPI } from "@/lib/api";
+import { enrollmentsAPI, authAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import ProfileEditDialog from "@/components/ProfileEditDialog";
 
 interface EnrolledCourse {
   id: number;
@@ -22,10 +23,14 @@ interface EnrolledCourse {
 }
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const { toast } = useToast();
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleProfileUpdate = async () => {
+    await refreshUser();
+  };
 
   useEffect(() => {
     const fetchEnrollments = async () => {
@@ -69,7 +74,7 @@ const Profile = () => {
                       : user?.first_name || "المستخدم"}
                   </h1>
                   <p className="text-muted-foreground mb-4">{user?.email}</p>
-                  <Button variant="outline">تعديل الملف الشخصي</Button>
+                  {user && <ProfileEditDialog user={user} onUpdate={handleProfileUpdate} />}
                 </div>
               </div>
             </div>

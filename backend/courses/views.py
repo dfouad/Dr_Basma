@@ -26,6 +26,7 @@ class CourseListView(generics.ListAPIView):
     
     serializer_class = CourseListSerializer
     permission_classes = (AllowAny,)
+   # pagination_class = None
     
     def get_queryset(self):
         queryset = Course.objects.filter(is_published=True)

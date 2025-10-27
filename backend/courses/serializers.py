@@ -7,7 +7,8 @@ class CategorySerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Category
-        fields = ('id', 'name', 'description', 'created_at')
+        fields = ["id", "name"]
+     #   fields = ('id', 'name', 'description', 'created_at')
 
 
 class VideoSerializer(serializers.ModelSerializer):
@@ -32,13 +33,20 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     """Serializer for course list view."""
     
-    category_name = serializers.CharField(source='category.name', read_only=True)
+  #  category_name = serializers.CharField(source='category.name', read_only=True)
+    category = CategorySerializer(read_only=True)
+    category_id = serializers.PrimaryKeyRelatedField(
+        source="category",
+        queryset=Category.objects.all(),
+        write_only=True
+    )
+
     thumbnail_url = serializers.SerializerMethodField()
     
     class Meta:
-        model = Course
-        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
-    
+     model = Course
+      #  fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
+     fields = ["id", "title", "description", "thumbnail", "duration", "is_published", "category", "category_id"]
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""
         if obj.thumbnail:

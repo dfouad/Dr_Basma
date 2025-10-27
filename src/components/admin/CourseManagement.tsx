@@ -47,7 +47,7 @@ export const CourseManagement = () => {
     fetchCategories();
   }, []);
 
-  const fetchCourses = async () => {
+/*  const fetchCourses = async () => {
     try {
       const response = await api.get("/courses/");
       setCourses(response.data);
@@ -60,12 +60,37 @@ export const CourseManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  };*/
+  const fetchCourses = async () => {
+  try {
+    const response = await api.get("/courses/");
+    
+    // Handle both paginated and non-paginated responses
+    const courseList = Array.isArray(response.data)
+      ? response.data
+      : response.data.results || [];
+    
+    setCourses(courseList);
+  } catch (error) {
+    toast({
+      title: "خطأ",
+      description: "فشل تحميل الدورات",
+      variant: "destructive",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const fetchCategories = async () => {
     try {
       const response = await api.get("/categories/");
-      setCategories(response.data);
+      const categoryList = Array.isArray(response.data)
+      ? response.data
+      : response.data.results || [];
+    
+      setCategories(categoryList);
     } catch (error) {
       console.error("Failed to fetch categories", error);
     }
@@ -248,7 +273,7 @@ export const CourseManagement = () => {
               {courses.map((course) => (
                 <TableRow key={course.id}>
                   <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell>{course.category.name}</TableCell>
+                  <TableCell>{course.category?.name || "بدون فئة"}</TableCell>
                   <TableCell>{course.duration}</TableCell>
                   <TableCell>
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>

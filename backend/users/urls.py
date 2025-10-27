@@ -8,8 +8,4 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('profile/', UserDetailView.as_view(), name='user_profile'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
-<<<<<<< HEAD
 ]
-=======
-]
->>>>>>> origin/main

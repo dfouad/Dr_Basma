@@ -1,14 +1,3 @@
-<<<<<<< HEAD
-from rest_framework import generics, status,viewsets
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-from django.shortcuts import get_object_or_404
-from .models import Course, Video, Enrollment, Category
-from .serializers import (
-    CourseListSerializer, CourseDetailSerializer, VideoSerializer,
-    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer,CourseListSerializer, CategorySerializer
-)
-=======
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -22,7 +11,6 @@ from .serializers import (
 from .permissions import IsStaffUser
 
 User = get_user_model()
->>>>>>> origin/main
 
 
 class CategoryListView(generics.ListAPIView):
@@ -129,15 +117,6 @@ class EnrollmentUpdateView(generics.UpdateAPIView):
     def get_queryset(self):
         return Enrollment.objects.filter(user=self.request.user)
 
-<<<<<<< HEAD
-class CourseViewSet(viewsets.ModelViewSet):
-    queryset = Course.objects.all()
-    serializer_class = CourseListSerializer
-
-class CategoryViewSet(viewsets.ModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-=======
 
 # Admin Views
 class AdminCourseCreateView(generics.CreateAPIView):
@@ -237,4 +216,3 @@ class AdminStatsView(generics.GenericAPIView):
             'total_enrollments': Enrollment.objects.count(),
         }
         return Response(stats)
->>>>>>> origin/main

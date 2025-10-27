@@ -76,16 +76,22 @@ const Profile = () => {
             enrolledCategories.includes(course.category.id)
           )
           .slice(0, 3);
-
         setRecommendedCourses(recommended);
-      } catch (error) {
+
+        // check for empty recommendations
+        if (!recommended || recommended.length === 0) {
+          // no recommendations — handle accordingly
+          console.log("No recommended courses found");
+        }
+      } /*catch (error) {
         console.error("Failed to fetch data:", error);
         toast({
           title: "خطأ في تحميل البيانات",
           description: "حاول مرة أخرى لاحقاً",
           variant: "destructive",
         });
-      } finally {
+      }*/
+      finally {
         setLoading(false);
       }
     };

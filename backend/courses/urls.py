@@ -2,14 +2,10 @@ from django.urls import path
 from .views import (
     CategoryListView, CourseListView, CourseDetailView,
     CourseVideosView, EnrollmentListView, EnrollmentCreateView,
-<<<<<<< HEAD
-    EnrollmentUpdateView
-=======
     EnrollmentUpdateView, AdminCourseCreateView, AdminCourseUpdateView,
     AdminCourseDeleteView, AdminVideoCreateView, AdminVideoUpdateView,
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
     AdminUserDeleteView, AdminStatsView
->>>>>>> origin/main
 )
 
 urlpatterns = [
@@ -20,9 +16,6 @@ urlpatterns = [
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
-<<<<<<< HEAD
-]
-=======
     
     # Admin endpoints
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
@@ -36,4 +29,3 @@ urlpatterns = [
     path('admin/users/<int:pk>/delete/', AdminUserDeleteView.as_view(), name='admin_user_delete'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
 ]
->>>>>>> origin/main

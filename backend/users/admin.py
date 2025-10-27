@@ -13,11 +13,7 @@ class UserAdmin(BaseUserAdmin):
     list_filter = ('is_staff', 'is_active', 'date_joined')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('-date_joined',)
-<<<<<<< HEAD
-    readonly_fields = ('date_joined',)
-=======
     
->>>>>>> origin/main
     fieldsets = (
         (None, {'fields': ('email', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name')}),

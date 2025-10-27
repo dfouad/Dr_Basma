@@ -5,10 +5,7 @@ Django settings for Arabic Online Course Platform.
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
-<<<<<<< HEAD
-=======
 import os
->>>>>>> origin/main
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,26 +41,14 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-<<<<<<< HEAD
-    
-    "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-=======
     'corsheaders.middleware.CorsMiddleware',  # This should be at the top
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
->>>>>>> origin/main
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-<<<<<<< HEAD
-    
-=======
->>>>>>> origin/main
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -170,24 +155,15 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
-<<<<<<< HEAD
-    
-=======
->>>>>>> origin/main
 }
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-<<<<<<< HEAD
-    default='http://localhost:5173,http://127.0.0.1:5173'
-).split(',')
-
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOW_ALL_ORIGINS = True
-=======
     default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080'
 ).split(',')
+
+CORS_ALLOW_ALL_ORIGINS = True
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_METHODS = [
@@ -198,4 +174,3 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
->>>>>>> origin/main

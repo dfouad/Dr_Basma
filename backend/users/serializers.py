@@ -10,8 +10,13 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
+<<<<<<< HEAD
         fields = ('id', 'email', 'first_name', 'last_name', 'date_joined')
         read_only_fields = ('id', 'date_joined')
+=======
+        fields = ('id', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
+        read_only_fields = ('id', 'is_staff', 'date_joined')
+>>>>>>> origin/main
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -43,4 +48,8 @@ class ChangePasswordSerializer(serializers.Serializer):
     """Serializer for password change."""
     
     old_password = serializers.CharField(required=True)
+<<<<<<< HEAD
     new_password = serializers.CharField(required=True, validators=[validate_password])
+=======
+    new_password = serializers.CharField(required=True, validators=[validate_password])
+>>>>>>> origin/main

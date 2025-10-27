@@ -1,11 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { User } from "lucide-react";
+import { User, LogOut } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import logo from "@/assets/logo.png";
 
 const Navbar = () => {
-  // Mock authentication - in real app, this would come from auth context
-  const isAuthenticated = false;
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <nav className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
@@ -27,16 +27,24 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             {isAuthenticated ? (
               <>
+                <span className="text-sm text-muted-foreground hidden md:inline">
+                  {user?.first_name || user?.email}
+                </span>
                 <Link to="/profile">
                   <Button variant="ghost" size="sm">
                     <User className="h-4 w-4" />
                   </Button>
                 </Link>
-                <Link to="/dashboard">
-                  <Button variant="outline" size="sm">
-                    لوحة التحكم
-                  </Button>
-                </Link>
+                {user?.is_staff && (
+                  <Link to="/dashboard">
+                    <Button variant="outline" size="sm">
+                      لوحة التحكم
+                    </Button>
+                  </Link>
+                )}
+                <Button variant="ghost" size="sm" onClick={logout}>
+                  <LogOut className="h-4 w-4" />
+                </Button>
               </>
             ) : (
               <>

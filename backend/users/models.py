@@ -52,4 +52,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     def get_full_name(self):
         """Return the user's full name."""
+<<<<<<< HEAD
         return f'{self.first_name} {self.last_name}'.strip() or self.email
+=======
+        return f'{self.first_name} {self.last_name}'.strip() or self.email
+>>>>>>> origin/main

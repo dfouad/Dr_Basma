@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from rest_framework import generics, status,viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -7,6 +8,21 @@ from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer,CourseListSerializer, CategorySerializer
 )
+=======
+from rest_framework import generics, status
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from .models import Course, Video, Enrollment, Category
+from .serializers import (
+    CourseListSerializer, CourseDetailSerializer, VideoSerializer,
+    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer
+)
+from .permissions import IsStaffUser
+
+User = get_user_model()
+>>>>>>> origin/main
 
 
 class CategoryListView(generics.ListAPIView):
@@ -113,6 +129,7 @@ class EnrollmentUpdateView(generics.UpdateAPIView):
     def get_queryset(self):
         return Enrollment.objects.filter(user=self.request.user)
 
+<<<<<<< HEAD
 class CourseViewSet(viewsets.ModelViewSet):
     queryset = Course.objects.all()
     serializer_class = CourseListSerializer
@@ -120,3 +137,104 @@ class CourseViewSet(viewsets.ModelViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+=======
+
+# Admin Views
+class AdminCourseCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating courses."""
+    
+    queryset = Course.objects.all()
+    serializer_class = CourseDetailSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCourseUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating courses."""
+    
+    queryset = Course.objects.all()
+    serializer_class = CourseDetailSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCourseDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting courses."""
+    
+    queryset = Course.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
+class AdminVideoCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating videos."""
+    
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminVideoUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating videos."""
+    
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminVideoDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting videos."""
+    
+    queryset = Video.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
+class AdminUserListView(generics.ListAPIView):
+    """Admin endpoint for listing all users."""
+    
+    permission_classes = (IsStaffUser,)
+    
+    def get(self, request, *args, **kwargs):
+        users = User.objects.all().values('id', 'email', 'first_name', 'last_name', 'is_staff', 'date_joined')
+        return Response(list(users))
+
+
+class AdminUserUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating users."""
+    
+    queryset = User.objects.all()
+    permission_classes = (IsStaffUser,)
+    
+    def update(self, request, *args, **kwargs):
+        user = self.get_object()
+        
+        if 'first_name' in request.data:
+            user.first_name = request.data['first_name']
+        if 'last_name' in request.data:
+            user.last_name = request.data['last_name']
+        if 'is_staff' in request.data:
+            user.is_staff = request.data['is_staff']
+        
+        user.save()
+        return Response({'message': 'User updated successfully'})
+
+
+class AdminUserDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting users."""
+    
+    queryset = User.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
+class AdminStatsView(generics.GenericAPIView):
+    """Admin endpoint for dashboard statistics."""
+    
+    permission_classes = (IsStaffUser,)
+    
+    def get(self, request):
+        stats = {
+            'total_courses': Course.objects.count(),
+            'published_courses': Course.objects.filter(is_published=True).count(),
+            'total_videos': Video.objects.count(),
+            'total_users': User.objects.count(),
+            'total_enrollments': Enrollment.objects.count(),
+        }
+        return Response(stats)
+>>>>>>> origin/main

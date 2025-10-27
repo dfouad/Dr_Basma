@@ -59,4 +59,8 @@ class EnrollmentAdmin(admin.ModelAdmin):
         ('Enrollment Details', {
             'fields': ('user', 'course', 'progress', 'last_watched')
         }),
+<<<<<<< HEAD
     )
+=======
+    )
+>>>>>>> origin/main

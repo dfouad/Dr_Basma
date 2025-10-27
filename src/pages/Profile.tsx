@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, User } from "lucide-react";
+import { PlayCircle, User, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { enrollmentsAPI, authAPI } from "@/lib/api";
+import { enrollmentsAPI, coursesAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
+import CourseCard from "@/components/CourseCard";
 
 interface EnrolledCourse {
   id: number;
@@ -15,6 +16,10 @@ interface EnrolledCourse {
     id: number;
     title: string;
     thumbnail: string;
+    category: {
+      id: number;
+      name: string;
+    };
   };
   progress: number;
   last_watched_video: {
@@ -22,10 +27,24 @@ interface EnrolledCourse {
   } | null;
 }
 
+interface Course {
+  id: number;
+  title: string;
+  description: string;
+  thumbnail: string;
+  category: {
+    id: number;
+    name: string;
+  };
+  duration: string;
+  video_count: number;
+}
+
 const Profile = () => {
   const { user, refreshUser } = useAuth();
   const { toast } = useToast();
   const [enrolledCourses, setEnrolledCourses] = useState<EnrolledCourse[]>([]);
+  const [recommendedCourses, setRecommendedCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
 
   const handleProfileUpdate = async () => {
@@ -33,16 +52,36 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    const fetchEnrollments = async () => {
+    const fetchData = async () => {
       try {
-        const response = await enrollmentsAPI.getAll();
-        const data = response.data;
-        // Ensure data is an array before setting state
-        setEnrolledCourses(Array.isArray(data) ? data : []);
+        const enrollmentResponse = await enrollmentsAPI.getAll();
+        const enrollmentData = enrollmentResponse.data;
+        const enrollments = Array.isArray(enrollmentData) ? enrollmentData : [];
+        setEnrolledCourses(enrollments);
+
+        // Fetch all courses for recommendations
+        const coursesResponse = await coursesAPI.getAll();
+        const allCourses = coursesResponse.data;
+
+        // Get enrolled course IDs
+        const enrolledIds = enrollments.map((e: EnrolledCourse) => e.course.id);
+
+        // Get categories from enrolled courses
+        const enrolledCategories = enrollments.map((e: EnrolledCourse) => e.course.category.id);
+
+        // Recommend courses from same categories that user hasn't enrolled in
+        const recommended = allCourses
+          .filter((course: Course) => 
+            !enrolledIds.includes(course.id) && 
+            enrolledCategories.includes(course.category.id)
+          )
+          .slice(0, 3);
+
+        setRecommendedCourses(recommended);
       } catch (error) {
-        console.error("Failed to fetch enrollments:", error);
+        console.error("Failed to fetch data:", error);
         toast({
-          title: "خطأ في تحميل الدورات",
+          title: "خطأ في تحميل البيانات",
           description: "حاول مرة أخرى لاحقاً",
           variant: "destructive",
         });
@@ -51,7 +90,7 @@ const Profile = () => {
       }
     };
 
-    fetchEnrollments();
+    fetchData();
   }, [toast]);
 
   return (
@@ -142,6 +181,29 @@ const Profile = () => {
                 </div>
               )}
             </div>
+
+            {/* Recommended Courses */}
+            {recommendedCourses.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-6">
+                  <Sparkles className="h-6 w-6 text-primary" />
+                  <h2 className="text-2xl font-bold">دورات موصى بها لك</h2>
+                </div>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {recommendedCourses.map((course) => (
+                    <CourseCard 
+                      key={course.id} 
+                      id={course.id}
+                      title={course.title}
+                      description={course.description}
+                      duration={course.duration}
+                      videoCount={course.video_count}
+                      thumbnail={course.thumbnail}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Browse More */}
             <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl p-8 text-center">

@@ -8,6 +8,7 @@ from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer
 )
+from .admin_serializers import AdminCourseSerializer
 from .permissions import IsStaffUser
 
 User = get_user_model()
@@ -123,7 +124,7 @@ class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     
     queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
+    serializer_class = AdminCourseSerializer
     permission_classes = (IsStaffUser,)
 
 
@@ -131,7 +132,15 @@ class AdminCourseUpdateView(generics.UpdateAPIView):
     """Admin endpoint for updating courses."""
     
     queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
+    serializer_class = AdminCourseSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCourseListView(generics.ListAPIView):
+    """Admin endpoint for listing all courses (including unpublished)."""
+    
+    queryset = Course.objects.all()
+    serializer_class = AdminCourseSerializer
     permission_classes = (IsStaffUser,)
 
 

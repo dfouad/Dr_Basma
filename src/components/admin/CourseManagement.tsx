@@ -50,7 +50,7 @@ export const CourseManagement = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get("/courses/");
+      const response = await api.get("/admin/courses/");
       const data = Array.isArray(response.data) ? response.data : (response.data?.results ?? []);
       setCourses(data as Course[]);
     } catch (error) {
@@ -79,8 +79,10 @@ export const CourseManagement = () => {
     try {
       const payload = {
         ...formData,
-        category: parseInt(formData.category),
+        category_id: parseInt(formData.category),
       };
+      // Remove category field as we're using category_id
+      delete (payload as any).category;
 
       if (editingCourse) {
         await api.put(`/admin/courses/${editingCourse.id}/update/`, payload);
@@ -122,8 +124,11 @@ export const CourseManagement = () => {
     setTogglingId(course.id);
     try {
       await api.put(`/admin/courses/${course.id}/update/`, {
-        ...course,
-        category: course.category.id,
+        title: course.title,
+        description: course.description,
+        thumbnail: course.thumbnail,
+        category_id: course.category.id,
+        duration: course.duration,
         is_published: !course.is_published,
       });
       toast({ 

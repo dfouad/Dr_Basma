@@ -32,12 +32,12 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     """Serializer for course list view."""
     
-    category_name = serializers.CharField(source='category.name', read_only=True)
+    category = CategorySerializer(read_only=True)
     thumbnail_url = serializers.SerializerMethodField()
     
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
+        fields = ('id', 'title', 'description', 'thumbnail_url', 'category', 'duration', 'video_count', 'is_published', 'created_at')
     
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""
@@ -59,8 +59,8 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 
-                  'videos', 'is_enrolled', 'created_at', 'updated_at')
+        fields = ('id', 'title', 'description', 'thumbnail', 'thumbnail_url', 'category', 'category_name', 
+                  'duration', 'video_count', 'videos', 'is_enrolled', 'is_published', 'created_at', 'updated_at')
     
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""

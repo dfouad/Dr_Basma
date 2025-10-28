@@ -3,7 +3,7 @@ from .views import (
     CategoryListView, CourseListView, CourseDetailView,
     CourseVideosView, EnrollmentListView, EnrollmentCreateView,
     EnrollmentUpdateView, AdminCourseCreateView, AdminCourseUpdateView,
-    AdminCourseDeleteView, AdminVideoCreateView, AdminVideoUpdateView,
+    AdminCourseDeleteView, AdminCourseListView, AdminVideoCreateView, AdminVideoUpdateView,
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
     AdminUserDeleteView, AdminStatsView
 )
@@ -18,6 +18,7 @@ urlpatterns = [
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
     
     # Admin endpoints
+    path('admin/courses/', AdminCourseListView.as_view(), name='admin_course_list'),
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
     path('admin/courses/<int:pk>/update/', AdminCourseUpdateView.as_view(), name='admin_course_update'),
     path('admin/courses/<int:pk>/delete/', AdminCourseDeleteView.as_view(), name='admin_course_delete'),

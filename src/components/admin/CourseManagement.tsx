@@ -50,7 +50,8 @@ export const CourseManagement = () => {
   const fetchCourses = async () => {
     try {
       const response = await api.get("/courses/");
-      setCourses(response.data);
+      const data = Array.isArray(response.data) ? response.data : (response.data?.results ?? []);
+      setCourses(data as Course[]);
     } catch (error) {
       toast({
         title: "خطأ",
@@ -65,7 +66,8 @@ export const CourseManagement = () => {
   const fetchCategories = async () => {
     try {
       const response = await api.get("/categories/");
-      setCategories(response.data);
+      const data = Array.isArray(response.data) ? response.data : (response.data?.results ?? []);
+      setCategories(data as Category[]);
     } catch (error) {
       console.error("Failed to fetch categories", error);
     }

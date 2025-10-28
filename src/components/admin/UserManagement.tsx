@@ -37,7 +37,8 @@ export const UserManagement = () => {
   const fetchUsers = async () => {
     try {
       const response = await api.get("/admin/users/");
-      setUsers(response.data);
+      const data = Array.isArray(response.data) ? response.data : (response.data?.results ?? []);
+      setUsers(data as User[]);
     } catch (error) {
       toast({
         title: "خطأ",

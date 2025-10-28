@@ -14,7 +14,8 @@ interface Course {
   duration: string;
   video_count: number;
   thumbnail: string;
-  thumbnail_url?: string;  // Add this if API sends thumbnail_url
+  thumbnail_url?: string;
+  is_published: boolean;
 }
 
 const Courses = () => {
@@ -51,10 +52,12 @@ const Courses = () => {
 
 
 
-    const filteredCourses = (Array.isArray(courses) ? courses : []).filter(course =>
-    course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    const filteredCourses = (Array.isArray(courses) ? courses : [])
+    .filter(course => course.is_published)
+    .filter(course =>
+      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      course.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div className="min-h-screen flex flex-col">

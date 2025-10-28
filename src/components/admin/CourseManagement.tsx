@@ -31,6 +31,7 @@ export const CourseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [togglingId, setTogglingId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -118,6 +119,7 @@ export const CourseManagement = () => {
   };
 
   const handleTogglePublish = async (course: Course) => {
+    setTogglingId(course.id);
     try {
       await api.put(`/admin/courses/${course.id}/update/`, {
         ...course,
@@ -135,6 +137,8 @@ export const CourseManagement = () => {
         description: "فشل تحديث حالة النشر",
         variant: "destructive",
       });
+    } finally {
+      setTogglingId(null);
     }
   };
 
@@ -276,10 +280,13 @@ export const CourseManagement = () => {
                   <TableCell>
                     <button
                       onClick={() => handleTogglePublish(course)}
-                      className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                      disabled={togglingId === course.id}
+                      className="flex items-center gap-2 hover:opacity-70 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                       title={course.is_published ? "انقر لإلغاء النشر" : "انقر للنشر"}
                     >
-                      {course.is_published ? (
+                      {togglingId === course.id ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
+                      ) : course.is_published ? (
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       ) : (
                         <XCircle className="h-5 w-5 text-gray-400" />

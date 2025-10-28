@@ -53,10 +53,10 @@ const Courses = () => {
 
 
     const filteredCourses = (Array.isArray(courses) ? courses : [])
-    .filter(course => course.is_published)
-    .filter(course =>
-      course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description.toLowerCase().includes(searchQuery.toLowerCase())
+    .filter((course) => (course as any).is_published !== false)
+    .filter((course) =>
+      (course.title || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (course.description || "").toLowerCase().includes(searchQuery.toLowerCase())
     );
 
   return (

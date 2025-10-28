@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api from "@/lib/api";
 
@@ -112,6 +112,27 @@ export const CourseManagement = () => {
       toast({
         title: "خطأ",
         description: "فشل حذف الدورة",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleTogglePublish = async (course: Course) => {
+    try {
+      await api.put(`/admin/courses/${course.id}/update/`, {
+        ...course,
+        category: course.category.id,
+        is_published: !course.is_published,
+      });
+      toast({ 
+        title: "تم التحديث", 
+        description: course.is_published ? "تم إلغاء نشر الدورة" : "تم نشر الدورة" 
+      });
+      fetchCourses();
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث حالة النشر",
         variant: "destructive",
       });
     }
@@ -253,9 +274,20 @@ export const CourseManagement = () => {
                   <TableCell>{course.category.name}</TableCell>
                   <TableCell>{course.duration}</TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {course.is_published ? 'منشور' : 'مسودة'}
-                    </span>
+                    <button
+                      onClick={() => handleTogglePublish(course)}
+                      className="flex items-center gap-2 hover:opacity-70 transition-opacity"
+                      title={course.is_published ? "انقر لإلغاء النشر" : "انقر للنشر"}
+                    >
+                      {course.is_published ? (
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <XCircle className="h-5 w-5 text-gray-400" />
+                      )}
+                      <span className="text-sm">
+                        {course.is_published ? 'منشور' : 'مسودة'}
+                      </span>
+                    </button>
                   </TableCell>
                   <TableCell className="text-left">
                     <Button variant="ghost" size="sm" onClick={() => openEditDialog(course)}>

@@ -23,7 +23,8 @@ interface Course {
   description: string;
   duration: string;
   video_count: number;
-  thumbnail: string;
+   thumbnail: string;
+  thumbnail_url?: string;  // Add this if API sends thumbnail_url
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -235,9 +236,9 @@ const CourseDetail = () => {
               <div className="md:col-span-1">
                 <div className="bg-card rounded-xl p-6 shadow-lg border border-border sticky top-24">
                   <div className="aspect-video bg-muted rounded-lg mb-4 flex items-center justify-center overflow-hidden">
-                    {course.thumbnail ? (
+                    {(course.thumbnail_url || course.thumbnail) ? (
                       <img 
-                        src={getFullImageUrl(course.thumbnail)} 
+                        src={getFullImageUrl(course.thumbnail_url || course.thumbnail)} 
                         alt={course.title} 
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {

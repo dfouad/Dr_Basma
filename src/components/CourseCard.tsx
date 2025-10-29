@@ -2,6 +2,29 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle } from "lucide-react";
 
+// Utility function to get full image URL
+const getFullImageUrl = (url: string): string => {
+  if (!url) return '';
+  const trimmed = url.trim();
+
+  // If absolute URL, upgrade to https when needed
+  if (/^https?:\/\//i.test(trimmed)) {
+    if (window.location.protocol === 'https:' && trimmed.startsWith('http://')) {
+      return trimmed.replace(/^http:\/\//i, 'https://');
+    }
+    return trimmed;
+  }
+
+  // Build from API base, stripping trailing /api
+  const rawBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+  const base = rawBase.replace(/\/api\/?$/i, '');
+
+  const joined = trimmed.startsWith('/') ? `${base}${trimmed}` : `${base}/${trimmed}`;
+  return window.location.protocol === 'https:' && joined.startsWith('http://')
+    ? joined.replace(/^http:\/\//i, 'https://')
+    : joined;
+};
+
 interface CourseCardProps {
   id: number;
   title: string;
@@ -24,10 +47,12 @@ const CourseCard = ({
       {/* 🖼 Course image area */}
       <div className="relative overflow-hidden bg-muted aspect-[16/9]">
         <img
-         src={thumbnail || "/assets/default-course.jpg"}
-         
-          //alt={title || "Course placeholder"}
+          src={thumbnail ? getFullImageUrl(thumbnail) : "/placeholder.svg"}
+          alt={title || "Course placeholder"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-100"
+          onError={(e) => {
+            e.currentTarget.src = "/placeholder.svg";
+          }}
         />
 
         {/* 🌗 Always-visible gradient overlay for contrast */}

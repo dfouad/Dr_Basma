@@ -17,7 +17,7 @@ const Index = () => {
       description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح.",
       duration: "6 أسابيع",
       videoCount: 24,
-      thumbnail: "/courses/wayaa.jpg",
+      thumbnail: "/media/course_thumbnails/wayaa.jpg",
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ const Index = () => {
       description: "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية.",
       duration: "4 أسابيع",
       videoCount: 18,
-      thumbnail: "/courses/Ataa.jpeg",
+      thumbnail: "/media/course_thumbnails/Ataa.jpg",
     },
     {
       id: 3,
@@ -33,7 +33,7 @@ const Index = () => {
       description: "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة.",
       duration: "8 أسابيع",
       videoCount: 32,
-      thumbnail: "/courses/stop.jpg",
+      thumbnail: "/media/course_thumbnails/stop.jpg",
     },
   ];
 

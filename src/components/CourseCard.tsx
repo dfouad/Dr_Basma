@@ -2,6 +2,16 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle } from "lucide-react";
 
+// Utility function to get full image URL
+const getFullImageUrl = (url: string): string => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+  return `${baseURL}${url}`;
+};
+
 interface CourseCardProps {
   id: number;
   title: string;
@@ -24,10 +34,12 @@ const CourseCard = ({
       {/* 🖼 Course image area */}
       <div className="relative overflow-hidden bg-muted aspect-[16/9]">
         <img
-         src={thumbnail || "/assets/default-course.jpg"}
-         
-          //alt={title || "Course placeholder"}
+          src={thumbnail ? getFullImageUrl(thumbnail) : "/assets/default-course.jpg"}
+          alt={title || "Course placeholder"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-100"
+          onError={(e) => {
+            e.currentTarget.src = "/assets/default-course.jpg";
+          }}
         />
 
         {/* 🌗 Always-visible gradient overlay for contrast */}

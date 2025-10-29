@@ -168,7 +168,7 @@ const CourseDetail = () => {
   }
 
   // Group videos by module (assuming order represents module grouping)
-  const groupedVideos = videos.reduce((acc, video) => {
+  const groupedVideos = (Array.isArray(videos) ? videos : []).reduce((acc, video) => {
     const moduleIndex = Math.floor((video.order - 1) / 3);
     if (!acc[moduleIndex]) {
       acc[moduleIndex] = [];

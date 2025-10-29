@@ -61,7 +61,9 @@ const Profile = () => {
 
         // Fetch all courses for recommendations
         const coursesResponse = await coursesAPI.getAll();
-        const allCourses = coursesResponse.data;
+        const allCourses = Array.isArray(coursesResponse.data) 
+          ? coursesResponse.data 
+          : (coursesResponse.data?.results || []);
 
         // Get enrolled course IDs
         const enrolledIds = enrollments.map((e: EnrolledCourse) => e.course.id);

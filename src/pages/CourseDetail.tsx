@@ -53,11 +53,24 @@ const getYouTubeEmbedUrl = (url: string): string | null => {
 // Utility function to get full image URL
 const getFullImageUrl = (url: string): string => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  const trimmed = url.trim();
+
+  // If absolute URL, upgrade to https when needed
+  if (/^https?:\/\//i.test(trimmed)) {
+    if (window.location.protocol === 'https:' && trimmed.startsWith('http://')) {
+      return trimmed.replace(/^http:\/\//i, 'https://');
+    }
+    return trimmed;
   }
-  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
-  return `${baseURL}${url}`;
+
+  // Build from API base, stripping trailing /api
+  const rawBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+  const base = rawBase.replace(/\/api\/?$/i, '');
+
+  const joined = trimmed.startsWith('/') ? `${base}${trimmed}` : `${base}/${trimmed}`;
+  return window.location.protocol === 'https:' && joined.startsWith('http://')
+    ? joined.replace(/^http:\/\//i, 'https://')
+    : joined;
 };
 
 const CourseDetail = () => {
@@ -228,13 +241,7 @@ const CourseDetail = () => {
                         alt={course.title} 
                         className="w-full h-full object-cover rounded-lg"
                         onError={(e) => {
-                          e.currentTarget.style.display = 'none';
-                          e.currentTarget.parentElement?.appendChild(
-                            Object.assign(document.createElement('div'), {
-                              innerHTML: '<svg class="h-16 w-16 text-muted-foreground/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-width="2"></circle><polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon></svg>',
-                              className: 'flex items-center justify-center w-full h-full'
-                            })
-                          );
+                          e.currentTarget.src = '/placeholder.svg';
                         }}
                       />
                     ) : (

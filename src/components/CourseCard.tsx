@@ -5,11 +5,24 @@ import { Clock, PlayCircle } from "lucide-react";
 // Utility function to get full image URL
 const getFullImageUrl = (url: string): string => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) {
-    return url;
+  const trimmed = url.trim();
+
+  // If absolute URL, upgrade to https when needed
+  if (/^https?:\/\//i.test(trimmed)) {
+    if (window.location.protocol === 'https:' && trimmed.startsWith('http://')) {
+      return trimmed.replace(/^http:\/\//i, 'https://');
+    }
+    return trimmed;
   }
-  const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
-  return `${baseURL}${url}`;
+
+  // Build from API base, stripping trailing /api
+  const rawBase = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+  const base = rawBase.replace(/\/api\/?$/i, '');
+
+  const joined = trimmed.startsWith('/') ? `${base}${trimmed}` : `${base}/${trimmed}`;
+  return window.location.protocol === 'https:' && joined.startsWith('http://')
+    ? joined.replace(/^http:\/\//i, 'https://')
+    : joined;
 };
 
 interface CourseCardProps {
@@ -34,11 +47,11 @@ const CourseCard = ({
       {/* 🖼 Course image area */}
       <div className="relative overflow-hidden bg-muted aspect-[16/9]">
         <img
-          src={thumbnail ? getFullImageUrl(thumbnail) : "/assets/default-course.jpg"}
+          src={thumbnail ? getFullImageUrl(thumbnail) : "/placeholder.svg"}
           alt={title || "Course placeholder"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-100"
           onError={(e) => {
-            e.currentTarget.src = "/assets/default-course.jpg";
+            e.currentTarget.src = "/placeholder.svg";
           }}
         />
 

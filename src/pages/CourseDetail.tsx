@@ -83,11 +83,14 @@ const CourseDetail = () => {
         if (isAuthenticated) {
           try {
             const videosResponse = await coursesAPI.getVideos(Number(id));
-            setVideos(videosResponse.data);
+            const vids = Array.isArray(videosResponse.data)
+              ? videosResponse.data
+              : (videosResponse.data?.results || []);
+            setVideos(vids);
             setEnrolled(true);
             // Set first video as selected by default
-            if (videosResponse.data.length > 0) {
-              setSelectedVideo(videosResponse.data[0]);
+            if (vids.length > 0) {
+              setSelectedVideo(vids[0]);
             }
           } catch (error: any) {
             if (error.response?.status === 403) {
@@ -122,10 +125,13 @@ const CourseDetail = () => {
       
       // Fetch videos after enrollment
       const videosResponse = await coursesAPI.getVideos(Number(id));
-      setVideos(videosResponse.data);
+      const vids = Array.isArray(videosResponse.data)
+        ? videosResponse.data
+        : (videosResponse.data?.results || []);
+      setVideos(vids);
       // Set first video as selected
-      if (videosResponse.data.length > 0) {
-        setSelectedVideo(videosResponse.data[0]);
+      if (vids.length > 0) {
+        setSelectedVideo(vids[0]);
       }
       
       toast({
@@ -258,7 +264,7 @@ const CourseDetail = () => {
         </section>
 
         {/* Course Content */}
-        {enrolled && videos.length > 0 && (
+        {enrolled && Array.isArray(videos) && videos.length > 0 && (
           <section className="py-16">
             <div className="container mx-auto px-4 max-w-6xl">
               <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>

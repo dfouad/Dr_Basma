@@ -4,11 +4,24 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
 from .models import Course, Video, Enrollment, Category, PDF, Certificate
+from django.http import FileResponse, HttpResponseBadRequest
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from courses.models import Course
+from .models import Certificate
+from io import BytesIO
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+import uuid
+
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer
 )
 from .permissions import IsStaffUser
+
+
 
 User = get_user_model()
 
@@ -253,14 +266,46 @@ class AdminPDFDeleteView(generics.DestroyAPIView):
 
 
 class UserCertificateListView(generics.ListAPIView):
-    """User endpoint for listing their certificates."""
-    
-    serializer_class = CertificateSerializer
-    permission_classes = (IsAuthenticated,)
-    
-    def get_queryset(self):
-        return Certificate.objects.filter(user=self.request.user)
+    permission_classes = [IsAuthenticated]
 
+    def post(self, request, course_id):
+        full_name = request.data.get("name")
+        if not full_name:
+            return HttpResponseBadRequest("Name is required")
+
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return HttpResponseBadRequest("Invalid course")
+
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+
+        # certificate background and layout
+        p.setFont("Helvetica-Bold", 28)
+        p.drawCentredString(300, 750, "شهادة إتمام دورة")
+
+        p.setFont("Helvetica", 16)
+        p.drawCentredString(300, 700, f"هذه الشهادة تمنح إلى")
+        p.setFont("Helvetica-Bold", 22)
+        p.drawCentredString(300, 670, full_name)
+
+        p.setFont("Helvetica", 16)
+        p.drawCentredString(300, 630, f"لإتمامه دورة {course.title}")
+
+        # Optional: add coach name or signature
+        coach_name = getattr(course, 'coach_name', 'المدربة')
+        p.setFont("Helvetica", 14)
+        p.drawCentredString(300, 580, f"بإشراف: {coach_name}")
+
+        p.setFont("Helvetica", 12)
+        p.drawCentredString(300, 530, "نتمنى لك دوام التوفيق والنجاح 🌟")
+        p.showPage()
+        p.save()
+
+        buffer.seek(0)
+        response = FileResponse(buffer, as_attachment=True, filename=f"certificate_{uuid.uuid4()}.pdf")
+        return response
 
 class AdminCertificateListView(generics.ListAPIView):
     """Admin endpoint for listing all certificates."""

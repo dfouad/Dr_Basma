@@ -126,4 +126,22 @@ export const pdfsAPI = {
     api.delete(`/admin/pdfs/${id}/delete/`),
 };
 
+// Certificates API
+export const certificatesAPI = {
+  getUserCertificates: () =>
+    api.get('/certificates/'),
+  
+  getAllAdmin: () =>
+    api.get('/admin/certificates/'),
+  
+  create: (data: { user: number; course: number; enrollment?: number; template_text?: string }) =>
+    api.post('/admin/certificates/create/', data),
+  
+  update: (id: number, data: { template_text?: string }) =>
+    api.put(`/admin/certificates/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/certificates/${id}/delete/`),
+};
+
 export default api;

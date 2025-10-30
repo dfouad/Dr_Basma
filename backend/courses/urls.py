@@ -6,7 +6,9 @@ from .views import (
     AdminCourseDeleteView, AdminVideoCreateView, AdminVideoUpdateView,
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
-    AdminPDFUpdateView, AdminPDFDeleteView
+    AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView,
+    AdminCertificateListView, AdminCertificateCreateView, AdminCertificateUpdateView,
+    AdminCertificateDeleteView
 )
 
 urlpatterns = [
@@ -17,6 +19,7 @@ urlpatterns = [
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
+    path('certificates/', UserCertificateListView.as_view(), name='user_certificate_list'),
     
     # Admin endpoints
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
@@ -32,5 +35,9 @@ urlpatterns = [
     path('admin/users/', AdminUserListView.as_view(), name='admin_user_list'),
     path('admin/users/<int:pk>/update/', AdminUserUpdateView.as_view(), name='admin_user_update'),
     path('admin/users/<int:pk>/delete/', AdminUserDeleteView.as_view(), name='admin_user_delete'),
+    path('admin/certificates/', AdminCertificateListView.as_view(), name='admin_certificate_list'),
+    path('admin/certificates/create/', AdminCertificateCreateView.as_view(), name='admin_certificate_create'),
+    path('admin/certificates/<int:pk>/update/', AdminCertificateUpdateView.as_view(), name='admin_certificate_update'),
+    path('admin/certificates/<int:pk>/delete/', AdminCertificateDeleteView.as_view(), name='admin_certificate_delete'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
 ]

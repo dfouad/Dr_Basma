@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Video, Enrollment, Category, PDF
+from .models import Course, Video, Enrollment, Category, PDF, Certificate
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -142,3 +142,23 @@ class PDFSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.pdf_file.url)
             return obj.pdf_file.url
         return None
+
+
+class CertificateSerializer(serializers.ModelSerializer):
+    """Serializer for certificates."""
+    
+    user_name = serializers.SerializerMethodField()
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    
+    class Meta:
+        model = Certificate
+        fields = ('id', 'user', 'user_email', 'user_name', 'course', 'course_title', 'enrollment', 
+                  'certificate_number', 'issued_at', 'template_text')
+        read_only_fields = ('certificate_number', 'issued_at')
+    
+    def get_user_name(self, obj):
+        """Return user's full name."""
+        if obj.user.first_name and obj.user.last_name:
+            return f'{obj.user.first_name} {obj.user.last_name}'
+        return obj.user.email

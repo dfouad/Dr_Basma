@@ -46,7 +46,10 @@ export const VideoManagement = () => {
   const fetchCourses = async () => {
     try {
       const response = await api.get("/courses/");
-      setCourses(response.data);
+      const coursesData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      setCourses(coursesData);
       setLoading(false);
     } catch (error) {
       toast({
@@ -61,7 +64,10 @@ export const VideoManagement = () => {
     if (!courseId) return;
     try {
       const response = await api.get(`/courses/${courseId}/videos/`);
-      setVideos(response.data);
+      const videosData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      setVideos(videosData);
     } catch (error) {
       console.error("Failed to fetch videos", error);
     }

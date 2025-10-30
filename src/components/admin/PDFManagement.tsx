@@ -72,7 +72,10 @@ export function PDFManagement() {
     setLoading(true);
     try {
       const response = await pdfsAPI.getAll();
-      setPdfs(response.data || []);
+      const pdfsData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      setPdfs(pdfsData);
     } catch (error) {
       console.error("Failed to fetch PDFs", error);
       toast({

@@ -93,6 +93,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     course_title = serializers.CharField(source='course.title', read_only=True)
     course_thumbnail = serializers.SerializerMethodField()
     last_watched_title = serializers.CharField(source='last_watched.title', read_only=True)
+    course = CourseListSerializer(read_only=True)  # nested course data
     
     class Meta:
         model = Enrollment

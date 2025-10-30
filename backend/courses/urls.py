@@ -18,10 +18,11 @@ urlpatterns = [
     path('courses/<int:course_id>/videos/', CourseVideosView.as_view(), name='course_videos'),
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
-    path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
-    path('certificates/', UserCertificateListView.as_view(), name='user_certificate_list'),
-    
-    # Admin endpoints
+path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
+path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='generate-certificate'),
+
+
+# Admin endpoints
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
     path('admin/courses/<int:pk>/update/', AdminCourseUpdateView.as_view(), name='admin_course_update'),
     path('admin/courses/<int:pk>/delete/', AdminCourseDeleteView.as_view(), name='admin_course_delete'),

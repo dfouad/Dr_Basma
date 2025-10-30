@@ -76,7 +76,18 @@ class PDFAdmin(admin.ModelAdmin):
 class CertificateAdmin(admin.ModelAdmin):
     """Admin for Certificate model."""
     
-    list_display = ('certificate_number', 'user', 'course', 'issued_at')
-    list_filter = ('issued_at', 'course')
-    search_fields = ('certificate_number', 'user__email', 'course__title')
-    readonly_fields = ('certificate_number', 'issued_at')
+      
+    # Fields that can't be edited manually
+    readonly_fields = ( 'issue_date',)
+
+    # Columns to show in the list view
+    list_display = ( 'user', 'course', 'issue_date')
+
+    # Filters on the right sidebar
+    list_filter = ('issue_date', 'course')
+
+    # Order newest first
+    ordering = ('-issue_date',)
+
+    # Optional: search bar for easier lookup
+    search_fields = ( 'user__username', 'course__title')

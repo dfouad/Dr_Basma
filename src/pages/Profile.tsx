@@ -84,7 +84,7 @@ useEffect(() => {
       thumbnail: courseData.thumbnail || "",
       thumbnail_url: courseData.thumbnail_url || "",
       category: categoryData,
-      progress: item.progress || 0,
+     // progress: item.progress || 0,
       last_watched_video: item.last_watched_video || null,
     },
   };
@@ -199,18 +199,19 @@ useEffect(() => {
                       <div className="p-6 space-y-4">
                         <h3 className="font-semibold text-lg">{enrollment.course.title}</h3>
                         
-                        <div className="space-y-2">
+                 {/*       <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">التقدم</span>
                             <span className="font-medium">{enrollment.course.progress}%</span>
                           </div>
-                          <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
+                        <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                             <div
                               className="bg-primary h-full rounded-full transition-all duration-300"
                               style={{ width: `${enrollment.course.progress}%` }}
                             />
-                          </div>
-                        </div>
+                          </div>/
+                          
+                        </div>*/}
 
                         <div className="pt-2 border-t border-border">
                           {enrollment.course.last_watched_video && (

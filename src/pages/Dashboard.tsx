@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Video, Users, BarChart3 } from "lucide-react";
+import { BookOpen, Video, Users, BarChart3, FileText } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { CourseManagement } from "@/components/admin/CourseManagement";
 import { VideoManagement } from "@/components/admin/VideoManagement";
 import { UserManagement } from "@/components/admin/UserManagement";
+import { PDFManagement } from "@/components/admin/PDFManagement";
 import api from "@/lib/api";
 
 interface Stats {
@@ -17,6 +18,7 @@ interface Stats {
   total_videos: number;
   total_users: number;
   total_enrollments: number;
+  total_pdfs: number;
 }
 
 const Dashboard = () => {
@@ -63,7 +65,7 @@ const Dashboard = () => {
 
             {/* Stats Overview */}
             {stats && (
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <div className="bg-card rounded-lg p-6 border border-border">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="bg-primary/10 p-2 rounded">
@@ -88,6 +90,15 @@ const Dashboard = () => {
                 <div className="bg-card rounded-lg p-6 border border-border">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="bg-accent/10 p-2 rounded">
+                      <FileText className="h-5 w-5 text-accent" />
+                    </div>
+                    <p className="text-sm text-muted-foreground">ملفات PDF</p>
+                  </div>
+                  <p className="text-3xl font-bold">{stats.total_pdfs}</p>
+                </div>
+                <div className="bg-card rounded-lg p-6 border border-border">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="bg-accent/10 p-2 rounded">
                       <Users className="h-5 w-5 text-accent" />
                     </div>
                     <p className="text-sm text-muted-foreground">المستخدمون</p>
@@ -108,9 +119,10 @@ const Dashboard = () => {
 
             {/* Management Tabs */}
             <Tabs defaultValue="courses" className="space-y-6">
-              <TabsList className="grid w-full max-w-md grid-cols-3">
+              <TabsList className="grid w-full max-w-2xl grid-cols-4">
                 <TabsTrigger value="courses">الدورات</TabsTrigger>
                 <TabsTrigger value="videos">الفيديوهات</TabsTrigger>
+                <TabsTrigger value="pdfs">ملفات PDF</TabsTrigger>
                 <TabsTrigger value="users">المستخدمون</TabsTrigger>
               </TabsList>
 
@@ -120,6 +132,10 @@ const Dashboard = () => {
 
               <TabsContent value="videos" className="bg-card rounded-lg p-6 border border-border">
                 <VideoManagement />
+              </TabsContent>
+
+              <TabsContent value="pdfs" className="bg-card rounded-lg p-6 border border-border">
+                <PDFManagement />
               </TabsContent>
 
               <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">

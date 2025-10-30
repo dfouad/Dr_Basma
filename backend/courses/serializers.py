@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Video, Enrollment, Category
+from .models import Course, Video, Enrollment, Category, PDF
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -121,3 +121,24 @@ class EnrollmentCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['user'] = self.context['request'].user
         return super().create(validated_data)
+
+
+class PDFSerializer(serializers.ModelSerializer):
+    """Serializer for PDF documents."""
+    
+    pdf_url = serializers.SerializerMethodField()
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    
+    class Meta:
+        model = PDF
+        fields = ('id', 'course', 'course_title', 'title', 'description', 'pdf_file', 'pdf_url', 'order', 'created_at', 'updated_at')
+        read_only_fields = ('created_at', 'updated_at')
+    
+    def get_pdf_url(self, obj):
+        """Return the full PDF URL."""
+        if obj.pdf_file:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.pdf_file.url)
+            return obj.pdf_file.url
+        return None

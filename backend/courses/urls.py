@@ -5,7 +5,8 @@ from .views import (
     EnrollmentUpdateView, AdminCourseCreateView, AdminCourseUpdateView,
     AdminCourseDeleteView, AdminVideoCreateView, AdminVideoUpdateView,
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
-    AdminUserDeleteView, AdminStatsView
+    AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
+    AdminPDFUpdateView, AdminPDFDeleteView
 )
 
 urlpatterns = [
@@ -24,6 +25,10 @@ urlpatterns = [
     path('admin/videos/create/', AdminVideoCreateView.as_view(), name='admin_video_create'),
     path('admin/videos/<int:pk>/update/', AdminVideoUpdateView.as_view(), name='admin_video_update'),
     path('admin/videos/<int:pk>/delete/', AdminVideoDeleteView.as_view(), name='admin_video_delete'),
+    path('admin/pdfs/', AdminPDFListView.as_view(), name='admin_pdf_list'),
+    path('admin/pdfs/create/', AdminPDFCreateView.as_view(), name='admin_pdf_create'),
+    path('admin/pdfs/<int:pk>/update/', AdminPDFUpdateView.as_view(), name='admin_pdf_update'),
+    path('admin/pdfs/<int:pk>/delete/', AdminPDFDeleteView.as_view(), name='admin_pdf_delete'),
     path('admin/users/', AdminUserListView.as_view(), name='admin_user_list'),
     path('admin/users/<int:pk>/update/', AdminUserUpdateView.as_view(), name='admin_user_update'),
     path('admin/users/<int:pk>/delete/', AdminUserDeleteView.as_view(), name='admin_user_delete'),

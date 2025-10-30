@@ -103,4 +103,27 @@ export const enrollmentsAPI = {
     }),
 };
 
+// PDFs API
+export const pdfsAPI = {
+  getAll: () =>
+    api.get('/admin/pdfs/'),
+  
+  create: (data: FormData) =>
+    api.post('/admin/pdfs/create/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  update: (id: number, data: FormData) =>
+    api.put(`/admin/pdfs/${id}/update/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/pdfs/${id}/delete/`),
+};
+
 export default api;

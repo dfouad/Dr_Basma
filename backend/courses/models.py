@@ -77,3 +77,23 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f'{self.user.email} enrolled in {self.course.title}'
+
+
+class PDF(models.Model):
+    """PDF document model."""
+    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    pdf_file = models.FileField(upload_to='course_pdfs/')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = 'PDF'
+        verbose_name_plural = 'PDFs'
+    
+    def __str__(self):
+        return f'{self.course.title} - {self.title}'

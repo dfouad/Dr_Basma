@@ -103,4 +103,45 @@ export const enrollmentsAPI = {
     }),
 };
 
+// PDFs API
+export const pdfsAPI = {
+  getAll: () =>
+    api.get('/admin/pdfs/'),
+  
+  create: (data: FormData) =>
+    api.post('/admin/pdfs/create/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  update: (id: number, data: FormData) =>
+    api.put(`/admin/pdfs/${id}/update/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/pdfs/${id}/delete/`),
+};
+
+// Certificates API
+export const certificatesAPI = {
+  getUserCertificates: () =>
+    api.get('/certificates/'),
+  
+  getAllAdmin: () =>
+    api.get('/admin/certificates/'),
+  
+  create: (data: { user: number; course: number; enrollment?: number; template_text?: string }) =>
+    api.post('/admin/certificates/create/', data),
+  
+  update: (id: number, data: { template_text?: string }) =>
+    api.put(`/admin/certificates/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/certificates/${id}/delete/`),
+};
+
 export default api;

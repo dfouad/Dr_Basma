@@ -3,10 +3,10 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category
+from .models import Course, Video, Enrollment, Category, PDF, Certificate
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
-    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer
+    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer
 )
 from .permissions import IsStaffUser
 
@@ -215,5 +215,79 @@ class AdminStatsView(generics.GenericAPIView):
             'total_videos': Video.objects.count(),
             'total_users': User.objects.count(),
             'total_enrollments': Enrollment.objects.count(),
+            'total_pdfs': PDF.objects.count(),
+            'total_certificates': Certificate.objects.count(),
         }
         return Response(stats)
+
+
+class AdminPDFListView(generics.ListAPIView):
+    """Admin endpoint for listing all PDFs."""
+    
+    queryset = PDF.objects.all()
+    serializer_class = PDFSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminPDFCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating PDFs."""
+    
+    queryset = PDF.objects.all()
+    serializer_class = PDFSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminPDFUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating PDFs."""
+    
+    queryset = PDF.objects.all()
+    serializer_class = PDFSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminPDFDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting PDFs."""
+    
+    queryset = PDF.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
+class UserCertificateListView(generics.ListAPIView):
+    """User endpoint for listing their certificates."""
+    
+    serializer_class = CertificateSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        return Certificate.objects.filter(user=self.request.user)
+
+
+class AdminCertificateListView(generics.ListAPIView):
+    """Admin endpoint for listing all certificates."""
+    
+    queryset = Certificate.objects.all()
+    serializer_class = CertificateSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCertificateCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating certificates."""
+    
+    queryset = Certificate.objects.all()
+    serializer_class = CertificateSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCertificateUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating certificates."""
+    
+    queryset = Certificate.objects.all()
+    serializer_class = CertificateSerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCertificateDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting certificates."""
+    
+    queryset = Certificate.objects.all()
+    permission_classes = (IsStaffUser,)

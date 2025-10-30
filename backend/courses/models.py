@@ -77,3 +77,47 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f'{self.user.email} enrolled in {self.course.title}'
+
+
+class PDF(models.Model):
+    """PDF document model."""
+    
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    pdf_file = models.FileField(upload_to='course_pdfs/')
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = 'PDF'
+        verbose_name_plural = 'PDFs'
+    
+    def __str__(self):
+        return f'{self.course.title} - {self.title}'
+
+
+class Certificate(models.Model):
+    """Certificate model for course completion."""
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='certificates')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='certificates')
+    enrollment = models.OneToOneField(Enrollment, on_delete=models.CASCADE, related_name='certificate', null=True, blank=True)
+    certificate_number = models.CharField(max_length=100, unique=True)
+    issued_at = models.DateTimeField(auto_now_add=True)
+    template_text = models.TextField(blank=True, help_text='Custom text for certificate template')
+    
+    class Meta:
+        unique_together = ('user', 'course')
+        ordering = ['-issued_at']
+    
+    def __str__(self):
+        return f'{self.user.email} - {self.course.title}'
+    
+    def save(self, *args, **kwargs):
+        if not self.certificate_number:
+            import uuid
+            self.certificate_number = f'CERT-{uuid.uuid4().hex[:8].upper()}'
+        super().save(*args, **kwargs)

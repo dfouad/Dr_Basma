@@ -14,31 +14,36 @@ interface EnrolledCourse {
   id: number;
   course: {
     id: number;
-    title: string;
-    thumbnail: string;
-    category: {
+     title: string;
+     description: string;
+     duration: string;
+     video_count: number;
+     thumbnail: string;
+     thumbnail_url?: string;  // Add this if API sends thumbnail_url
+     category: {
       id: number;
       name: string;
-    };
   };
   progress: number;
   last_watched_video: {
-    title: string;
+  title: string;
   } | null;
 }
-
+}
 interface Course {
   id: number;
   title: string;
   description: string;
+  duration: string;
+  video_count: number;
   thumbnail: string;
+  thumbnail_url?: string;  // Add this if API sends thumbnail_url
   category: {
     id: number;
     name: string;
   };
-  duration: string;
-  video_count: number;
 }
+
 
 const Profile = () => {
   const { user, refreshUser } = useAuth();
@@ -51,55 +56,88 @@ const Profile = () => {
     await refreshUser();
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const enrollmentResponse = await enrollmentsAPI.getAll();
-        const enrollmentData = enrollmentResponse.data;
-        const enrollments = Array.isArray(enrollmentData) ? enrollmentData : [];
-        setEnrolledCourses(enrollments);
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      // 1️⃣ Fetch enrollments
+      const enrollmentResponse = await enrollmentsAPI.getAll();
+      const rawData = enrollmentResponse.data;
 
-        // Fetch all courses for recommendations
-        const coursesResponse = await coursesAPI.getAll();
-        const allCourses = Array.isArray(coursesResponse.data) 
-          ? coursesResponse.data 
-          : (coursesResponse.data?.results || []);
+      // Handle pagination or direct array
+      const enrollmentsRaw = Array.isArray(rawData)
+        ? rawData
+        : rawData.results || [];
 
-        // Get enrolled course IDs
-        const enrolledIds = enrollments.map((e: EnrolledCourse) => e.course.id);
+      // Normalize enrollment structure (handle cases without nested course)
+     const enrollments: EnrolledCourse[] = enrollmentsRaw.map((item: any) => {
+     const courseData = item.course || {};
+     const categoryData = courseData.category || { id: 0, name: "غير مصنفة" };
 
-        // Get categories from enrolled courses
-        const enrolledCategories = enrollments.map((e: EnrolledCourse) => e.course.category.id);
+  return {
+    id: item.id,
+    course: {
+      id: courseData.id || item.course_id || 0,
+      title: courseData.title || "دورة غير معروفة",
+      description: courseData.description || "",
+      duration: courseData.duration || "",
+      video_count: courseData.video_count || 0,
+      thumbnail: courseData.thumbnail || "",
+      thumbnail_url: courseData.thumbnail_url || "",
+      category: categoryData,
+      progress: item.progress || 0,
+      last_watched_video: item.last_watched_video || null,
+    },
+  };
+});
 
-        // Recommend courses from same categories that user hasn't enrolled in
-        const recommended = allCourses
-          .filter((course: Course) => 
-            !enrolledIds.includes(course.id) && 
+      setEnrolledCourses(enrollments);
+
+      // 2️⃣ Fetch all courses for recommendations
+      const coursesResponse = await coursesAPI.getAll();
+      const allCourses = Array.isArray(coursesResponse.data)
+        ? coursesResponse.data
+        : coursesResponse.data?.results || [];
+
+      // 3️⃣ Prepare IDs and categories for recommendation
+      const enrolledIds = enrollments.map((e) => e.course.id);
+      const enrolledCategories = enrollments.map((e) => e.course.category.id);
+
+      // 4️⃣ Recommend courses
+      const recommended = allCourses
+        .filter(
+          (course: Course) =>
+            !enrolledIds.includes(course.id) &&
             enrolledCategories.includes(course.category.id)
-          )
-          .slice(0, 3);
-        setRecommendedCourses(recommended);
+        )
+        .slice(0, 3);
 
-        // check for empty recommendations
-        if (!recommended || recommended.length === 0) {
-          // no recommendations — handle accordingly
-          console.log("No recommended courses found");
-        }
-      } /*catch (error) {
-        console.error("Failed to fetch data:", error);
-        toast({
-          title: "خطأ في تحميل البيانات",
-          description: "حاول مرة أخرى لاحقاً",
-          variant: "destructive",
-        });
-      }*/
-      finally {
-        setLoading(false);
-      }
-    };
+      setRecommendedCourses(recommended);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      toast({
+        title: "خطأ في تحميل البيانات",
+        description: "حاول مرة أخرى لاحقاً",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchData();
-  }, [toast]);
+  fetchData();
+}, [toast]);
+
+  function getFullImageUrl(url: string): string {
+    if (!url) return "/placeholder.svg";
+    // If already absolute (starts with http or https), return as is
+    if (/^https?:\/\//i.test(url)) return url;
+    // Otherwise, treat as relative to the public folder or backend
+    // You may want to adjust the base URL depending on your backend setup
+    // Example: prepend your backend URL if needed
+    // const BASE_URL = "https://your-backend.com";
+    // return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+    return url.startsWith("/") ? url : `/${url}`;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -145,15 +183,18 @@ const Profile = () => {
                   {enrolledCourses.map((enrollment) => (
                     <div key={enrollment.id} className="bg-card rounded-lg overflow-hidden shadow-sm border border-border">
                       <div className="aspect-video bg-muted flex items-center justify-center">
-                        {enrollment.course.thumbnail ? (
-                          <img 
-                            src={enrollment.course.thumbnail} 
-                            alt={enrollment.course.title}
-                            className="w-full h-full object-cover"
+                        {(enrollment.course.thumbnail_url || enrollment.course.thumbnail) ? (
+                        <img 
+                          src={getFullImageUrl(enrollment.course.thumbnail_url || enrollment.course.thumbnail)} 
+                          alt={enrollment.course.title} 
+                          className="w-full h-full object-cover rounded-lg"
+                          onError={(e) => {
+                          e.currentTarget.src = '/placeholder.svg';
+                         }}
                           />
-                        ) : (
-                          <PlayCircle className="h-12 w-12 text-muted-foreground/30" />
-                        )}
+                         ) : (
+                         <PlayCircle className="h-16 w-16 text-muted-foreground/30" />
+                         )}
                       </div>
                       <div className="p-6 space-y-4">
                         <h3 className="font-semibold text-lg">{enrollment.course.title}</h3>
@@ -161,20 +202,20 @@ const Profile = () => {
                         <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">التقدم</span>
-                            <span className="font-medium">{enrollment.progress}%</span>
+                            <span className="font-medium">{enrollment.course.progress}%</span>
                           </div>
                           <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                             <div
                               className="bg-primary h-full rounded-full transition-all duration-300"
-                              style={{ width: `${enrollment.progress}%` }}
+                              style={{ width: `${enrollment.course.progress}%` }}
                             />
                           </div>
                         </div>
 
                         <div className="pt-2 border-t border-border">
-                          {enrollment.last_watched_video && (
+                          {enrollment.course.last_watched_video && (
                             <p className="text-sm text-muted-foreground mb-3">
-                              آخر مشاهدة: {enrollment.last_watched_video.title}
+                              آخر مشاهدة: {enrollment.course.last_watched_video.title}
                             </p>
                           )}
                           <Link to={`/courses/${enrollment.course.id}`}>
@@ -206,7 +247,7 @@ const Profile = () => {
                       description={course.description}
                       duration={course.duration}
                       videoCount={course.video_count}
-                      thumbnail={course.thumbnail}
+                      thumbnail={course.thumbnail_url || course.thumbnail}
                     />
                   ))}
                 </div>

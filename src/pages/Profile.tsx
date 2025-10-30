@@ -9,6 +9,7 @@ import { enrollmentsAPI, coursesAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import CourseCard from "@/components/CourseCard";
+import CertificateDownloadDialog from "@/components/CertificateDownloadDialog";
 
 interface EnrolledCourse {
   id: number;
@@ -223,6 +224,11 @@ useEffect(() => {
                               متابعة التعلم
                             </Button>
                           </Link>
+                          <CertificateDownloadDialog
+                            courseTitle={enrollment.course.title}
+                            courseId={enrollment.course.id}
+                            progress={enrollment.course.progress}
+                          />
                         </div>
                       </div>
                     </div>

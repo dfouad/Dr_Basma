@@ -31,8 +31,9 @@ interface Course {
   description: string;
   duration: string;
   video_count: number;
-   thumbnail: string;
-  thumbnail_url?: string;  // Add this if API sends thumbnail_url
+  thumbnail: string;
+  thumbnail_url?: string;
+  is_enrolled?: boolean;
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -101,36 +102,34 @@ const CourseDetail = () => {
       try {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
-
-        // Try to fetch videos and PDFs - if successful, user is enrolled
-        if (isAuthenticated) {
+        
+        // Set enrollment status from course data
+        if (isAuthenticated && courseResponse.data.is_enrolled) {
+          setEnrolled(true);
+          
+          // Fetch videos and PDFs for enrolled users
           try {
             const videosResponse = await coursesAPI.getVideos(Number(id));
             const vids = Array.isArray(videosResponse.data)
               ? videosResponse.data
               : (videosResponse.data?.results || []);
             setVideos(vids);
-            setEnrolled(true);
             // Set first video as selected by default
             if (vids.length > 0) {
               setSelectedVideo(vids[0]);
             }
             
-            // Fetch PDFs for enrolled users
-            try {
-              const pdfsResponse = await coursesAPI.getPDFs(Number(id));
-              const pdfsData = Array.isArray(pdfsResponse.data)
-                ? pdfsResponse.data
-                : (pdfsResponse.data?.results || []);
-              setPdfs(pdfsData);
-            } catch (pdfError) {
-              console.log("No PDFs available or error fetching PDFs");
-            }
-          } catch (error: any) {
-            if (error.response?.status === 403) {
-              setEnrolled(false);
-            }
+            // Fetch PDFs
+            const pdfsResponse = await coursesAPI.getPDFs(Number(id));
+            const pdfsData = Array.isArray(pdfsResponse.data)
+              ? pdfsResponse.data
+              : (pdfsResponse.data?.results || []);
+            setPdfs(pdfsData);
+          } catch (error) {
+            console.log("Error fetching course materials:", error);
           }
+        } else {
+          setEnrolled(false);
         }
       } catch (error) {
         toast({

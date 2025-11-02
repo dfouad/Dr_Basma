@@ -9,9 +9,11 @@ import { enrollmentsAPI, coursesAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import CourseCard from "@/components/CourseCard";
+import CertificateDownloadDialog from "@/components/CertificateDownloadDialog";
 
 interface EnrolledCourse {
   id: number;
+  progress: number;
   course: {
     id: number;
      title: string;
@@ -24,7 +26,6 @@ interface EnrolledCourse {
       id: number;
       name: string;
   };
-  progress: number;
   last_watched_video: {
   title: string;
   } | null;
@@ -75,6 +76,7 @@ useEffect(() => {
 
   return {
     id: item.id,
+    progress: item.progress || 0,
     course: {
       id: courseData.id || item.course_id || 0,
       title: courseData.title || "دورة غير معروفة",
@@ -202,12 +204,12 @@ useEffect(() => {
                  {/*       <div className="space-y-2">
                           <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">التقدم</span>
-                            <span className="font-medium">{enrollment.course.progress}%</span>
+                            <span className="font-medium">{enrollment.progress}%</span>
                           </div>
                         <div className="w-full bg-muted rounded-full h-2 overflow-hidden">
                             <div
                               className="bg-primary h-full rounded-full transition-all duration-300"
-                              style={{ width: `${enrollment.course.progress}%` }}
+                              style={{ width: `${enrollment.progress}%` }}
                             />
                           </div>/
                           
@@ -224,6 +226,11 @@ useEffect(() => {
                               متابعة التعلم
                             </Button>
                           </Link>
+                          <CertificateDownloadDialog
+                            courseTitle={enrollment.course.title}
+                            courseId={enrollment.course.id}
+                            progress={enrollment.progress}
+                          />
                         </div>
                       </div>
                     </div>

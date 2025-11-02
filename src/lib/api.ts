@@ -84,6 +84,9 @@ export const coursesAPI = {
   getVideos: (courseId: number) =>
     api.get(`/courses/${courseId}/videos/`),
   
+  getPDFs: (courseId: number) =>
+    api.get(`/courses/${courseId}/pdfs/`),
+  
   getCategories: () =>
     api.get('/categories/'),
 };

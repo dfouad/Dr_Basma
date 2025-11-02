@@ -58,8 +58,8 @@ const Auth = () => {
         <div className="bg-card rounded-2xl shadow-xl border border-border p-8 space-y-6">
           <div className="text-center space-y-2">
             <Link to="/" className="inline-flex items-center gap-3 mb-4">
-              <img src={logo} alt="سنوات" className="h-16 w-auto" />
-              <span className="text-2xl font-bold">سنوات</span>
+              <img src={logo} alt="دكتور سعادة" className="h-16 w-auto" />
+              <span className="text-2xl font-bold">دكتور سعادة</span>
             </Link>
             <h1 className="text-3xl font-bold">{isLogin ? "مرحباً بعودتك" : "إنشاء حساب جديد"}</h1>
             <p className="text-muted-foreground">

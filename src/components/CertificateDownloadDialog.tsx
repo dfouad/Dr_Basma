@@ -1,4 +1,5 @@
 import { useState } from "react";
+import html2pdf from "html2pdf.js";
 import {
   Dialog,
   DialogContent,
@@ -41,167 +42,86 @@ const CertificateDownloadDialog = ({
 
     setLoading(true);
     try {
-      // Create a simple certificate as an HTML document
+      // ✅ Certificate HTML Template
       const certificateHTML = `
-        <!DOCTYPE html>
-        <html dir="rtl" lang="ar">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>شهادة إتمام الدورة</title>
-          <style>
-            * {
-              margin: 0;
-              padding: 0;
-              box-sizing: border-box;
-            }
-            body {
-              font-family: 'Arial', sans-serif;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              min-height: 100vh;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              padding: 20px;
-            }
-            .certificate {
-              background: white;
-              max-width: 800px;
-              width: 100%;
-              padding: 60px 40px;
-              border-radius: 20px;
-              box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-              text-align: center;
-            }
-            .header {
-              border-bottom: 3px solid #667eea;
-              padding-bottom: 30px;
-              margin-bottom: 40px;
-            }
-            h1 {
-              color: #667eea;
-              font-size: 48px;
-              font-weight: bold;
-              margin-bottom: 10px;
-            }
-            .subtitle {
-              color: #666;
-              font-size: 18px;
-            }
-            .content {
-              margin: 40px 0;
-            }
-            .recipient {
-              font-size: 20px;
-              color: #666;
-              margin-bottom: 20px;
-            }
-            .name {
-              font-size: 42px;
-              color: #333;
-              font-weight: bold;
-              margin: 20px 0;
-              border-bottom: 2px solid #667eea;
-              display: inline-block;
-              padding: 10px 40px;
-            }
-            .course {
-              font-size: 24px;
-              color: #666;
-              margin: 30px 0;
-            }
-            .course-title {
-              color: #667eea;
-              font-weight: bold;
-            }
-            .footer {
-              margin-top: 60px;
-              padding-top: 30px;
-              border-top: 2px solid #f0f0f0;
-              display: flex;
-              justify-content: space-around;
-              align-items: flex-end;
-            }
-            .signature {
-              text-align: center;
-            }
-            .signature-line {
-              border-top: 2px solid #333;
-              width: 200px;
-              margin: 0 auto 10px;
-            }
-            .signature-label {
-              color: #666;
-              font-size: 14px;
-            }
-            .badge {
-              width: 80px;
-              height: 80px;
-              background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              margin: 0 auto 20px;
-              font-size: 40px;
-              color: white;
-            }
-            @media print {
-              body {
-                background: white;
-              }
-              .certificate {
-                box-shadow: none;
-              }
-            }
-          </style>
-        </head>
-        <body>
-          <div class="certificate">
-            <div class="badge">🏆</div>
-            <div class="header">
-              <h1>شهادة إتمام</h1>
-              <p class="subtitle">Certificate of Completion</p>
-            </div>
-            
-            <div class="content">
-              <p class="recipient">هذه الشهادة تمنح لـ</p>
-              <div class="name">${userName}</div>
-              <p class="course">لإتمام دورة</p>
-              <p class="course-title">${courseTitle}</p>
-            </div>
-            
-            <div class="footer">
-              <div class="signature">
-                <div class="signature-line"></div>
-                <p class="signature-label">توقيع المدرب</p>
-              </div>
-              <div class="signature">
-                <div class="signature-line"></div>
-                <p class="signature-label">التاريخ: ${new Date().toLocaleDateString('ar-SA')}</p>
-              </div>
-            </div>
-          </div>
-        </body>
-        </html>
-      `;
+        <div class="certificate" dir="rtl" lang="ar" 
+          style="
+            width: 1200px;
+            height: 850px;
+            padding: 60px 80px;
+            background: #fff url('/certfication_bg.jpg') no-repeat center;
+            background-size: 1000px auto;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            border: 16px double #667eea;
+            border-radius: 20px;
+            position: relative;
+          ">
+          
+       <!-- Name -->
+<div 
+  style="
+    font-size:45px;
+    font-weight:bold;
+    font-family:'Amiri', serif; 
+    color: rgb(97, 122, 144);
+    margin:270px auto 10px;  /* reduced top margin from 270px → lifted upward */
+    width:fit-content;
+    padding:0 20px;
+  <!--  border-bottom:2px dotted #aaa;-->
+  "
+>
+  ${userName}
+</div>
 
-      // Create a blob and download
-      const blob = new Blob([certificateHTML], { type: "text/html" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `certificate-${courseTitle.replace(/\s+/g, "-")}.html`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+<!-- Course -->
+<p style="font-size:22px;margin-top:10px;margin-bottom:5px;">لإتمام دورة</p>
+
+<div style="font-size:30px;font-weight:700;  font-family:'Amiri', serif;  color: rgb(97, 122, 144); margin:10px auto 0; max-width:80%; ">
+  ${courseTitle}
+</div>
+
+
+ <!-- Date -->
+<div 
+  style="
+    position: absolute;
+    bottom: 135px;
+    right: 430px;  /* move more right by increasing this */
+    text-align: right;
+    font-family:'Amiri', serif; 
+  "
+>
+  <p style="font-size:25px; color:#555; margin-top:10px;">
+    ${new Date().toLocaleDateString("En-EG")}
+  </p>
+</div>
+ </div> `;
+
+      // Create hidden container
+      const tempDiv = document.createElement("div");
+      tempDiv.innerHTML = certificateHTML;
+      document.body.appendChild(tempDiv);
+
+      const element = tempDiv.querySelector(".certificate") as HTMLElement;
+
+      // ✅ PDF export options
+      const opt = {
+        margin: 0,
+        filename: `certificate-${courseTitle.replace(/\s+/g, "-")}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "px", format: [1200, 850] as [number, number], orientation: "landscape" as const },
+      };
+
+      await html2pdf().set(opt).from(element).save();
+      document.body.removeChild(tempDiv);
 
       toast({
         title: "تم تحميل الشهادة بنجاح",
-        description: "يمكنك طباعة الشهادة من المتصفح",
+        description: "تم حفظها بصيغة PDF.",
       });
-      
+
       setOpen(false);
       setUserName("");
     } catch (error) {
@@ -216,10 +136,7 @@ const CertificateDownloadDialog = ({
     }
   };
 
-  // Only show for completed courses (100% progress)
-  if (progress < 100) {
-    return null;
-  }
+  if (progress < 100) return null;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -244,11 +161,7 @@ const CertificateDownloadDialog = ({
               placeholder="أدخل اسمك الكامل"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  handleDownload();
-                }
-              }}
+              onKeyDown={(e) => e.key === "Enter" && handleDownload()}
             />
           </div>
           <div className="bg-muted p-3 rounded-lg">
@@ -258,17 +171,13 @@ const CertificateDownloadDialog = ({
           </div>
         </div>
         <DialogFooter>
-          <Button
-            type="button"
-            onClick={handleDownload}
-            disabled={loading || !userName.trim()}
-          >
+          <Button onClick={handleDownload} disabled={loading || !userName.trim()}>
             {loading ? (
               "جاري التحميل..."
             ) : (
               <>
                 <Download className="h-4 w-4 ml-2" />
-                تحميل الشهادة
+                تحميل PDF
               </>
             )}
           </Button>

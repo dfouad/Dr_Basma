@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Clock, PlayCircle, CheckCircle, ArrowRight } from "lucide-react";
+import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download } from "lucide-react";
 import { coursesAPI, enrollmentsAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
@@ -17,14 +17,23 @@ interface Video {
   video_url_display: string;
 }
 
+interface PDF {
+  id: number;
+  title: string;
+  description: string;
+  pdf_url: string;
+  order: number;
+}
+
 interface Course {
   id: number;
   title: string;
   description: string;
   duration: string;
   video_count: number;
-   thumbnail: string;
-  thumbnail_url?: string;  // Add this if API sends thumbnail_url
+  thumbnail: string;
+  thumbnail_url?: string;
+  is_enrolled?: boolean;
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -82,6 +91,7 @@ const CourseDetail = () => {
   
   const [course, setCourse] = useState<Course | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
+  const [pdfs, setPdfs] = useState<PDF[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
@@ -92,25 +102,34 @@ const CourseDetail = () => {
       try {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
-
-        // Try to fetch videos - if successful, user is enrolled
-        if (isAuthenticated) {
+        
+        // Set enrollment status from course data
+        if (isAuthenticated && courseResponse.data.is_enrolled) {
+          setEnrolled(true);
+          
+          // Fetch videos and PDFs for enrolled users
           try {
             const videosResponse = await coursesAPI.getVideos(Number(id));
             const vids = Array.isArray(videosResponse.data)
               ? videosResponse.data
               : (videosResponse.data?.results || []);
             setVideos(vids);
-            setEnrolled(true);
             // Set first video as selected by default
             if (vids.length > 0) {
               setSelectedVideo(vids[0]);
             }
-          } catch (error: any) {
-            if (error.response?.status === 403) {
-              setEnrolled(false);
-            }
+            
+            // Fetch PDFs
+            const pdfsResponse = await coursesAPI.getPDFs(Number(id));
+            const pdfsData = Array.isArray(pdfsResponse.data)
+              ? pdfsResponse.data
+              : (pdfsResponse.data?.results || []);
+            setPdfs(pdfsData);
+          } catch (error) {
+            console.log("Error fetching course materials:", error);
           }
+        } else {
+          setEnrolled(false);
         }
       } catch (error) {
         toast({
@@ -126,40 +145,17 @@ const CourseDetail = () => {
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
 
-  const handleEnroll = async () => {
+  const handleEnrollClick = () => {
     if (!isAuthenticated) {
+      // Redirect to login page
       navigate('/auth');
       return;
     }
 
-    setEnrolling(true);
-    try {
-      await enrollmentsAPI.create(Number(id));
-      setEnrolled(true);
-      
-      // Fetch videos after enrollment
-      const videosResponse = await coursesAPI.getVideos(Number(id));
-      const vids = Array.isArray(videosResponse.data)
-        ? videosResponse.data
-        : (videosResponse.data?.results || []);
-      setVideos(vids);
-      // Set first video as selected
-      if (vids.length > 0) {
-        setSelectedVideo(vids[0]);
-      }
-      
-      toast({
-        title: "تم التسجيل بنجاح",
-        description: "يمكنك الآن الوصول إلى محتوى الدورة",
-      });
-    } catch (error) {
-      toast({
-        title: "خطأ في التسجيل",
-        description: "حاول مرة أخرى لاحقاً",
-        variant: "destructive",
-      });
-    } finally {
-      setEnrolling(false);
+    if (!enrolled) {
+      // Redirect to WhatsApp
+      const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
+      window.open(whatsappUrl, '_blank');
     }
   };
 
@@ -252,11 +248,15 @@ const CourseDetail = () => {
                   <Button 
                     className="w-full mb-3" 
                     size="lg" 
-                    variant="hero"
-                    onClick={handleEnroll}
-                    disabled={enrolled || enrolling}
+                    variant={enrolled ? "outline" : "hero"}
+                    onClick={handleEnrollClick}
+                    disabled={enrolled}
                   >
-                    {enrolling ? "جاري التسجيل..." : enrolled ? "مسجل بالفعل" : "التسجيل الآن"}
+                    {enrolled 
+                      ? "مسجل بالفعل" 
+                      : isAuthenticated 
+                        ? "اشترك الآن في الدورة" 
+                        : "سجل الآن"}
                   </Button>
                   {enrolled && (
                     <Link to="/profile">
@@ -272,94 +272,138 @@ const CourseDetail = () => {
         </section>
 
         {/* Course Content */}
-        {enrolled && Array.isArray(videos) && videos.length > 0 && (
+        {enrolled && (
           <section className="py-16">
             <div className="container mx-auto px-4 max-w-6xl">
               <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>
+              
+              {/* Videos Section */}
+              {Array.isArray(videos) && videos.length > 0 && (
+                <div className="mb-12">
 
-              <div className="grid lg:grid-cols-3 gap-6">
-                {/* Video Player */}
-                <div className="lg:col-span-2 space-y-6">
-                  {selectedVideo && (
-                    <>
-                      <div className="bg-card rounded-xl overflow-hidden shadow-lg border border-border">
-                        <div className="aspect-video bg-black">
-                          {(() => {
-                            const embedUrl = getYouTubeEmbedUrl(selectedVideo.video_url_display);
-                            if (embedUrl) {
-                              return (
-                                <iframe
-                                  width="100%"
-                                  height="100%"
-                                  src={embedUrl}
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                  className="w-full h-full"
-                                ></iframe>
-                              );
-                            } else {
-                              return (
-                                <div className="w-full h-full flex items-center justify-center text-white">
-                                  <div className="text-center">
-                                    <PlayCircle className="h-16 w-16 mx-auto mb-4 opacity-50" />
-                                    <p>عذرًا، لا يمكن عرض هذا الفيديو حاليًا.</p>
+                <div className="grid lg:grid-cols-3 gap-6">
+                  {/* Video Player */}
+                  <div className="lg:col-span-2 space-y-6">
+                    {selectedVideo && (
+                      <>
+                        <div className="bg-card rounded-xl overflow-hidden shadow-lg border border-border">
+                          <div className="aspect-video bg-black">
+                            {(() => {
+                              const embedUrl = getYouTubeEmbedUrl(selectedVideo.video_url_display);
+                              if (embedUrl) {
+                                return (
+                                  <iframe
+                                    width="100%"
+                                    height="100%"
+                                    src={embedUrl}
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    className="w-full h-full"
+                                  ></iframe>
+                                );
+                              } else {
+                                return (
+                                  <div className="w-full h-full flex items-center justify-center text-white">
+                                    <div className="text-center">
+                                      <PlayCircle className="h-16 w-16 mx-auto mb-4 opacity-50" />
+                                      <p>عذرًا، لا يمكن عرض هذا الفيديو حاليًا.</p>
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            }
-                          })()}
-                        </div>
-                      </div>
-                      <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
-                        <h3 className="text-2xl font-bold mb-3">{selectedVideo.title}</h3>
-                        {selectedVideo.description && (
-                          <p className="text-muted-foreground leading-relaxed">{selectedVideo.description}</p>
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Video List */}
-                <div className="lg:col-span-1">
-                  <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden sticky top-24">
-                    <div className="bg-muted/50 p-4 border-b border-border">
-                      <h3 className="font-semibold text-lg">قائمة الفيديوهات</h3>
-                    </div>
-                    <div className="max-h-[600px] overflow-y-auto">
-                      {Object.entries(groupedVideos).map(([moduleIndex, moduleVideos]) => (
-                        <div key={moduleIndex}>
-                          <div className="bg-muted/30 p-3 border-b border-border">
-                            <p className="font-semibold text-sm">الوحدة {Number(moduleIndex) + 1}</p>
-                          </div>
-                          <div className="divide-y divide-border">
-                            {moduleVideos.map((video) => (
-                              <div
-                                key={video.id}
-                                className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
-                                  selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
-                                }`}
-                                onClick={() => setSelectedVideo(video)}
-                              >
-                                <div className="flex items-start gap-3">
-                                  <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-                                    selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
-                                  }`} />
-                                  <div className="flex-1 min-w-0">
-                                    <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
-                                    <span className="text-xs text-muted-foreground">{video.duration}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
+                                );
+                              }
+                            })()}
                           </div>
                         </div>
-                      ))}
+                        <div className="bg-card rounded-xl p-6 shadow-lg border border-border">
+                          <h3 className="text-2xl font-bold mb-3">{selectedVideo.title}</h3>
+                          {selectedVideo.description && (
+                            <p className="text-muted-foreground leading-relaxed">{selectedVideo.description}</p>
+                          )}
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Video List */}
+                  <div className="lg:col-span-1">
+                    <div className="bg-card rounded-xl shadow-lg border border-border overflow-hidden sticky top-24">
+                      <div className="bg-muted/50 p-4 border-b border-border">
+                        <h3 className="font-semibold text-lg">قائمة الفيديوهات</h3>
+                      </div>
+                      <div className="max-h-[600px] overflow-y-auto">
+                        {Object.entries(groupedVideos).map(([moduleIndex, moduleVideos]) => (
+                          <div key={moduleIndex}>
+                            <div className="bg-muted/30 p-3 border-b border-border">
+                              <p className="font-semibold text-sm">الوحدة {Number(moduleIndex) + 1}</p>
+                            </div>
+                            <div className="divide-y divide-border">
+                              {moduleVideos.map((video) => (
+                                <div
+                                  key={video.id}
+                                  className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
+                                    selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
+                                  }`}
+                                  onClick={() => setSelectedVideo(video)}
+                                >
+                                  <div className="flex items-start gap-3">
+                                    <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                                      selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
+                                    }`} />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
+                                      <span className="text-xs text-muted-foreground">{video.duration}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+              )}
+              
+              {/* PDFs Section */}
+              {Array.isArray(pdfs) && pdfs.length > 0 && (
+                <div className="mt-12">
+                  <h3 className="text-2xl font-bold mb-6">📄 مواد الدورة</h3>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {pdfs.map((pdf) => (
+                      <div
+                        key={pdf.id}
+                        className="bg-card rounded-lg border border-border p-6 hover:shadow-lg transition-shadow"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="bg-primary/10 p-3 rounded-lg">
+                            <FileText className="h-6 w-6 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold mb-1 line-clamp-2">{pdf.title}</h4>
+                            {pdf.description && (
+                              <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                                {pdf.description}
+                              </p>
+                            )}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="w-full"
+                              onClick={() => window.open(pdf.pdf_url, '_blank')}
+                            >
+                              <Download className="h-4 w-4 ml-2" />
+                              عرض
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </section>
         )}

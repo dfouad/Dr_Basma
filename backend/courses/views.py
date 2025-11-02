@@ -86,6 +86,25 @@ class CourseVideosView(generics.ListAPIView):
         return Video.objects.filter(course=course)
 
 
+class CoursePDFsView(generics.ListAPIView):
+    """API endpoint for listing PDFs in a course (only for enrolled users)."""
+    
+    serializer_class = PDFSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        course_id = self.kwargs.get('course_id')
+        course = get_object_or_404(Course, id=course_id, is_published=True)
+        
+        # Check if user is enrolled
+        is_enrolled = Enrollment.objects.filter(user=self.request.user, course=course).exists()
+        
+        if not is_enrolled:
+            return PDF.objects.none()
+        
+        return PDF.objects.filter(course=course)
+
+
 class EnrollmentListView(generics.ListAPIView):
     """API endpoint for listing user's enrollments."""
     

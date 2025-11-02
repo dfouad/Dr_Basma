@@ -146,51 +146,17 @@ const CourseDetail = () => {
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
 
-  const handleEnroll = async () => {
+  const handleEnrollClick = () => {
     if (!isAuthenticated) {
+      // Redirect to login page
       navigate('/auth');
       return;
     }
 
-    setEnrolling(true);
-    try {
-      await enrollmentsAPI.create(Number(id));
-      setEnrolled(true);
-      
-      // Fetch videos and PDFs after enrollment
-      const videosResponse = await coursesAPI.getVideos(Number(id));
-      const vids = Array.isArray(videosResponse.data)
-        ? videosResponse.data
-        : (videosResponse.data?.results || []);
-      setVideos(vids);
-      // Set first video as selected
-      if (vids.length > 0) {
-        setSelectedVideo(vids[0]);
-      }
-      
-      // Fetch PDFs
-      try {
-        const pdfsResponse = await coursesAPI.getPDFs(Number(id));
-        const pdfsData = Array.isArray(pdfsResponse.data)
-          ? pdfsResponse.data
-          : (pdfsResponse.data?.results || []);
-        setPdfs(pdfsData);
-      } catch (pdfError) {
-        console.log("No PDFs available");
-      }
-      
-      toast({
-        title: "تم التسجيل بنجاح",
-        description: "يمكنك الآن الوصول إلى محتوى الدورة",
-      });
-    } catch (error) {
-      toast({
-        title: "خطأ في التسجيل",
-        description: "حاول مرة أخرى لاحقاً",
-        variant: "destructive",
-      });
-    } finally {
-      setEnrolling(false);
+    if (!enrolled) {
+      // Redirect to WhatsApp
+      const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
+      window.open(whatsappUrl, '_blank');
     }
   };
 
@@ -283,11 +249,15 @@ const CourseDetail = () => {
                   <Button 
                     className="w-full mb-3" 
                     size="lg" 
-                    variant="hero"
-                    onClick={handleEnroll}
-                    disabled={enrolled || enrolling}
+                    variant={enrolled ? "outline" : "hero"}
+                    onClick={handleEnrollClick}
+                    disabled={enrolled}
                   >
-                    {enrolling ? "جاري التسجيل..." : enrolled ? "مسجل بالفعل" : "التسجيل الآن"}
+                    {enrolled 
+                      ? "مسجل بالفعل" 
+                      : isAuthenticated 
+                        ? "اشترك الآن في الدورة" 
+                        : "سجل الآن"}
                   </Button>
                   {enrolled && (
                     <Link to="/profile">

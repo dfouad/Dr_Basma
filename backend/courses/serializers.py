@@ -46,7 +46,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
      model = Course
       #  fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
-     fields = ["id", "title", "description", "thumbnail_url", "duration", "is_published", "category", "category_id", "video_count", "created_at"]
+     fields = ["id", "title", "description", "thumbnail_url", "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""
         if obj.thumbnail:
@@ -67,7 +67,7 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 
+        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'price', 'video_count', 
                   'videos', 'is_enrolled', 'created_at', 'updated_at')
     
     def get_thumbnail_url(self, obj):

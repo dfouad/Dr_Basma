@@ -87,6 +87,9 @@ export const coursesAPI = {
   getPDFs: (courseId: number) =>
     api.get(`/courses/${courseId}/pdfs/`),
   
+  enroll: (courseId: number) =>
+    api.post(`/courses/${courseId}/enroll/`),
+  
   getCategories: () =>
     api.get('/categories/'),
 };

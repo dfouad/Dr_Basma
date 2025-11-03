@@ -18,6 +18,7 @@ urlpatterns = [
     path('courses/<int:pk>/', CourseDetailView.as_view(), name='course_detail'),
     path('courses/<int:course_id>/videos/', CourseVideosView.as_view(), name='course_videos'),
     path('courses/<int:course_id>/pdfs/', CoursePDFsView.as_view(), name='course_pdfs'),
+    path('courses/<int:course_id>/enroll/', EnrollmentCreateView.as_view(), name='course_enroll'),
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),

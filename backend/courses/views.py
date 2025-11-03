@@ -119,7 +119,23 @@ class EnrollmentCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     
     def create(self, request, *args, **kwargs):
-        course_id = request.data.get('course')
+        # Get course_id from URL kwargs or request data
+        course_id = self.kwargs.get('course_id') or request.data.get('course')
+        
+        if not course_id:
+            return Response(
+                {'error': 'Course ID is required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if course exists
+        try:
+            course = Course.objects.get(id=course_id, is_published=True)
+        except Course.DoesNotExist:
+            return Response(
+                {'error': 'Course not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         
         # Check if already enrolled
         if Enrollment.objects.filter(user=request.user, course_id=course_id).exists():
@@ -128,9 +144,8 @@ class EnrollmentCreateView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        # Create enrollment
+        Enrollment.objects.create(user=request.user, course_id=course_id)
         
         return Response(
             {'message': 'Successfully enrolled in the course.'},

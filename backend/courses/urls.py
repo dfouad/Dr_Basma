@@ -7,9 +7,10 @@ from .views import (
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView,
-    AdminCertificateListView, AdminCertificateCreateView, AdminCertificateUpdateView,
-    AdminCertificateDeleteView
 )
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+#router.register(r'certificates', UserCertificateListView, basename='certificate')
 
 urlpatterns = [
     path('categories/', CategoryListView.as_view(), name='category_list'),
@@ -19,8 +20,8 @@ urlpatterns = [
     path('courses/<int:course_id>/pdfs/', CoursePDFsView.as_view(), name='course_pdfs'),
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
-path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
-path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='generate-certificate'),
+    path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
+    path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='generate-certificate'),
 
 
 # Admin endpoints
@@ -37,9 +38,5 @@ path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='gener
     path('admin/users/', AdminUserListView.as_view(), name='admin_user_list'),
     path('admin/users/<int:pk>/update/', AdminUserUpdateView.as_view(), name='admin_user_update'),
     path('admin/users/<int:pk>/delete/', AdminUserDeleteView.as_view(), name='admin_user_delete'),
-    path('admin/certificates/', AdminCertificateListView.as_view(), name='admin_certificate_list'),
-    path('admin/certificates/create/', AdminCertificateCreateView.as_view(), name='admin_certificate_create'),
-    path('admin/certificates/<int:pk>/update/', AdminCertificateUpdateView.as_view(), name='admin_certificate_update'),
-    path('admin/certificates/<int:pk>/delete/', AdminCertificateDeleteView.as_view(), name='admin_certificate_delete'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
-]
+]+ router.urls

@@ -6,10 +6,7 @@ from django.contrib.auth import get_user_model
 from .models import Course, Video, Enrollment, Category, PDF, Certificate
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 from courses.models import Course
-from .models import Certificate
 from io import BytesIO
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
@@ -285,73 +282,30 @@ class AdminPDFDeleteView(generics.DestroyAPIView):
 
 
 class UserCertificateListView(generics.ListAPIView):
+    queryset = Certificate.objects.all()
+    serializer_class = CertificateSerializer
     permission_classes = [IsAuthenticated]
 
-    def post(self, request, course_id):
-        full_name = request.data.get("name")
-        if not full_name:
-            return HttpResponseBadRequest("Name is required")
+    def get_queryset(self):
+        # Only return current user's certificates
+        return Certificate.objects.filter(user=self.request.user)
 
-        try:
-            course = Course.objects.get(id=course_id)
-        except Course.DoesNotExist:
-            return HttpResponseBadRequest("Invalid course")
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        course_id = request.data.get("course_id")
 
-        buffer = BytesIO()
-        p = canvas.Canvas(buffer, pagesize=A4)
+        if not course_id:
+            return Response({"error": "Course ID required"}, status=status.HTTP_400_BAD_REQUEST)
 
-        # certificate background and layout
-        p.setFont("Helvetica-Bold", 28)
-        p.drawCentredString(300, 750, "شهادة إتمام دورة")
+        # Check if already exists
+        existing = Certificate.objects.filter(user=user, course_id=course_id).first()
+        if existing:
+            return Response(
+                {"message": "Certificate already exists"},
+                status=status.HTTP_200_OK
+            )  
 
-        p.setFont("Helvetica", 16)
-        p.drawCentredString(300, 700, f"هذه الشهادة تمنح إلى")
-        p.setFont("Helvetica-Bold", 22)
-        p.drawCentredString(300, 670, full_name)
-
-        p.setFont("Helvetica", 16)
-        p.drawCentredString(300, 630, f"لإتمامه دورة {course.title}")
-
-        # Optional: add coach name or signature
-        coach_name = getattr(course, 'coach_name', 'المدربة')
-        p.setFont("Helvetica", 14)
-        p.drawCentredString(300, 580, f"بإشراف: {coach_name}")
-
-        p.setFont("Helvetica", 12)
-        p.drawCentredString(300, 530, "نتمنى لك دوام التوفيق والنجاح 🌟")
-        p.showPage()
-        p.save()
-
-        buffer.seek(0)
-        response = FileResponse(buffer, as_attachment=True, filename=f"certificate_{uuid.uuid4()}.pdf")
-        return response
-
-class AdminCertificateListView(generics.ListAPIView):
-    """Admin endpoint for listing all certificates."""
-    
-    queryset = Certificate.objects.all()
-    serializer_class = CertificateSerializer
-    permission_classes = (IsStaffUser,)
-
-
-class AdminCertificateCreateView(generics.CreateAPIView):
-    """Admin endpoint for creating certificates."""
-    
-    queryset = Certificate.objects.all()
-    serializer_class = CertificateSerializer
-    permission_classes = (IsStaffUser,)
-
-
-class AdminCertificateUpdateView(generics.UpdateAPIView):
-    """Admin endpoint for updating certificates."""
-    
-    queryset = Certificate.objects.all()
-    serializer_class = CertificateSerializer
-    permission_classes = (IsStaffUser,)
-
-
-class AdminCertificateDeleteView(generics.DestroyAPIView):
-    """Admin endpoint for deleting certificates."""
-    
-    queryset = Certificate.objects.all()
-    permission_classes = (IsStaffUser,)
+        # Create new certificate
+        certificate = Certificate.objects.create(user=user, course_id=course_id)
+        serializer = self.get_serializer(certificate)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

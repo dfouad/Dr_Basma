@@ -15,13 +15,13 @@ const Navbar = () => {
             <img src={logo} alt="د. بسمة كمال" className="h-20 w-auto" />
           </Link>
 
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-8">
             <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               الدورات
             </Link>
-            <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+          { /* <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               عن المنصة
-            </Link>
+            </Link>*/}
           </div>
 
           <div className="flex items-center gap-3">

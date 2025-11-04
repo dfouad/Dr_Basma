@@ -193,22 +193,22 @@ export function PDFManagement() {
     : pdfs.filter(pdf => pdf.course.toString() === filterCourse);
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة ملفات PDF</h2>
+    <div className="space-y-6" dir="rtl">
+      <div className="flex flex-row-reverse justify-between items-center">
+        <h2 className="text-2xl font-bold text-right">إدارة ملفات PDF</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
             <Button>
-              <FileUp className="ml-2 h-4 w-4" />
+              <FileUp className="mr-2 h-4 w-4" />
               إضافة ملف PDF
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" dir="rtl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-right">
                 {editingPdf ? "تعديل ملف PDF" : "إضافة ملف PDF جديد"}
               </DialogTitle>
             </DialogHeader>
@@ -319,11 +319,11 @@ export function PDFManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>العنوان</TableHead>
-                <TableHead>الدورة</TableHead>
-                <TableHead>الترتيب</TableHead>
-                <TableHead>تاريخ الإنشاء</TableHead>
-                <TableHead className="text-right">الإجراءات</TableHead>
+                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">الدورة</TableHead>
+                <TableHead className="text-right">الترتيب</TableHead>
+                <TableHead className="text-right">تاريخ الإنشاء</TableHead>
+                <TableHead className="text-left">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -336,12 +336,12 @@ export function PDFManagement() {
               ) : (
                 filteredPdfs.map((pdf) => (
                   <TableRow key={pdf.id}>
-                    <TableCell className="font-medium">{pdf.title}</TableCell>
-                    <TableCell>{pdf.course_title}</TableCell>
-                    <TableCell>{pdf.order}</TableCell>
-                    <TableCell>{new Date(pdf.created_at).toLocaleDateString('ar-EG')}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-2 justify-end">
+                    <TableCell className="font-medium text-right">{pdf.title}</TableCell>
+                    <TableCell className="text-right">{pdf.course_title}</TableCell>
+                    <TableCell className="text-right">{pdf.order}</TableCell>
+                    <TableCell className="text-right">{new Date(pdf.created_at).toLocaleDateString('ar-EG')}</TableCell>
+                    <TableCell className="text-left">
+                      <div className="flex gap-2 justify-start">
                         <Button
                           variant="outline"
                           size="sm"

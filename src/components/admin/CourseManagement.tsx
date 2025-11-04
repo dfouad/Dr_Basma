@@ -166,22 +166,22 @@ export const CourseManagement = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة الدورات</h2>
+    <div className="space-y-4" dir="rtl">
+      <div className="flex flex-row-reverse justify-between items-center">
+        <h2 className="text-2xl font-bold text-right">إدارة الدورات</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="h-4 w-4 ml-2" />
+              <Plus className="h-4 w-4 mr-2" />
               إضافة دورة
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" dir="rtl">
             <DialogHeader>
-              <DialogTitle>{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
+              <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -262,31 +262,33 @@ export const CourseManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>العنوان</TableHead>
-                <TableHead>الفئة</TableHead>
-                <TableHead>المدة</TableHead>
-                <TableHead>الحالة</TableHead>
+                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">الفئة</TableHead>
+                <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-left">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {courses.map((course) => (
                 <TableRow key={course.id}>
-                  <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell>{course.category?.name || "بدون فئة"}</TableCell>
-                  <TableCell>{course.duration}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium text-right">{course.title}</TableCell>
+                  <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
+                  <TableCell className="text-right">{course.duration}</TableCell>
+                  <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {course.is_published ? 'منشور' : 'مسودة'}
                     </span>
                   </TableCell>
                   <TableCell className="text-left">
-                    <Button variant="ghost" size="sm" onClick={() => openEditDialog(course)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(course.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex gap-2 justify-start">
+                      <Button variant="ghost" size="sm" onClick={() => openEditDialog(course)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(course.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

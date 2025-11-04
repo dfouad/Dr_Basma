@@ -146,22 +146,22 @@ export const VideoManagement = () => {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة الفيديوهات</h2>
+    <div className="space-y-4" dir="rtl">
+      <div className="flex flex-row-reverse justify-between items-center">
+        <h2 className="text-2xl font-bold text-right">إدارة الفيديوهات</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="h-4 w-4 ml-2" />
+              <Plus className="h-4 w-4 mr-2" />
               إضافة فيديو
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent dir="rtl">
             <DialogHeader>
-              <DialogTitle>{editingVideo ? "تعديل فيديو" : "إضافة فيديو جديد"}</DialogTitle>
+              <DialogTitle className="text-right">{editingVideo ? "تعديل فيديو" : "إضافة فيديو جديد"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -252,9 +252,9 @@ export const VideoManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>العنوان</TableHead>
-                <TableHead>المدة</TableHead>
-                <TableHead>الترتيب</TableHead>
+                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-left">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
@@ -268,16 +268,18 @@ export const VideoManagement = () => {
               ) : (
                 videos.map((video) => (
                   <TableRow key={video.id}>
-                    <TableCell className="font-medium">{video.title}</TableCell>
-                    <TableCell>{video.duration}</TableCell>
-                    <TableCell>{video.order}</TableCell>
+                    <TableCell className="font-medium text-right">{video.title}</TableCell>
+                    <TableCell className="text-right">{video.duration}</TableCell>
+                    <TableCell className="text-right">{video.order}</TableCell>
                     <TableCell className="text-left">
-                      <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(video.id)}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                      <div className="flex gap-2 justify-start">
+                        <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => handleDelete(video.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

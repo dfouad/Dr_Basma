@@ -216,7 +216,21 @@ export const CourseManagement = () => {
                   id="thumbnail"
                   value={formData.thumbnail}
                   onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
                 />
+                {formData.thumbnail && (
+                  <div className="mt-2">
+                    <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                    <img 
+                      src={formData.thumbnail} 
+                      alt="معاينة" 
+                      className="mt-1 h-32 w-full object-cover rounded-lg border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div>
                 <Label htmlFor="category">الفئة</Label>

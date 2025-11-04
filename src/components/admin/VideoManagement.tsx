@@ -196,9 +196,14 @@ export const VideoManagement = () => {
                   id="video_url"
                   value={formData.video_url}
                   onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-                  placeholder="https://..."
+                  placeholder="https://youtube.com/watch?v=..."
                   required
                 />
+                {formData.video_url && (
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    ✓ تم إدخال رابط الفيديو
+                  </p>
+                )}
               </div>
               <div>
                 <Label htmlFor="duration">المدة</Label>

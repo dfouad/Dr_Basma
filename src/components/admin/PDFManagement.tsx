@@ -43,6 +43,8 @@ export function PDFManagement() {
     order: "0",
   });
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   
   const { toast } = useToast();
 
@@ -120,6 +122,20 @@ export function PDFManagement() {
     }
 
     try {
+      setIsUploading(true);
+      setUploadProgress(0);
+      
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
       if (editingPdf) {
         await pdfsAPI.update(editingPdf.id, data);
         toast({
@@ -133,6 +149,10 @@ export function PDFManagement() {
           description: "تم إضافة ملف PDF بنجاح",
         });
       }
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
       fetchPdfs();
       resetForm();
       setDialogOpen(false);
@@ -143,6 +163,9 @@ export function PDFManagement() {
         description: "فشل حفظ ملف PDF",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -186,6 +209,8 @@ export function PDFManagement() {
       order: "0",
     });
     setPdfFile(null);
+    setUploadProgress(0);
+    setIsUploading(false);
   };
 
   const filteredPdfs = filterCourse === "all" 
@@ -268,11 +293,31 @@ export function PDFManagement() {
                   accept="application/pdf"
                   onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
                   required={!editingPdf}
+                  disabled={isUploading}
                 />
-                {editingPdf && (
+                {pdfFile && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ تم اختيار الملف: {pdfFile.name}
+                  </p>
+                )}
+                {editingPdf && !pdfFile && (
                   <p className="text-sm text-muted-foreground mt-1">
                     اترك فارغاً للاحتفاظ بالملف الحالي
                   </p>
+                )}
+                {isUploading && (
+                  <div className="mt-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>جاري التحميل...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               <div className="flex gap-2 justify-end">
@@ -283,11 +328,12 @@ export function PDFManagement() {
                     setDialogOpen(false);
                     resetForm();
                   }}
+                  disabled={isUploading}
                 >
                   إلغاء
                 </Button>
-                <Button type="submit">
-                  {editingPdf ? "تحديث" : "إضافة"}
+                <Button type="submit" disabled={isUploading}>
+                  {isUploading ? "جاري الحفظ..." : editingPdf ? "تحديث" : "إضافة"}
                 </Button>
               </div>
             </form>

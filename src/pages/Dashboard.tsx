@@ -117,8 +117,72 @@ const Dashboard = () => {
               </div>
             )}
 
-            {/* Management Tabs */}
-            <Tabs defaultValue="courses" className="space-y-6">
+            
+            {/* Management Tabs chatGPT suggestion */}
+<Tabs defaultValue="courses" className="space-y-6" dir="rtl">
+  <TabsList className="flex justify-end w-full max-w-3xl gap-2 border-b border-border pb-2">
+    <TabsTrigger
+      value="courses"
+      className="relative px-2 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      الدورات
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="videos"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      الفيديوهات
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="pdfs"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      ملفات PDF
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="users"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      المستخدمون
+    </TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="courses" className="bg-card rounded-lg p-6 border border-border">
+    <CourseManagement />
+  </TabsContent>
+
+  <TabsContent value="videos" className="bg-card rounded-lg p-6 border border-border">
+    <VideoManagement />
+  </TabsContent>
+
+  <TabsContent value="pdfs" className="bg-card rounded-lg p-6 border border-border">
+    <PDFManagement />
+  </TabsContent>
+
+  <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">
+    <UserManagement />
+  </TabsContent>
+</Tabs>
+
+           
+ 
+{/* Management Tabs Loveable design*/}
+           {/* <Tabs defaultValue="courses" className="space-y-6"> 
               <TabsList className="grid w-full max-w-3xl grid-cols-4">
                 <TabsTrigger value="courses">الدورات</TabsTrigger>
                 <TabsTrigger value="videos">الفيديوهات</TabsTrigger>
@@ -141,7 +205,7 @@ const Dashboard = () => {
               <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">
                 <UserManagement />
               </TabsContent>
-            </Tabs>
+            </Tabs> */}
           </div>
         </div>
       </main>

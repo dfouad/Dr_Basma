@@ -167,7 +167,7 @@ export const CourseManagement = () => {
 
   return (
     <div className="space-y-4" dir="rtl">
-      <div className="flex flex-row-reverse justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-right">إدارة الدورات</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);

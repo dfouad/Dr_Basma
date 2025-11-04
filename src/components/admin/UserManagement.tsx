@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { usersAPI } from "@/lib/api";
 
 interface User {
   id: number;
@@ -36,9 +36,13 @@ export const UserManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get("/admin/users/");
-      setUsers(response.data);
+      const response = await usersAPI.getAll();
+      const usersData = Array.isArray(response.data)
+        ? response.data
+        : response.data.results || [];
+      setUsers(usersData);
     } catch (error) {
+      console.error("Error fetching users:", error);
       toast({
         title: "خطأ",
         description: "فشل تحميل المستخدمين",
@@ -54,12 +58,13 @@ export const UserManagement = () => {
     if (!editingUser) return;
 
     try {
-      await api.put(`/admin/users/${editingUser.id}/update/`, formData);
+      await usersAPI.update(editingUser.id, formData);
       toast({ title: "تم التحديث", description: "تم تحديث المستخدم بنجاح" });
       setDialogOpen(false);
       resetForm();
       fetchUsers();
     } catch (error) {
+      console.error("Error updating user:", error);
       toast({
         title: "خطأ",
         description: "فشل تحديث المستخدم",
@@ -72,10 +77,11 @@ export const UserManagement = () => {
     if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
 
     try {
-      await api.delete(`/admin/users/${id}/delete/`);
+      await usersAPI.delete(id);
       toast({ title: "تم الحذف", description: "تم حذف المستخدم بنجاح" });
       fetchUsers();
     } catch (error) {
+      console.error("Error deleting user:", error);
       toast({
         title: "خطأ",
         description: "فشل حذف المستخدم",
@@ -105,7 +111,7 @@ export const UserManagement = () => {
 
   return (
     <div className="space-y-4" dir="rtl">
-      <div className="flex flex-row-reverse justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-right">إدارة المستخدمين</h2>
       </div>
 

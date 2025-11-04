@@ -92,6 +92,43 @@ export const coursesAPI = {
   
   getCategories: () =>
     api.get('/categories/'),
+
+  // Admin endpoints
+  create: (data: any) =>
+    api.post('/admin/courses/create/', data),
+  
+  update: (id: number, data: any) =>
+    api.put(`/admin/courses/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/courses/${id}/delete/`),
+};
+
+// Videos API
+export const videosAPI = {
+  getAll: () =>
+    api.get('/admin/videos/'),
+  
+  create: (data: any) =>
+    api.post('/admin/videos/create/', data),
+  
+  update: (id: number, data: any) =>
+    api.put(`/admin/videos/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/videos/${id}/delete/`),
+};
+
+// Users API
+export const usersAPI = {
+  getAll: () =>
+    api.get('/admin/users/'),
+  
+  update: (id: number, data: any) =>
+    api.put(`/admin/users/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/users/${id}/delete/`),
 };
 
 // Enrollments API

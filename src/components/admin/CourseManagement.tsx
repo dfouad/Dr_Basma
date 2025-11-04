@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { coursesAPI } from "@/lib/api";
 
 interface Course {
   id: number;
@@ -18,6 +18,7 @@ interface Course {
   category: { id: number; name: string };
   duration: string;
   is_published: boolean;
+  price?: number;
 }
 
 interface Category {
@@ -39,6 +40,7 @@ export const CourseManagement = () => {
     thumbnail: "",
     category: "",
     duration: "",
+    price: "",
     is_published: true,
   });
 
@@ -102,13 +104,14 @@ export const CourseManagement = () => {
       const payload = {
         ...formData,
         category: parseInt(formData.category),
+        price: formData.price ? parseFloat(formData.price) : null,
       };
 
       if (editingCourse) {
-        await api.put(`/admin/courses/${editingCourse.id}/update/`, payload);
+        await coursesAPI.update(editingCourse.id, payload);
         toast({ title: "تم التحديث", description: "تم تحديث الدورة بنجاح" });
       } else {
-        await api.post("/admin/courses/create/", payload);
+        await coursesAPI.create(payload);
         toast({ title: "تم الإنشاء", description: "تم إنشاء الدورة بنجاح" });
       }
 
@@ -116,6 +119,7 @@ export const CourseManagement = () => {
       resetForm();
       fetchCourses();
     } catch (error) {
+      console.error("Error saving course:", error);
       toast({
         title: "خطأ",
         description: "فشل حفظ الدورة",
@@ -128,10 +132,11 @@ export const CourseManagement = () => {
     if (!confirm("هل أنت متأكد من حذف هذه الدورة؟")) return;
 
     try {
-      await api.delete(`/admin/courses/${id}/delete/`);
+      await coursesAPI.delete(id);
       toast({ title: "تم الحذف", description: "تم حذف الدورة بنجاح" });
       fetchCourses();
     } catch (error) {
+      console.error("Error deleting course:", error);
       toast({
         title: "خطأ",
         description: "فشل حذف الدورة",
@@ -148,6 +153,7 @@ export const CourseManagement = () => {
       thumbnail: course.thumbnail,
       category: course.category.id.toString(),
       duration: course.duration,
+      price: course.price?.toString() || "",
       is_published: course.is_published,
     });
     setDialogOpen(true);
@@ -161,6 +167,7 @@ export const CourseManagement = () => {
       thumbnail: "",
       category: "",
       duration: "",
+      price: "",
       is_published: true,
     });
   };
@@ -234,6 +241,18 @@ export const CourseManagement = () => {
                   onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
                   placeholder="مثال: 4 ساعات"
                   required
+                />
+              </div>
+              <div>
+                <Label htmlFor="price">السعر (اختياري)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="مثال: 99.99"
                 />
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">

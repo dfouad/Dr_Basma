@@ -194,7 +194,7 @@ export function PDFManagement() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <div className="flex flex-row-reverse justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-right">إدارة ملفات PDF</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);

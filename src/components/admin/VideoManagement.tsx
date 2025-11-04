@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { videosAPI } from "@/lib/api";
 
 interface Video {
   id: number;
@@ -83,10 +83,10 @@ export const VideoManagement = () => {
       };
 
       if (editingVideo) {
-        await api.put(`/admin/videos/${editingVideo.id}/update/`, payload);
+        await videosAPI.update(editingVideo.id, payload);
         toast({ title: "تم التحديث", description: "تم تحديث الفيديو بنجاح" });
       } else {
-        await api.post("/admin/videos/create/", payload);
+        await videosAPI.create(payload);
         toast({ title: "تم الإنشاء", description: "تم إنشاء الفيديو بنجاح" });
       }
 
@@ -96,6 +96,7 @@ export const VideoManagement = () => {
         fetchVideos(formData.course);
       }
     } catch (error) {
+      console.error("Error saving video:", error);
       toast({
         title: "خطأ",
         description: "فشل حفظ الفيديو",
@@ -108,12 +109,13 @@ export const VideoManagement = () => {
     if (!confirm("هل أنت متأكد من حذف هذا الفيديو؟")) return;
 
     try {
-      await api.delete(`/admin/videos/${id}/delete/`);
+      await videosAPI.delete(id);
       toast({ title: "تم الحذف", description: "تم حذف الفيديو بنجاح" });
       if (formData.course) {
         fetchVideos(formData.course);
       }
     } catch (error) {
+      console.error("Error deleting video:", error);
       toast({
         title: "خطأ",
         description: "فشل حذف الفيديو",
@@ -147,7 +149,7 @@ export const VideoManagement = () => {
 
   return (
     <div className="space-y-4" dir="rtl">
-      <div className="flex flex-row-reverse justify-between items-center">
+      <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-right">إدارة الفيديوهات</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);

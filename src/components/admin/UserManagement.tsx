@@ -128,7 +128,7 @@ export const UserManagement = () => {
                 <TableHead className="text-right">الاسم</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">تاريخ التسجيل</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

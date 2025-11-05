@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { coursesAPI } from "@/lib/api";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Course {
   id: number;
@@ -270,11 +271,10 @@ export const CourseManagement = () => {
                 />
               </div>
               <div className="flex items-center space-x-2 space-x-reverse">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="is_published"
                   checked={formData.is_published}
-                  onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked as boolean })}
                 />
                 <Label htmlFor="is_published">نشر الدورة</Label>
               </div>

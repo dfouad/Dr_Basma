@@ -341,16 +341,18 @@ export function PDFManagement() {
         </Dialog>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4" dir="rtl" >
         <Label htmlFor="filter-course">تصفية حسب الدورة</Label>
         <Select value={filterCourse} onValueChange={setFilterCourse}>
-          <SelectTrigger className="w-[250px]">
+          
+            <SelectTrigger className="w-[250px] text-right justify-end">
+
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">جميع الدورات</SelectItem>
+            <SelectItem dir="rtl" value="all">جميع الدورات</SelectItem>
             {courses.map((course) => (
-              <SelectItem key={course.id} value={course.id.toString()}>
+              <SelectItem dir="rtl" key={course.id} value={course.id.toString()}>
                 {course.title}
               </SelectItem>
             ))}

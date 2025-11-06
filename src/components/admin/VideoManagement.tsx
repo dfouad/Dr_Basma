@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api, { videosAPI } from "@/lib/api";
+import api, { coursesAPI, videosAPI } from "@/lib/api";
 
 interface Video {
   id: number;
@@ -31,6 +31,10 @@ export const VideoManagement = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [selectedCourse, setSelectedCourse] = useState<string>("");
+  
+  // Add this with your other useState declarations
+  const [filterCourse, setFilterCourse] = useState<string>("all");
+  
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -46,14 +50,21 @@ export const VideoManagement = () => {
     fetchCourses();
   }, []);
 
+  // Re-fetch videos whenever the selected filter changes
+  useEffect(() => {
+    // keep selectedCourse in sync for the form default
+    setSelectedCourse(filterCourse === "all" ? "" : filterCourse);
+    fetchVideos(filterCourse);
+  }, [filterCourse]);
+
   const fetchCourses = async () => {
     try {
-      const response = await api.get("/admin/courses/");
+      const response = await coursesAPI.getAllAdmin();
       const coursesData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
       setCourses(coursesData);
-      setLoading(false);
+      
     } catch (error) {
       toast({
         title: "خطأ",
@@ -63,7 +74,7 @@ export const VideoManagement = () => {
     }
   };
 
-  const fetchVideos = async (courseId: string) => {
+  /*const fetchVideos = async (courseId: string) => {
     if (!courseId) {
       setVideos([]);
       return;
@@ -83,6 +94,33 @@ export const VideoManagement = () => {
         description: "فشل تحميل الفيديوهات",
         variant: "destructive",
       });
+    }
+  };*/
+
+  const fetchVideos = async (courseId: string = "all") => {
+    setLoading(true);
+    try {
+      let response;
+      if (courseId === "all") {
+        response = await videosAPI.getAll();
+      } else {
+        // API helper expects a numeric course id for filtering
+        response = await videosAPI.getAll(parseInt(courseId));
+      }
+
+      const videosData = Array.isArray(response.data)
+        ? response.data
+        : (response.data?.results || []);
+      setVideos(videosData);
+    } catch (error) {
+      console.error("Failed to fetch videos", error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحميل الفيديوهات",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -261,7 +299,7 @@ export const VideoManagement = () => {
         </Dialog>
       </div>
 
-      <div className="mb-4">
+   {  /*  <div className="mb-4">
         <Label htmlFor="filterCourse">تصفية حسب الدورة</Label>
         <Select value={selectedCourse} onValueChange={fetchVideos}>
           <SelectTrigger id="filterCourse">
@@ -275,7 +313,24 @@ export const VideoManagement = () => {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
+
+      <div className="mb-4">
+              <Label htmlFor="filter-course">تصفية حسب الدورة</Label>
+              <Select value={filterCourse} onValueChange={setFilterCourse}>
+                <SelectTrigger dir="rtl" className="w-[250px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem dir="rtl" value="all">جميع الدورات</SelectItem>
+                  {courses.map((course) => (
+                    <SelectItem dir="rtl" key={course.id} value={course.id.toString()}>
+                      {course.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
       {loading ? (
         <div className="flex justify-center py-8">

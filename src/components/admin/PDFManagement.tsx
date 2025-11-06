@@ -55,7 +55,7 @@ export function PDFManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await coursesAPI.getAll();
+      const response = await coursesAPI.getAllAdmin();
       const coursesData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);

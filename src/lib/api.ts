@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const DEFAULT_API_BASE = typeof window !== 'undefined' ? `${window.location.origin}/api` : '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_BASE;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -107,16 +108,16 @@ export const coursesAPI = {
 // Videos API
 export const videosAPI = {
   getAll: (courseId?: number) =>
-    api.get('/admin/videos/', { params: courseId ? { course: courseId } : {} }),
+    api.get('/videos/', { params: courseId ? { course: courseId } : {} }),
   
   create: (data: any) =>
-    api.post('/admin/videos/create/', data),
+    api.post('/videos/', data),
   
   update: (id: number, data: any) =>
-    api.patch(`/admin/videos/${id}/update/`, data),
+    api.patch(`/videos/${id}/`, data),
   
   delete: (id: number) =>
-    api.delete(`/admin/videos/${id}/delete/`),
+    api.delete(`/videos/${id}/`),
 };
 
 // Users API

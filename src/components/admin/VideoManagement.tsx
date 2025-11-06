@@ -190,7 +190,7 @@ export const VideoManagement = () => {
                   <SelectTrigger id="course">
                     <SelectValue placeholder="اختر دورة" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="z-50 bg-popover">
                     {courses.map((course) => (
                       <SelectItem key={course.id} value={course.id.toString()}>
                         {course.title}
@@ -267,7 +267,7 @@ export const VideoManagement = () => {
           <SelectTrigger id="filterCourse">
             <SelectValue placeholder="اختر دورة لعرض الفيديوهات" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-50 bg-popover">
             {courses.map((course) => (
               <SelectItem key={course.id} value={course.id.toString()}>
                 {course.title}

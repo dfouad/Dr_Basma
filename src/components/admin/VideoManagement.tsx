@@ -290,7 +290,7 @@ export const VideoManagement = () => {
                 <TableHead className="text-right">المدة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">عنوان الدورة</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

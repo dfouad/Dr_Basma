@@ -369,7 +369,7 @@ export function PDFManagement() {
                 <TableHead className="text-right">الدورة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">تاريخ الإنشاء</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

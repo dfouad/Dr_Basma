@@ -30,7 +30,7 @@ export const VideoManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState<string>("all");
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -44,7 +44,6 @@ export const VideoManagement = () => {
 
   useEffect(() => {
     fetchCourses();
-    fetchVideos("all");
   }, []);
 
   const fetchCourses = async () => {
@@ -65,25 +64,18 @@ export const VideoManagement = () => {
   };
 
   const fetchVideos = async (courseId: string) => {
+    if (!courseId) {
+      setVideos([]);
+      return;
+    }
+    
     setSelectedCourse(courseId);
     try {
-      let allVideos: Video[] = [];
-      
-      if (courseId === "all") {
-        // Fetch videos for all courses
-        const promises = courses.map(course => videosAPI.getAll(course.id));
-        const responses = await Promise.all(promises);
-        allVideos = responses.flatMap(response => 
-          Array.isArray(response.data) ? response.data : (response.data?.results || [])
-        );
-      } else {
-        const response = await videosAPI.getAll(parseInt(courseId));
-        allVideos = Array.isArray(response.data) 
-          ? response.data 
-          : (response.data?.results || []);
-      }
-      
-      setVideos(allVideos);
+      const response = await videosAPI.getAll(parseInt(courseId));
+      const videosData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      setVideos(videosData);
     } catch (error) {
       console.error("Failed to fetch videos", error);
       toast({
@@ -269,23 +261,20 @@ export const VideoManagement = () => {
         </Dialog>
       </div>
 
-      <div className="mb-4 flex justify-end">
-        <div className="w-[280px]">
-          <Label htmlFor="filterCourse" className="text-right block mb-2">تصفية حسب الدورة</Label>
-          <Select value={selectedCourse} onValueChange={fetchVideos}>
-            <SelectTrigger id="filterCourse" className="text-right">
-              <SelectValue placeholder="اختر دورة لعرض الفيديوهات" />
-            </SelectTrigger>
-            <SelectContent className="z-50 bg-popover">
-              <SelectItem value="all">جميع الدورات</SelectItem>
-              {courses.map((course) => (
-                <SelectItem key={course.id} value={course.id.toString()}>
-                  {course.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
+      <div className="mb-4">
+        <Label htmlFor="filterCourse">تصفية حسب الدورة</Label>
+        <Select value={selectedCourse} onValueChange={fetchVideos}>
+          <SelectTrigger id="filterCourse">
+            <SelectValue placeholder="اختر دورة لعرض الفيديوهات" />
+          </SelectTrigger>
+          <SelectContent className="z-50 bg-popover">
+            {courses.map((course) => (
+              <SelectItem key={course.id} value={course.id.toString()}>
+                {course.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {loading ? (
@@ -301,14 +290,14 @@ export const VideoManagement = () => {
                 <TableHead className="text-right">المدة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">عنوان الدورة</TableHead>
-                <TableHead className="text-right">الإجراءات</TableHead>
+                <TableHead className="text-left">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {videos.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    لا توجد فيديوهات
+                    اختر دورة لعرض الفيديوهات
                   </TableCell>
                 </TableRow>
               ) : (
@@ -332,8 +321,8 @@ export const VideoManagement = () => {
                     <TableCell className="text-right">{video.duration}</TableCell>
                     <TableCell className="text-right">{video.order}</TableCell>
                     <TableCell className="text-right">{video.course_title}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-2 justify-end items-center">
+                    <TableCell className="text-left">
+                      <div className="flex gap-2 justify-start">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>
                           <Edit className="h-4 w-4" />
                         </Button>

@@ -164,6 +164,14 @@ class EnrollmentUpdateView(generics.UpdateAPIView):
 
 
 # Admin Views
+class AdminCourseListView(generics.ListAPIView):
+    """Admin endpoint for listing all courses (including unpublished)."""
+    
+    queryset = Course.objects.all()
+    serializer_class = CourseListSerializer
+    permission_classes = (IsStaffUser,)
+
+
 class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     

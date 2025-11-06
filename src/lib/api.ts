@@ -95,6 +95,9 @@ export const coursesAPI = {
     api.get('/categories/'),
 
   // Admin endpoints
+  getAllAdmin: () =>
+    api.get('/admin/courses/'),
+  
   create: (data: any) =>
     api.post('/admin/courses/create/', data),
   
@@ -108,16 +111,16 @@ export const coursesAPI = {
 // Videos API
 export const videosAPI = {
   getAll: (courseId?: number) =>
-    api.get('/videos/', { params: courseId ? { course: courseId } : {} }),
+    api.get('/admin/videos/', { params: courseId ? { course: courseId } : {} }),
   
   create: (data: any) =>
-    api.post('/videos/', data),
+    api.post('/admin/videos/create/', data),
   
   update: (id: number, data: any) =>
-    api.patch(`/videos/${id}/`, data),
+    api.patch(`/admin/videos/${id}/update/`, data),
   
   delete: (id: number) =>
-    api.delete(`/videos/${id}/`),
+    api.delete(`/admin/videos/${id}/delete/`),
 };
 
 // Users API

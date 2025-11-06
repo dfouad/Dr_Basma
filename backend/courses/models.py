@@ -47,7 +47,7 @@ class Course(models.Model):
 class Video(models.Model):
     """Video model."""
     
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos', null=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     video_file = models.FileField(upload_to='course_videos/', blank=True, null=True)

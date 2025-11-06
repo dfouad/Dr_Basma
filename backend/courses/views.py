@@ -187,6 +187,21 @@ class AdminCourseDeleteView(generics.DestroyAPIView):
     permission_classes = (IsStaffUser,)
 
 
+class AdminVideoListView(generics.ListAPIView):
+    """Admin endpoint for listing all videos with optional course filter."""
+    
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = (IsStaffUser,)
+    
+    def get_queryset(self):
+        queryset = Video.objects.all()
+        course_id = self.request.query_params.get('course', None)
+        if course_id:
+            queryset = queryset.filter(course_id=course_id)
+        return queryset.order_by('order')
+
+
 class AdminVideoCreateView(generics.CreateAPIView):
     """Admin endpoint for creating videos."""
     

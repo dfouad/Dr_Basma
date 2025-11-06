@@ -106,14 +106,14 @@ export const coursesAPI = {
 
 // Videos API
 export const videosAPI = {
-  getAll: () =>
-    api.get('/admin/videos/'),
+  getAll: (courseId?: number) =>
+    api.get('/admin/videos/', { params: courseId ? { course: courseId } : {} }),
   
   create: (data: any) =>
     api.post('/admin/videos/create/', data),
   
   update: (id: number, data: any) =>
-    api.put(`/admin/videos/${id}/update/`, data),
+    api.patch(`/admin/videos/${id}/update/`, data),
   
   delete: (id: number) =>
     api.delete(`/admin/videos/${id}/delete/`),

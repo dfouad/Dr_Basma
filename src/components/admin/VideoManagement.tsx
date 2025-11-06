@@ -16,6 +16,7 @@ interface Video {
   duration: string;
   order: number;
   course: number;
+  course_title: string;
 }
 
 interface Course {
@@ -29,11 +30,13 @@ export const VideoManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
+  const [selectedCourse, setSelectedCourse] = useState<string>("");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
     title: "",
     video_url: "",
+    description: "",
     duration: "",
     order: 1,
     course: "",
@@ -45,7 +48,7 @@ export const VideoManagement = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get("/courses/");
+      const response = await api.get("/admin/courses/");
       const coursesData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
@@ -61,15 +64,25 @@ export const VideoManagement = () => {
   };
 
   const fetchVideos = async (courseId: string) => {
-    if (!courseId) return;
+    if (!courseId) {
+      setVideos([]);
+      return;
+    }
+    
+    setSelectedCourse(courseId);
     try {
-      const response = await api.get(`/courses/${courseId}/videos/`);
+      const response = await videosAPI.getAll(parseInt(courseId));
       const videosData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
       setVideos(videosData);
     } catch (error) {
       console.error("Failed to fetch videos", error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحميل الفيديوهات",
+        variant: "destructive",
+      });
     }
   };
 
@@ -77,24 +90,28 @@ export const VideoManagement = () => {
     e.preventDefault();
     try {
       const payload = {
-        ...formData,
+        title: formData.title,
+        video_url: formData.video_url,
+        description: formData.description,
+        duration: formData.duration,
         course: parseInt(formData.course),
         order: parseInt(formData.order.toString()),
       };
 
       if (editingVideo) {
-        await videosAPI.update(editingVideo.id, payload);
+        const response = await videosAPI.update(editingVideo.id, payload);
+        // Update the video in the local state
+        setVideos(videos.map(v => v.id === editingVideo.id ? response.data : v));
         toast({ title: "تم التحديث", description: "تم تحديث الفيديو بنجاح" });
       } else {
-        await videosAPI.create(payload);
-        toast({ title: "تم الإنشاء", description: "تم إنشاء الفيديو بنجاح" });
+        const response = await videosAPI.create(payload);
+        // Add the new video to the local state
+        setVideos([...videos, response.data]);
+        toast({ title: "تم الإضافة", description: "تم إضافة الفيديو بنجاح" });
       }
 
       setDialogOpen(false);
       resetForm();
-      if (formData.course) {
-        fetchVideos(formData.course);
-      }
     } catch (error) {
       console.error("Error saving video:", error);
       toast({
@@ -110,10 +127,9 @@ export const VideoManagement = () => {
 
     try {
       await videosAPI.delete(id);
+      // Remove the video from the local state
+      setVideos(videos.filter(v => v.id !== id));
       toast({ title: "تم الحذف", description: "تم حذف الفيديو بنجاح" });
-      if (formData.course) {
-        fetchVideos(formData.course);
-      }
     } catch (error) {
       console.error("Error deleting video:", error);
       toast({
@@ -129,6 +145,7 @@ export const VideoManagement = () => {
     setFormData({
       title: video.title,
       video_url: video.video_url,
+      description: "",
       duration: video.duration,
       order: video.order,
       course: video.course.toString(),
@@ -141,9 +158,10 @@ export const VideoManagement = () => {
     setFormData({
       title: "",
       video_url: "",
+      description: "",
       duration: "",
       order: 1,
-      course: "",
+      course: selectedCourse,
     });
   };
 
@@ -206,6 +224,15 @@ export const VideoManagement = () => {
                 )}
               </div>
               <div>
+                <Label htmlFor="description">الوصف</Label>
+                <Input
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="وصف الفيديو"
+                />
+              </div>
+              <div>
                 <Label htmlFor="duration">المدة</Label>
                 <Input
                   id="duration"
@@ -236,7 +263,7 @@ export const VideoManagement = () => {
 
       <div className="mb-4">
         <Label htmlFor="filterCourse">تصفية حسب الدورة</Label>
-        <Select onValueChange={fetchVideos}>
+        <Select value={selectedCourse} onValueChange={fetchVideos}>
           <SelectTrigger id="filterCourse">
             <SelectValue placeholder="اختر دورة لعرض الفيديوهات" />
           </SelectTrigger>
@@ -259,25 +286,41 @@ export const VideoManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">الفيديوهات</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
+                <TableHead className="text-right">عنوان الدورة</TableHead>
                 <TableHead className="text-left">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {videos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
                     اختر دورة لعرض الفيديوهات
                   </TableCell>
                 </TableRow>
               ) : (
                 videos.map((video) => (
                   <TableRow key={video.id}>
-                    <TableCell className="font-medium text-right">{video.title}</TableCell>
+                    <TableCell className="font-medium text-right">
+                      <div>
+                        <div>{video.title}</div>
+                        {video.video_url && (
+                          <a 
+                            href={video.video_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline"
+                          >
+                            رابط الفيديو
+                          </a>
+                        )}
+                      </div>
+                    </TableCell>
                     <TableCell className="text-right">{video.duration}</TableCell>
                     <TableCell className="text-right">{video.order}</TableCell>
+                    <TableCell className="text-right">{video.course_title}</TableCell>
                     <TableCell className="text-left">
                       <div className="flex gap-2 justify-start">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>

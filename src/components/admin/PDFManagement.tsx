@@ -341,21 +341,23 @@ export function PDFManagement() {
         </Dialog>
       </div>
 
-      <div className="mb-4">
-        <Label htmlFor="filter-course">تصفية حسب الدورة</Label>
-        <Select value={filterCourse} onValueChange={setFilterCourse}>
-          <SelectTrigger className="w-[250px]">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">جميع الدورات</SelectItem>
-            {courses.map((course) => (
-              <SelectItem key={course.id} value={course.id.toString()}>
-                {course.title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="mb-4 flex justify-end">
+        <div className="w-[280px]">
+          <Label htmlFor="filter-course" className="text-right block mb-2">تصفية حسب الدورة</Label>
+          <Select value={filterCourse} onValueChange={setFilterCourse}>
+            <SelectTrigger className="w-full text-right">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="z-50 bg-popover">
+              <SelectItem value="all">جميع الدورات</SelectItem>
+              {courses.map((course) => (
+                <SelectItem key={course.id} value={course.id.toString()}>
+                  {course.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {loading ? (
@@ -369,7 +371,7 @@ export function PDFManagement() {
                 <TableHead className="text-right">الدورة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">تاريخ الإنشاء</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -386,8 +388,8 @@ export function PDFManagement() {
                     <TableCell className="text-right">{pdf.course_title}</TableCell>
                     <TableCell className="text-right">{pdf.order}</TableCell>
                     <TableCell className="text-right">{new Date(pdf.created_at).toLocaleDateString('ar-EG')}</TableCell>
-                    <TableCell className="text-left">
-                      <div className="flex gap-2 justify-start">
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end items-center">
                         <Button
                           variant="outline"
                           size="sm"

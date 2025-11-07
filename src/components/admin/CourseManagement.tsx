@@ -235,7 +235,7 @@ export const CourseManagement = () => {
               </div>
               <div>
                 <Label htmlFor="category">الفئة</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                <Select value={formData.category || undefined} onValueChange={(value) => setFormData({ ...formData, category: value })}>
                   <SelectTrigger id="category">
                     <SelectValue placeholder="اختر فئة" />
                   </SelectTrigger>

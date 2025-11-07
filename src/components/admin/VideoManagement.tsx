@@ -351,7 +351,7 @@ export const VideoManagement = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
       ) : (
-        <div className="border rounded-lg">
+        <div className="border rounded-lg flex justify-center">
           <Table>
             <TableHeader>
               <TableRow>
@@ -360,7 +360,7 @@ export const VideoManagement = () => {
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">عنوان الدورة</TableHead>
                 <TableHead className="text-right">مجاني</TableHead>
-                <TableHead className="text-right">الإجراءات</TableHead>
+                <TableHead className="text-leftt">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -393,12 +393,12 @@ export const VideoManagement = () => {
                     <TableCell className="text-right">{video.course_title}</TableCell>
                     <TableCell className="text-right">
                       {video.is_free ? (
-                        <span className="text-green-600 font-semibold">نعم ✅</span>
+                        <span className="text-green-600 font-semibold">✅</span>
                       ) : (
-                        <span className="text-muted-foreground">لا ❌</span>
+                        <span className="text-muted-foreground"> ❌</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right" dir="rtl">
                       <div className="flex gap-2 justify-end items-center">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>
                           <Edit className="h-4 w-4" />

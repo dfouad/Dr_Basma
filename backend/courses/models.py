@@ -60,7 +60,7 @@ class Video(models.Model):
         ordering = ['order', 'created_at']
     
     def __str__(self):
-        return f'{self.course.title} - {self.title}'
+        return f'{self.title}'
 
 
 class Enrollment(models.Model):

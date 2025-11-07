@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { coursesAPI, videosAPI } from "@/lib/api";
@@ -17,6 +18,7 @@ interface Video {
   order: number;
   course: number;
   course_title: string;
+  is_free: boolean;
 }
 
 interface Course {
@@ -44,6 +46,7 @@ export const VideoManagement = () => {
     duration: "",
     order: 1,
     course: "",
+    is_free: false,
   });
 
   useEffect(() => {
@@ -134,6 +137,7 @@ export const VideoManagement = () => {
         duration: formData.duration,
         course: parseInt(formData.course),
         order: parseInt(formData.order.toString()),
+        is_free: formData.is_free,
       };
 
       if (editingVideo) {
@@ -187,6 +191,7 @@ export const VideoManagement = () => {
       duration: video.duration,
       order: video.order,
       course: video.course.toString(),
+      is_free: video.is_free || false,
     });
     setDialogOpen(true);
   };
@@ -200,6 +205,7 @@ export const VideoManagement = () => {
       duration: "",
       order: 1,
       course: selectedCourse,
+      is_free: false,
     });
   };
 
@@ -291,6 +297,14 @@ export const VideoManagement = () => {
                   required
                 />
               </div>
+              <div className="flex items-center gap-3 space-x-reverse">
+                <Checkbox
+                  id="is_free"
+                  checked={formData.is_free}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_free: checked as boolean })}
+                />
+                <Label htmlFor="is_free" className="cursor-pointer">مجاني</Label>
+              </div>
               <Button type="submit" className="w-full">
                 {editingVideo ? "تحديث" : "إنشاء"}
               </Button>
@@ -345,14 +359,15 @@ export const VideoManagement = () => {
                 <TableHead className="text-right">المدة</TableHead>
                 <TableHead className="text-right">الترتيب</TableHead>
                 <TableHead className="text-right">عنوان الدورة</TableHead>
+                <TableHead className="text-right">مجاني</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {videos.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
-                    اختر دورة لعرض الفيديوهات
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    لا توجد فيديوهات
                   </TableCell>
                 </TableRow>
               ) : (
@@ -376,8 +391,15 @@ export const VideoManagement = () => {
                     <TableCell className="text-right">{video.duration}</TableCell>
                     <TableCell className="text-right">{video.order}</TableCell>
                     <TableCell className="text-right">{video.course_title}</TableCell>
-                    <TableCell className="text-left">
-                      <div className="flex gap-2 justify-start">
+                    <TableCell className="text-right">
+                      {video.is_free ? (
+                        <span className="text-green-600 font-semibold">نعم ✅</span>
+                      ) : (
+                        <span className="text-muted-foreground">لا ❌</span>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex gap-2 justify-end items-center">
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(video)}>
                           <Edit className="h-4 w-4" />
                         </Button>

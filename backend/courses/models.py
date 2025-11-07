@@ -54,6 +54,7 @@ class Video(models.Model):
     video_url = models.URLField(blank=True, help_text='Alternative to uploading file')
     duration = models.CharField(max_length=20, help_text='e.g., 15:30')
     order = models.PositiveIntegerField(default=0)
+    is_free = models.BooleanField(default=False, help_text='Mark video as free for public access')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:

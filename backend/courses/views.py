@@ -163,6 +163,14 @@ class EnrollmentUpdateView(generics.UpdateAPIView):
         return Enrollment.objects.filter(user=self.request.user)
 
 
+class FreeVideoListView(generics.ListAPIView):
+    """API endpoint for listing all free videos (public access)."""
+    
+    queryset = Video.objects.filter(is_free=True).order_by('order')
+    serializer_class = VideoSerializer
+    permission_classes = (AllowAny,)
+
+
 # Admin Views
 class AdminCourseListView(generics.ListAPIView):
     """Admin endpoint for listing all courses (including unpublished)."""

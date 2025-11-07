@@ -3,13 +3,41 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
-import { ArrowLeft, CheckCircle, Star } from "lucide-react";
+import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
+import { useState, useEffect } from "react";
+import { videosAPI } from "@/lib/api";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
 
 
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<"courses" | "videos">("courses");
+  const [freeVideos, setFreeVideos] = useState<any[]>([]);
+  const [loadingVideos, setLoadingVideos] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "videos") {
+      fetchFreeVideos();
+    }
+  }, [activeTab]);
+
+  const fetchFreeVideos = async () => {
+    setLoadingVideos(true);
+    try {
+      const response = await videosAPI.getFreeVideos();
+      const videosData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      setFreeVideos(videosData);
+    } catch (error) {
+      console.error("Failed to fetch free videos", error);
+    } finally {
+      setLoadingVideos(false);
+    }
+  };
+
   const featuredCourses = [
     {
       id: 1,
@@ -87,29 +115,115 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Courses */}
+      {/* Featured Courses / Free Videos Section */}
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredCourses.map((course) => (
-              <CourseCard key={course.id} {...course} />
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link to="/courses">
-              <Button variant="outline" size="lg">
-                عرض جميع الدورات
+          <div className="text-center mb-8">
+            <div className="flex justify-center gap-4 mb-8">
+              <Button
+                variant={activeTab === "courses" ? "default" : "outline"}
+                size="lg"
+                onClick={() => setActiveTab("courses")}
+              >
+                الدورات
               </Button>
-            </Link>
+              <Button
+                variant={activeTab === "videos" ? "default" : "outline"}
+                size="lg"
+                onClick={() => setActiveTab("videos")}
+              >
+                الفيديوهات
+              </Button>
+            </div>
+            {activeTab === "courses" && (
+              <>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
+                </p>
+              </>
+            )}
+            {activeTab === "videos" && (
+              <>
+                <h2 className="text-3xl md:text-4xl font-bold mb-4">الفيديوهات المجانية</h2>
+                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                  شاهد فيديوهاتنا المجانية للتعرف على محتوى الدورات
+                </p>
+              </>
+            )}
           </div>
+
+          {activeTab === "courses" && (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {featuredCourses.map((course) => (
+                  <CourseCard key={course.id} {...course} />
+                ))}
+              </div>
+              <div className="text-center mt-12">
+                <Link to="/courses">
+                  <Button variant="outline" size="lg">
+                    عرض جميع الدورات
+                  </Button>
+                </Link>
+              </div>
+            </>
+          )}
+
+          {activeTab === "videos" && (
+            <>
+              {loadingVideos ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              ) : freeVideos.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg">لا توجد فيديوهات مجانية متاحة حالياً</p>
+                </div>
+              ) : (
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {freeVideos.map((video) => (
+                    <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                      <CardHeader>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Play className="h-5 w-5 text-primary" />
+                          <span className="text-sm font-medium text-primary">مجاني</span>
+                        </div>
+                        <CardTitle className="text-right">{video.title}</CardTitle>
+                        {video.course_title && (
+                          <CardDescription className="text-right">
+                            من دورة: {video.course_title}
+                          </CardDescription>
+                        )}
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          {video.description && (
+                            <p className="text-sm text-muted-foreground text-right">{video.description}</p>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground">المدة: {video.duration}</span>
+                          </div>
+                          {video.video_url && (
+                            <a
+                              href={video.video_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="block"
+                            >
+                              <Button className="w-full" variant="default">
+                                شاهد الآن
+                              </Button>
+                            </a>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 

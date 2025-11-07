@@ -112,6 +112,9 @@ export const videosAPI = {
   getAll: (courseId?: number) =>
     api.get('/admin/videos/', { params: courseId ? { course: courseId } : {} }),
   
+  getFreeVideos: () =>
+    api.get('/videos/free/'),
+  
   create: (data: any) =>
     api.post('/admin/videos/create/', data),
   

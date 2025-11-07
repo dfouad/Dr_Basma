@@ -19,7 +19,7 @@ class VideoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Video
-        fields = ('id', 'title', 'description', 'video_url', 'video_url_display', 'duration', 'order', 'course', 'course_title', 'created_at')
+        fields = ('id', 'title', 'description', 'video_url', 'video_url_display', 'duration', 'order', 'course', 'course_title', 'is_free', 'created_at')
     
     def get_video_url_display(self, obj):
         """Return the appropriate video URL (file or external)."""

@@ -47,7 +47,7 @@ export const UserManagement = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await api.get('/courses/admin/courses/');
+      const response = await api.get('/admin/courses/');
       setCourses(response.data.results || response.data || []);
     } catch (error) {
       console.error("Error fetching courses:", error);

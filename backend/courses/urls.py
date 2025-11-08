@@ -7,6 +7,7 @@ from .views import (
     AdminVideoDeleteView, AdminUserListView, AdminUserUpdateView,
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
+    AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -42,5 +43,8 @@ urlpatterns = [
     path('admin/users/', AdminUserListView.as_view(), name='admin_user_list'),
     path('admin/users/<int:pk>/update/', AdminUserUpdateView.as_view(), name='admin_user_update'),
     path('admin/users/<int:pk>/delete/', AdminUserDeleteView.as_view(), name='admin_user_delete'),
+    path('admin/users/<int:user_id>/enrollments/', AdminUserEnrollmentsView.as_view(), name='admin_user_enrollments'),
+    path('admin/assign-course/', AdminAssignCourseView.as_view(), name='admin_assign_course'),
+    path('admin/unassign-course/', AdminUnassignCourseView.as_view(), name='admin_unassign_course'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
 ]+ router.urls

@@ -163,3 +163,47 @@ class CertificateSerializer(serializers.ModelSerializer):
         if obj.user.first_name and obj.user.last_name:
             return f'{obj.user.first_name} {obj.user.last_name}'
         return obj.user.email
+
+
+class AdminAssignCourseSerializer(serializers.Serializer):
+    """Serializer for admin to assign courses to users."""
+    
+    user_id = serializers.IntegerField()
+    course_id = serializers.IntegerField()
+    
+    def validate(self, attrs):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        
+        try:
+            user = User.objects.get(id=attrs['user_id'])
+            if user.is_staff:
+                raise serializers.ValidationError("لا يمكن تعيين دورات للمسؤولين")
+        except User.DoesNotExist:
+            raise serializers.ValidationError("المستخدم غير موجود")
+        
+        try:
+            course = Course.objects.get(id=attrs['course_id'])
+        except Course.DoesNotExist:
+            raise serializers.ValidationError("الدورة غير موجودة")
+        
+        # Check if already enrolled
+        if Enrollment.objects.filter(user=user, course=course).exists():
+            raise serializers.ValidationError("المستخدم مسجل في هذه الدورة بالفعل")
+        
+        attrs['user'] = user
+        attrs['course'] = course
+        return attrs
+    
+    def save(self):
+        return Enrollment.objects.create(
+            user=self.validated_data['user'],
+            course=self.validated_data['course']
+        )
+
+
+class AdminUnassignCourseSerializer(serializers.Serializer):
+    """Serializer for admin to unassign courses from users."""
+    
+    user_id = serializers.IntegerField()
+    course_id = serializers.IntegerField()

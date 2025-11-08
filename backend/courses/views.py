@@ -14,7 +14,8 @@ import uuid
 
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
-    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer
+    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
+    AdminAssignCourseSerializer, AdminUnassignCourseSerializer,
 )
 from .permissions import IsStaffUser
 
@@ -355,3 +356,57 @@ class UserCertificateListView(generics.ListAPIView):
         certificate = Certificate.objects.create(user=user, course_id=course_id)
         serializer = self.get_serializer(certificate)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminAssignCourseView(generics.CreateAPIView):
+    """Admin endpoint to assign a course to a user."""
+    
+    serializer_class = AdminAssignCourseSerializer
+    permission_classes = [IsStaffUser]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        enrollment = serializer.save()
+        return Response(
+            EnrollmentSerializer(enrollment).data,
+            status=status.HTTP_201_CREATED
+        )
+
+
+class AdminUnassignCourseView(generics.GenericAPIView):
+    """Admin endpoint to unassign a course from a user."""
+    
+    serializer_class = AdminUnassignCourseSerializer
+    permission_classes = [IsStaffUser]
+    
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user_id = serializer.validated_data['user_id']
+        course_id = serializer.validated_data['course_id']
+        
+        try:
+            enrollment = Enrollment.objects.get(user_id=user_id, course_id=course_id)
+            enrollment.delete()
+            return Response(
+                {'message': 'تم إلغاء تسجيل المستخدم من الدورة بنجاح'},
+                status=status.HTTP_200_OK
+            )
+        except Enrollment.DoesNotExist:
+            return Response(
+                {'error': 'المستخدم غير مسجل في هذه الدورة'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class AdminUserEnrollmentsView(generics.ListAPIView):
+    """Admin endpoint to view a user's enrollments."""
+    
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsStaffUser]
+    
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')

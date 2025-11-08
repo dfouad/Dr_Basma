@@ -128,13 +128,22 @@ export const videosAPI = {
 // Users API
 export const usersAPI = {
   getAll: () =>
-    api.get('/admin/users/'),
+    api.get('/courses/admin/users/'),
   
   update: (id: number, data: any) =>
-    api.put(`/admin/users/${id}/update/`, data),
+    api.put(`/courses/admin/users/${id}/update/`, data),
   
   delete: (id: number) =>
-    api.delete(`/admin/users/${id}/delete/`),
+    api.delete(`/courses/admin/users/${id}/delete/`),
+  
+  getEnrollments: (userId: number) =>
+    api.get(`/courses/admin/users/${userId}/enrollments/`),
+  
+  assignCourse: (data: { user_id: number; course_id: number }) =>
+    api.post('/courses/admin/assign-course/', data),
+  
+  unassignCourse: (data: { user_id: number; course_id: number }) =>
+    api.delete('/courses/admin/unassign-course/', { data }),
 };
 
 // Enrollments API

@@ -406,6 +406,7 @@ class AdminUserEnrollmentsView(generics.ListAPIView):
     
     serializer_class = EnrollmentSerializer
     permission_classes = [IsStaffUser]
+    pagination_class = None  # Disable pagination for this endpoint
     
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')

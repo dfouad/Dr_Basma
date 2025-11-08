@@ -66,8 +66,14 @@ export const UserManagement = () => {
         usersData.map(async (user: User) => {
           try {
             const enrollmentsResponse = await usersAPI.getEnrollments(user.id);
-            return { ...user, enrollments: enrollmentsResponse.data || [] };
+            console.log(`Enrollments for user ${user.id}:`, enrollmentsResponse.data);
+            // Handle both paginated and non-paginated responses
+            const enrollments = Array.isArray(enrollmentsResponse.data) 
+              ? enrollmentsResponse.data 
+              : enrollmentsResponse.data.results || [];
+            return { ...user, enrollments };
           } catch (error) {
+            console.error(`Error fetching enrollments for user ${user.id}:`, error);
             return { ...user, enrollments: [] };
           }
         })

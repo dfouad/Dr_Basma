@@ -34,6 +34,7 @@ interface Course {
   thumbnail: string;
   thumbnail_url?: string;
   is_enrolled?: boolean;
+  price?: number | null;
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -94,7 +95,6 @@ const CourseDetail = () => {
   const [pdfs, setPdfs] = useState<PDF[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
-  const [enrolling, setEnrolling] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
 
   useEffect(() => {
@@ -145,15 +145,59 @@ const CourseDetail = () => {
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
 
-  const handleEnrollClick = () => {
+  const handleEnrollClick = async () => {
     if (!isAuthenticated) {
-      // Redirect to login page
       navigate('/auth');
       return;
     }
-
-    if (!enrolled) {
-      // Redirect to WhatsApp
+    
+    if (enrolled) return;
+    
+    // Check if course is free or paid
+    const isFree = !course?.price || course.price === 0;
+    
+    if (isFree) {
+      // Free course - enroll directly via API
+      try {
+        setLoading(true);
+        await coursesAPI.enroll(Number(id));
+        
+        toast({
+          title: "تم التسجيل بنجاح",
+          description: "يمكنك الآن الوصول إلى محتوى الدورة",
+        });
+        
+        // Refresh course data to show materials
+        const courseResponse = await coursesAPI.getById(Number(id));
+        setCourse(courseResponse.data);
+        setEnrolled(true);
+        
+        // Fetch videos and PDFs
+        try {
+          const [videosResponse, pdfsResponse] = await Promise.all([
+            coursesAPI.getVideos(Number(id)),
+            coursesAPI.getPDFs(Number(id))
+          ]);
+          const vids = Array.isArray(videosResponse.data) ? videosResponse.data : [];
+          setVideos(vids);
+          if (vids.length > 0) {
+            setSelectedVideo(vids[0]);
+          }
+          setPdfs(Array.isArray(pdfsResponse.data) ? pdfsResponse.data : []);
+        } catch (error) {
+          console.error('Error fetching course materials:', error);
+        }
+      } catch (error: any) {
+        toast({
+          title: "خطأ في التسجيل",
+          description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      // Paid course - redirect to WhatsApp
       const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
       window.open(whatsappUrl, '_blank');
     }
@@ -245,18 +289,20 @@ const CourseDetail = () => {
                       <PlayCircle className="h-16 w-16 text-muted-foreground/30" />
                     )}
                   </div>
-                  <Button 
-                    className="w-full mb-3" 
-                    size="lg" 
+                  <Button
+                    className="w-full mb-3"
+                    size="lg"
                     variant={enrolled ? "outline" : "hero"}
                     onClick={handleEnrollClick}
-                    disabled={enrolled}
+                    disabled={enrolled || loading}
                   >
-                    {enrolled 
-                      ? "مسجل بالفعل" 
-                      : isAuthenticated 
-                        ? "اشترك الآن في الدورة" 
-                        : "سجل الآن"}
+                    {enrolled
+                      ? "مسجل بالفعل"
+                      : !isAuthenticated
+                        ? "سجل الآن"
+                        : (!course?.price || course.price === 0)
+                          ? "ابدأ التعلم الآن"
+                          : "اشترك الآن في الدورة"}
                   </Button>
                   {enrolled && (
                     <Link to="/profile">

@@ -87,8 +87,63 @@ export const coursesAPI = {
   getPDFs: (courseId: number) =>
     api.get(`/courses/${courseId}/pdfs/`),
   
+  enroll: (courseId: number) =>
+    api.post(`/courses/${courseId}/enroll/`),
+  
   getCategories: () =>
     api.get('/categories/'),
+
+  // Admin endpoints
+  getAllAdmin: () =>
+    api.get('/admin/courses/'),
+  
+  create: (data: any) =>
+    api.post('/admin/courses/create/', data),
+  
+  update: (id: number, data: any) =>
+    api.put(`/admin/courses/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/courses/${id}/delete/`),
+};
+
+// Videos API
+export const videosAPI = {
+  getAll: (courseId?: number) =>
+    api.get('/admin/videos/', { params: courseId ? { course: courseId } : {} }),
+  
+  getFreeVideos: () =>
+    api.get('/videos/free/'),
+  
+  create: (data: any) =>
+    api.post('/admin/videos/create/', data),
+  
+  update: (id: number, data: any) =>
+    api.patch(`/admin/videos/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/videos/${id}/delete/`),
+};
+
+// Users API
+export const usersAPI = {
+  getAll: () =>
+    api.get('/admin/users/'),
+  
+  update: (id: number, data: any) =>
+    api.put(`/admin/users/${id}/update/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/users/${id}/delete/`),
+  
+  getEnrollments: (userId: number) =>
+    api.get(`/admin/users/${userId}/enrollments/`),
+  
+  assignCourse: (data: { user_id: number; course_id: number }) =>
+    api.post('/admin/assign-course/', data),
+  
+  unassignCourse: (data: { user_id: number; course_id: number }) =>
+    api.delete('/admin/unassign-course/', { data }),
 };
 
 // Enrollments API

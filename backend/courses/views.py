@@ -14,7 +14,8 @@ import uuid
 
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
-    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer
+    EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
+    AdminAssignCourseSerializer, AdminUnassignCourseSerializer,
 )
 from .permissions import IsStaffUser
 
@@ -119,7 +120,23 @@ class EnrollmentCreateView(generics.CreateAPIView):
     permission_classes = (IsAuthenticated,)
     
     def create(self, request, *args, **kwargs):
-        course_id = request.data.get('course')
+        # Get course_id from URL kwargs or request data
+        course_id = self.kwargs.get('course_id') or request.data.get('course')
+        
+        if not course_id:
+            return Response(
+                {'error': 'Course ID is required.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if course exists
+        try:
+            course = Course.objects.get(id=course_id, is_published=True)
+        except Course.DoesNotExist:
+            return Response(
+                {'error': 'Course not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
         
         # Check if already enrolled
         if Enrollment.objects.filter(user=request.user, course_id=course_id).exists():
@@ -128,9 +145,8 @@ class EnrollmentCreateView(generics.CreateAPIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
         
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+        # Create enrollment
+        Enrollment.objects.create(user=request.user, course_id=course_id)
         
         return Response(
             {'message': 'Successfully enrolled in the course.'},
@@ -148,7 +164,23 @@ class EnrollmentUpdateView(generics.UpdateAPIView):
         return Enrollment.objects.filter(user=self.request.user)
 
 
+class FreeVideoListView(generics.ListAPIView):
+    """API endpoint for listing all free videos (public access)."""
+    
+    queryset = Video.objects.filter(is_free=True).order_by('order')
+    serializer_class = VideoSerializer
+    permission_classes = (AllowAny,)
+
+
 # Admin Views
+class AdminCourseListView(generics.ListAPIView):
+    """Admin endpoint for listing all courses (including unpublished)."""
+    
+    queryset = Course.objects.all()
+    serializer_class = CourseListSerializer
+    permission_classes = (IsStaffUser,)
+
+
 class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     
@@ -170,6 +202,21 @@ class AdminCourseDeleteView(generics.DestroyAPIView):
     
     queryset = Course.objects.all()
     permission_classes = (IsStaffUser,)
+
+
+class AdminVideoListView(generics.ListAPIView):
+    """Admin endpoint for listing all videos with optional course filter."""
+    
+    queryset = Video.objects.all()
+    serializer_class = VideoSerializer
+    permission_classes = (IsStaffUser,)
+    
+    def get_queryset(self):
+        queryset = Video.objects.all()
+        course_id = self.request.query_params.get('course', None)
+        if course_id:
+            queryset = queryset.filter(course_id=course_id)
+        return queryset.order_by('order')
 
 
 class AdminVideoCreateView(generics.CreateAPIView):
@@ -309,3 +356,58 @@ class UserCertificateListView(generics.ListAPIView):
         certificate = Certificate.objects.create(user=user, course_id=course_id)
         serializer = self.get_serializer(certificate)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminAssignCourseView(generics.CreateAPIView):
+    """Admin endpoint to assign a course to a user."""
+    
+    serializer_class = AdminAssignCourseSerializer
+    permission_classes = [IsStaffUser]
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        enrollment = serializer.save()
+        return Response(
+            EnrollmentSerializer(enrollment).data,
+            status=status.HTTP_201_CREATED
+        )
+
+
+class AdminUnassignCourseView(generics.GenericAPIView):
+    """Admin endpoint to unassign a course from a user."""
+    
+    serializer_class = AdminUnassignCourseSerializer
+    permission_classes = [IsStaffUser]
+    
+    def delete(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        user_id = serializer.validated_data['user_id']
+        course_id = serializer.validated_data['course_id']
+        
+        try:
+            enrollment = Enrollment.objects.get(user_id=user_id, course_id=course_id)
+            enrollment.delete()
+            return Response(
+                {'message': 'تم إلغاء تسجيل المستخدم من الدورة بنجاح'},
+                status=status.HTTP_200_OK
+            )
+        except Enrollment.DoesNotExist:
+            return Response(
+                {'error': 'المستخدم غير مسجل في هذه الدورة'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class AdminUserEnrollmentsView(generics.ListAPIView):
+    """Admin endpoint to view a user's enrollments."""
+    
+    serializer_class = EnrollmentSerializer
+    permission_classes = [IsStaffUser]
+    pagination_class = None  # Disable pagination for this endpoint
+    
+    def get_queryset(self):
+        user_id = self.kwargs.get('user_id')
+        return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')

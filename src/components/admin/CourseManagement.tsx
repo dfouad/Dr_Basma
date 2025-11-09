@@ -8,7 +8,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2, Plus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { coursesAPI } from "@/lib/api";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Course {
   id: number;
@@ -18,6 +19,7 @@ interface Course {
   category: { id: number; name: string };
   duration: string;
   is_published: boolean;
+  price?: number;
 }
 
 interface Category {
@@ -39,6 +41,7 @@ export const CourseManagement = () => {
     thumbnail: "",
     category: "",
     duration: "",
+    price: "",
     is_published: true,
   });
 
@@ -102,13 +105,14 @@ export const CourseManagement = () => {
       const payload = {
         ...formData,
         category: parseInt(formData.category),
+        price: formData.price ? parseFloat(formData.price) : null,
       };
 
       if (editingCourse) {
-        await api.put(`/admin/courses/${editingCourse.id}/update/`, payload);
+        await coursesAPI.update(editingCourse.id, payload);
         toast({ title: "تم التحديث", description: "تم تحديث الدورة بنجاح" });
       } else {
-        await api.post("/admin/courses/create/", payload);
+        await coursesAPI.create(payload);
         toast({ title: "تم الإنشاء", description: "تم إنشاء الدورة بنجاح" });
       }
 
@@ -116,6 +120,7 @@ export const CourseManagement = () => {
       resetForm();
       fetchCourses();
     } catch (error) {
+      console.error("Error saving course:", error);
       toast({
         title: "خطأ",
         description: "فشل حفظ الدورة",
@@ -128,10 +133,11 @@ export const CourseManagement = () => {
     if (!confirm("هل أنت متأكد من حذف هذه الدورة؟")) return;
 
     try {
-      await api.delete(`/admin/courses/${id}/delete/`);
+      await coursesAPI.delete(id);
       toast({ title: "تم الحذف", description: "تم حذف الدورة بنجاح" });
       fetchCourses();
     } catch (error) {
+      console.error("Error deleting course:", error);
       toast({
         title: "خطأ",
         description: "فشل حذف الدورة",
@@ -148,6 +154,7 @@ export const CourseManagement = () => {
       thumbnail: course.thumbnail,
       category: course.category.id.toString(),
       duration: course.duration,
+      price: course.price?.toString() || "",
       is_published: course.is_published,
     });
     setDialogOpen(true);
@@ -161,27 +168,28 @@ export const CourseManagement = () => {
       thumbnail: "",
       category: "",
       duration: "",
+      price: "",
       is_published: true,
     });
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة الدورات</h2>
+        <h2 className="text-2xl font-bold text-right">إدارة الدورات</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="h-4 w-4 ml-2" />
+              <Plus className="h-4 w-4 mr-2" />
               إضافة دورة
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" dir="rtl">
             <DialogHeader>
-              <DialogTitle>{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
+              <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
@@ -209,7 +217,21 @@ export const CourseManagement = () => {
                   id="thumbnail"
                   value={formData.thumbnail}
                   onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
                 />
+                {formData.thumbnail && (
+                  <div className="mt-2">
+                    <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                    <img 
+                      src={formData.thumbnail} 
+                      alt="معاينة" 
+                      className="mt-1 h-32 w-full object-cover rounded-lg border"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div>
                 <Label htmlFor="category">الفئة</Label>
@@ -236,12 +258,23 @@ export const CourseManagement = () => {
                   required
                 />
               </div>
+              <div>
+                <Label htmlFor="price">السعر (اختياري)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  placeholder="مثال: 99.99"
+                />
+              </div>
               <div className="flex items-center space-x-2 space-x-reverse">
-                <input
-                  type="checkbox"
+                <Checkbox
                   id="is_published"
                   checked={formData.is_published}
-                  onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_published: checked as boolean })}
                 />
                 <Label htmlFor="is_published">نشر الدورة</Label>
               </div>
@@ -262,31 +295,33 @@ export const CourseManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>العنوان</TableHead>
-                <TableHead>الفئة</TableHead>
-                <TableHead>المدة</TableHead>
-                <TableHead>الحالة</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">الفئة</TableHead>
+                <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">الحالة</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {courses.map((course) => (
                 <TableRow key={course.id}>
-                  <TableCell className="font-medium">{course.title}</TableCell>
-                  <TableCell>{course.category?.name || "بدون فئة"}</TableCell>
-                  <TableCell>{course.duration}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium text-right">{course.title}</TableCell>
+                  <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
+                  <TableCell className="text-right">{course.duration}</TableCell>
+                  <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {course.is_published ? 'منشور' : 'مسودة'}
                     </span>
                   </TableCell>
                   <TableCell className="text-left">
-                    <Button variant="ghost" size="sm" onClick={() => openEditDialog(course)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(course.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex gap-2 justify-start">
+                      <Button variant="ghost" size="sm" onClick={() => openEditDialog(course)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(course.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}

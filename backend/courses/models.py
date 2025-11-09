@@ -27,6 +27,7 @@ class Course(models.Model):
     thumbnail = models.ImageField(upload_to='course_thumbnails/', blank=True, null=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
     duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text='Course price (null or 0 for free courses)')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)
@@ -46,20 +47,21 @@ class Course(models.Model):
 class Video(models.Model):
     """Video model."""
     
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos', null=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     video_file = models.FileField(upload_to='course_videos/', blank=True, null=True)
     video_url = models.URLField(blank=True, help_text='Alternative to uploading file')
     duration = models.CharField(max_length=20, help_text='e.g., 15:30')
     order = models.PositiveIntegerField(default=0)
+    is_free = models.BooleanField(default=False, help_text='Mark video as free for public access')
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         ordering = ['order', 'created_at']
     
     def __str__(self):
-        return f'{self.course.title} - {self.title}'
+        return f'{self.title}'
 
 
 class Enrollment(models.Model):

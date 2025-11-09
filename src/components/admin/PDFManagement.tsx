@@ -43,6 +43,8 @@ export function PDFManagement() {
     order: "0",
   });
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   
   const { toast } = useToast();
 
@@ -53,7 +55,7 @@ export function PDFManagement() {
 
   const fetchCourses = async () => {
     try {
-      const response = await coursesAPI.getAll();
+      const response = await coursesAPI.getAllAdmin();
       const coursesData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
@@ -120,6 +122,20 @@ export function PDFManagement() {
     }
 
     try {
+      setIsUploading(true);
+      setUploadProgress(0);
+      
+      // Simulate upload progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
       if (editingPdf) {
         await pdfsAPI.update(editingPdf.id, data);
         toast({
@@ -133,6 +149,10 @@ export function PDFManagement() {
           description: "تم إضافة ملف PDF بنجاح",
         });
       }
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
       fetchPdfs();
       resetForm();
       setDialogOpen(false);
@@ -143,6 +163,9 @@ export function PDFManagement() {
         description: "فشل حفظ ملف PDF",
         variant: "destructive",
       });
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -186,6 +209,8 @@ export function PDFManagement() {
       order: "0",
     });
     setPdfFile(null);
+    setUploadProgress(0);
+    setIsUploading(false);
   };
 
   const filteredPdfs = filterCourse === "all" 
@@ -193,22 +218,22 @@ export function PDFManagement() {
     : pdfs.filter(pdf => pdf.course.toString() === filterCourse);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir="rtl">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة ملفات PDF</h2>
+        <h2 className="text-2xl font-bold text-right">إدارة ملفات PDF</h2>
         <Dialog open={dialogOpen} onOpenChange={(open) => {
           setDialogOpen(open);
           if (!open) resetForm();
         }}>
           <DialogTrigger asChild>
             <Button>
-              <FileUp className="ml-2 h-4 w-4" />
+              <FileUp className="mr-2 h-4 w-4" />
               إضافة ملف PDF
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent className="max-w-2xl" dir="rtl">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-right">
                 {editingPdf ? "تعديل ملف PDF" : "إضافة ملف PDF جديد"}
               </DialogTitle>
             </DialogHeader>
@@ -268,11 +293,31 @@ export function PDFManagement() {
                   accept="application/pdf"
                   onChange={(e) => setPdfFile(e.target.files?.[0] || null)}
                   required={!editingPdf}
+                  disabled={isUploading}
                 />
-                {editingPdf && (
+                {pdfFile && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ تم اختيار الملف: {pdfFile.name}
+                  </p>
+                )}
+                {editingPdf && !pdfFile && (
                   <p className="text-sm text-muted-foreground mt-1">
                     اترك فارغاً للاحتفاظ بالملف الحالي
                   </p>
+                )}
+                {isUploading && (
+                  <div className="mt-2">
+                    <div className="flex justify-between text-sm mb-1">
+                      <span>جاري التحميل...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <div className="w-full bg-secondary rounded-full h-2">
+                      <div 
+                        className="bg-primary h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
                 )}
               </div>
               <div className="flex gap-2 justify-end">
@@ -283,11 +328,12 @@ export function PDFManagement() {
                     setDialogOpen(false);
                     resetForm();
                   }}
+                  disabled={isUploading}
                 >
                   إلغاء
                 </Button>
-                <Button type="submit">
-                  {editingPdf ? "تحديث" : "إضافة"}
+                <Button type="submit" disabled={isUploading}>
+                  {isUploading ? "جاري الحفظ..." : editingPdf ? "تحديث" : "إضافة"}
                 </Button>
               </div>
             </form>
@@ -295,16 +341,18 @@ export function PDFManagement() {
         </Dialog>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4" dir="rtl" >
         <Label htmlFor="filter-course">تصفية حسب الدورة</Label>
         <Select value={filterCourse} onValueChange={setFilterCourse}>
-          <SelectTrigger className="w-[250px]">
+          
+            <SelectTrigger className="w-[250px] text-right justify-end">
+
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">جميع الدورات</SelectItem>
+            <SelectItem dir="rtl" value="all">جميع الدورات</SelectItem>
             {courses.map((course) => (
-              <SelectItem key={course.id} value={course.id.toString()}>
+              <SelectItem dir="rtl" key={course.id} value={course.id.toString()}>
                 {course.title}
               </SelectItem>
             ))}
@@ -319,10 +367,10 @@ export function PDFManagement() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>العنوان</TableHead>
-                <TableHead>الدورة</TableHead>
-                <TableHead>الترتيب</TableHead>
-                <TableHead>تاريخ الإنشاء</TableHead>
+                <TableHead className="text-right">العنوان</TableHead>
+                <TableHead className="text-right">الدورة</TableHead>
+                <TableHead className="text-right">الترتيب</TableHead>
+                <TableHead className="text-right">تاريخ الإنشاء</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
@@ -336,12 +384,12 @@ export function PDFManagement() {
               ) : (
                 filteredPdfs.map((pdf) => (
                   <TableRow key={pdf.id}>
-                    <TableCell className="font-medium">{pdf.title}</TableCell>
-                    <TableCell>{pdf.course_title}</TableCell>
-                    <TableCell>{pdf.order}</TableCell>
-                    <TableCell>{new Date(pdf.created_at).toLocaleDateString('ar-EG')}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex gap-2 justify-end">
+                    <TableCell className="font-medium text-right">{pdf.title}</TableCell>
+                    <TableCell className="text-right">{pdf.course_title}</TableCell>
+                    <TableCell className="text-right">{pdf.order}</TableCell>
+                    <TableCell className="text-right">{new Date(pdf.created_at).toLocaleDateString('ar-EG')}</TableCell>
+                    <TableCell className="text-left">
+                      <div className="flex gap-2 justify-start">
                         <Button
                           variant="outline"
                           size="sm"

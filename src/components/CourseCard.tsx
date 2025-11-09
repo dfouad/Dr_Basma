@@ -32,6 +32,7 @@ interface CourseCardProps {
   duration: string;
   videoCount: number;
   thumbnail?: string; // optional image
+  price?: number | null;
 }
 
 const CourseCard = ({
@@ -41,6 +42,7 @@ const CourseCard = ({
   duration,
   videoCount,
   thumbnail,
+  price,
 }: CourseCardProps) => {
   return (
     <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
@@ -68,9 +70,20 @@ const CourseCard = ({
 
       {/* 📋 Course info */}
       <div className="p-6 space-y-4">
-        <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
-          {title}
-        </h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors flex-1">
+            {title}
+          </h3>
+          {price === null || price === 0 ? (
+            <span className="bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+              مجاناً
+            </span>
+          ) : (
+            <span className="bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
+              {price} جنيه
+            </span>
+          )}
+        </div>
 
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}

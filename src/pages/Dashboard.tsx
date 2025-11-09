@@ -52,13 +52,13 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col" dir="rtl">
       <Navbar />
 
       <main className="flex-grow bg-muted/30">
         <div className="container mx-auto px-4 py-12">
           <div className="max-w-7xl mx-auto space-y-8">
-            <div>
+            <div className="text-right">
               <h1 className="text-4xl font-bold mb-2">لوحة التحكم</h1>
               <p className="text-muted-foreground">إدارة الدورات والمستخدمين والمحتوى</p>
             </div>
@@ -67,58 +67,122 @@ const Dashboard = () => {
             {stats && (
               <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
                 <div className="bg-card rounded-lg p-6 border border-border">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-row-reverse">
+                    <p className="text-sm text-muted-foreground text-right flex-1">إجمالي الدورات</p>
                     <div className="bg-primary/10 p-2 rounded">
                       <BookOpen className="h-5 w-5 text-primary" />
                     </div>
-                    <p className="text-sm text-muted-foreground">إجمالي الدورات</p>
                   </div>
-                  <p className="text-3xl font-bold">{stats.total_courses}</p>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-3xl font-bold text-right">{stats.total_courses}</p>
+                  <p className="text-xs text-muted-foreground mt-1 text-right">
                     {stats.published_courses} منشورة
                   </p>
                 </div>
                 <div className="bg-card rounded-lg p-6 border border-border">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-row-reverse">
+                    <p className="text-sm text-muted-foreground text-right flex-1">إجمالي الفيديوهات</p>
                     <div className="bg-secondary/10 p-2 rounded">
                       <Video className="h-5 w-5 text-secondary" />
                     </div>
-                    <p className="text-sm text-muted-foreground">إجمالي الفيديوهات</p>
                   </div>
-                  <p className="text-3xl font-bold">{stats.total_videos}</p>
+                  <p className="text-3xl font-bold text-right">{stats.total_videos}</p>
                 </div>
                 <div className="bg-card rounded-lg p-6 border border-border">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-row-reverse">
+                    <p className="text-sm text-muted-foreground text-right flex-1">ملفات PDF</p>
                     <div className="bg-accent/10 p-2 rounded">
                       <FileText className="h-5 w-5 text-accent" />
                     </div>
-                    <p className="text-sm text-muted-foreground">ملفات PDF</p>
                   </div>
-                  <p className="text-3xl font-bold">{stats.total_pdfs}</p>
+                  <p className="text-3xl font-bold text-right">{stats.total_pdfs}</p>
                 </div>
                 <div className="bg-card rounded-lg p-6 border border-border">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-row-reverse">
+                    <p className="text-sm text-muted-foreground text-right flex-1">المستخدمون</p>
                     <div className="bg-accent/10 p-2 rounded">
                       <Users className="h-5 w-5 text-accent" />
                     </div>
-                    <p className="text-sm text-muted-foreground">المستخدمون</p>
                   </div>
-                  <p className="text-3xl font-bold">{stats.total_users}</p>
+                  <p className="text-3xl font-bold text-right">{stats.total_users}</p>
                 </div>
                 <div className="bg-card rounded-lg p-6 border border-border">
-                  <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-3 mb-2 flex-row-reverse">
+                    <p className="text-sm text-muted-foreground text-right flex-1">التسجيلات</p>
                     <div className="bg-primary/10 p-2 rounded">
                       <BarChart3 className="h-5 w-5 text-primary" />
                     </div>
-                    <p className="text-sm text-muted-foreground">التسجيلات</p>
                   </div>
-                  <p className="text-3xl font-bold">{stats.total_enrollments}</p>
+                  <p className="text-3xl font-bold text-right">{stats.total_enrollments}</p>
                 </div>
               </div>
             )}
 
-            {/* Management Tabs */}
-            <Tabs defaultValue="courses" className="space-y-6">
+            
+            {/* Management Tabs chatGPT suggestion */}
+<Tabs defaultValue="courses" className="space-y-6" dir="rtl">
+  <TabsList className="flex justify-end w-full max-w-3xl gap-2 border-b border-border pb-2">
+    <TabsTrigger
+      value="courses"
+      className="relative px-2 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      الدورات
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="videos"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      الفيديوهات
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="pdfs"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      ملفات PDF
+    </TabsTrigger>
+
+    <TabsTrigger
+      value="users"
+      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+                 data-[state=active]:before:bg-primary rounded-lg transition-all"
+    >
+      المستخدمون
+    </TabsTrigger>
+  </TabsList>
+
+  <TabsContent value="courses" className="bg-card rounded-lg p-6 border border-border">
+    <CourseManagement />
+  </TabsContent>
+
+  <TabsContent value="videos" className="bg-card rounded-lg p-6 border border-border">
+    <VideoManagement />
+  </TabsContent>
+
+  <TabsContent value="pdfs" className="bg-card rounded-lg p-6 border border-border">
+    <PDFManagement />
+  </TabsContent>
+
+  <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">
+    <UserManagement />
+  </TabsContent>
+</Tabs>
+
+           
+ 
+{/* Management Tabs Loveable design*/}
+           {/* <Tabs defaultValue="courses" className="space-y-6"> 
               <TabsList className="grid w-full max-w-3xl grid-cols-4">
                 <TabsTrigger value="courses">الدورات</TabsTrigger>
                 <TabsTrigger value="videos">الفيديوهات</TabsTrigger>
@@ -141,7 +205,7 @@ const Dashboard = () => {
               <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">
                 <UserManagement />
               </TabsContent>
-            </Tabs>
+            </Tabs> */}
           </div>
         </div>
       </main>

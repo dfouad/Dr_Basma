@@ -21,15 +21,15 @@ class VideoInline(admin.TabularInline):
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     """Admin for Course model."""
-    
-    list_display = ('title', 'category', 'duration', 'video_count', 'is_published', 'created_at')
+
+    list_display = ('title', 'category', 'duration', 'video_count', 'is_published', 'created_at', 'price')
     list_filter = ('is_published', 'category', 'created_at')
     search_fields = ('title', 'description')
     inlines = [VideoInline]
     
     fieldsets = (
         ('Course Information', {
-            'fields': ('title', 'description', 'thumbnail', 'category', 'duration')
+            'fields': ('title', 'description', 'thumbnail', 'category', 'duration', 'price')
         }),
         ('Publishing', {
             'fields': ('is_published',)

@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import api from "@/lib/api";
+import api, { usersAPI } from "@/lib/api";
 
 interface User {
   id: number;
@@ -15,13 +15,23 @@ interface User {
   last_name: string;
   is_staff: boolean;
   date_joined: string;
+  enrollments?: { id: number; course: { id: number; title: string } }[];
+}
+
+interface Course {
+  id: number;
+  title: string;
 }
 
 export const UserManagement = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedCourseId, setSelectedCourseId] = useState<number | null>(null);
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -32,13 +42,46 @@ export const UserManagement = () => {
 
   useEffect(() => {
     fetchUsers();
+    fetchCourses();
   }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await api.get('/admin/courses/');
+      setCourses(response.data.results || response.data || []);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+    }
+  };
 
   const fetchUsers = async () => {
     try {
-      const response = await api.get("/admin/users/");
-      setUsers(response.data);
+      const response = await usersAPI.getAll();
+      const usersData = Array.isArray(response.data)
+        ? response.data
+        : response.data.results || [];
+      
+      // Fetch enrollments for each user
+      const usersWithEnrollments = await Promise.all(
+        usersData.map(async (user: User) => {
+          try {
+            const enrollmentsResponse = await usersAPI.getEnrollments(user.id);
+            console.log(`Enrollments for user ${user.id}:`, enrollmentsResponse.data);
+            // Handle both paginated and non-paginated responses
+            const enrollments = Array.isArray(enrollmentsResponse.data) 
+              ? enrollmentsResponse.data 
+              : enrollmentsResponse.data.results || [];
+            return { ...user, enrollments };
+          } catch (error) {
+            console.error(`Error fetching enrollments for user ${user.id}:`, error);
+            return { ...user, enrollments: [] };
+          }
+        })
+      );
+      
+      setUsers(usersWithEnrollments);
     } catch (error) {
+      console.error("Error fetching users:", error);
       toast({
         title: "خطأ",
         description: "فشل تحميل المستخدمين",
@@ -54,12 +97,13 @@ export const UserManagement = () => {
     if (!editingUser) return;
 
     try {
-      await api.put(`/admin/users/${editingUser.id}/update/`, formData);
+      await usersAPI.update(editingUser.id, formData);
       toast({ title: "تم التحديث", description: "تم تحديث المستخدم بنجاح" });
       setDialogOpen(false);
       resetForm();
       fetchUsers();
     } catch (error) {
+      console.error("Error updating user:", error);
       toast({
         title: "خطأ",
         description: "فشل تحديث المستخدم",
@@ -72,10 +116,11 @@ export const UserManagement = () => {
     if (!confirm("هل أنت متأكد من حذف هذا المستخدم؟")) return;
 
     try {
-      await api.delete(`/admin/users/${id}/delete/`);
+      await usersAPI.delete(id);
       toast({ title: "تم الحذف", description: "تم حذف المستخدم بنجاح" });
       fetchUsers();
     } catch (error) {
+      console.error("Error deleting user:", error);
       toast({
         title: "خطأ",
         description: "فشل حذف المستخدم",
@@ -103,10 +148,64 @@ export const UserManagement = () => {
     });
   };
 
+  const openAssignDialog = (userId: number) => {
+    setSelectedUserId(userId);
+    setSelectedCourseId(null);
+    setAssignDialogOpen(true);
+  };
+
+  const handleAssignCourse = async () => {
+    if (!selectedUserId || !selectedCourseId) {
+      toast({
+        title: "خطأ",
+        description: "الرجاء اختيار دورة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await usersAPI.assignCourse({
+        user_id: selectedUserId,
+        course_id: selectedCourseId,
+      });
+      toast({ title: "نجح", description: "تم تعيين الدورة بنجاح" });
+      setAssignDialogOpen(false);
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Error assigning course:", error);
+      const message = error.response?.data?.non_field_errors?.[0] || 
+                      error.response?.data?.detail || 
+                      "فشل تعيين الدورة";
+      toast({
+        title: "خطأ",
+        description: message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUnassignCourse = async (userId: number, courseId: number) => {
+    if (!confirm("هل أنت متأكد من إلغاء تسجيل المستخدم من هذه الدورة؟")) return;
+
+    try {
+      await usersAPI.unassignCourse({ user_id: userId, course_id: courseId });
+      toast({ title: "نجح", description: "تم إلغاء التسجيل بنجاح" });
+      fetchUsers();
+    } catch (error) {
+      console.error("Error unassigning course:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل إلغاء التسجيل",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">إدارة المستخدمين</h2>
+        <h2 className="text-2xl font-bold text-right">إدارة المستخدمين</h2>
       </div>
 
       {loading ? (
@@ -118,31 +217,62 @@ export const UserManagement = () => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>البريد الإلكتروني</TableHead>
-                <TableHead>الاسم</TableHead>
-                <TableHead>الحالة</TableHead>
-                <TableHead>تاريخ التسجيل</TableHead>
-                <TableHead className="text-left">الإجراءات</TableHead>
+                <TableHead className="text-right">البريد الإلكتروني</TableHead>
+                <TableHead className="text-right">الاسم</TableHead>
+                <TableHead className="text-right">الحالة</TableHead>
+                <TableHead className="text-right">الدورات المسجلة</TableHead>
+                <TableHead className="text-right">تاريخ التسجيل</TableHead>
+                <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.email}</TableCell>
-                  <TableCell>{`${user.first_name} ${user.last_name}`.trim() || '-'}</TableCell>
-                  <TableCell>
+                  <TableCell className="font-medium text-right">{user.email}</TableCell>
+                  <TableCell className="text-right">{`${user.first_name} ${user.last_name}`.trim() || '-'}</TableCell>
+                  <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${user.is_staff ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                       {user.is_staff ? 'مدير' : 'مستخدم'}
                     </span>
                   </TableCell>
-                  <TableCell>{new Date(user.date_joined).toLocaleDateString('ar-SA')}</TableCell>
+                  <TableCell className="text-right">
+                    {user.enrollments && user.enrollments.length > 0 ? (
+                      <div className="flex flex-col gap-1">
+                        {user.enrollments.map((enrollment) => (
+                          <div key={enrollment.id} className="flex items-center gap-2 text-sm">
+                            <span>{enrollment.course.title}</span>
+                            {!user.is_staff && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleUnassignCourse(user.id, enrollment.course.id)}
+                                className="h-6 w-6 p-0"
+                              >
+                                <Trash2 className="h-3 w-3 text-destructive" />
+                              </Button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-muted-foreground">لا توجد دورات</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-SA')}</TableCell>
                   <TableCell className="text-left">
-                    <Button variant="ghost" size="sm" onClick={() => openEditDialog(user)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(user.id)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+                    <div className="flex gap-2 justify-start">
+                      {!user.is_staff && (
+                        <Button variant="outline" size="sm" onClick={() => openAssignDialog(user.id)}>
+                          تعيين دورة
+                        </Button>
+                      )}
+                      <Button variant="ghost" size="sm" onClick={() => openEditDialog(user)}>
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(user.id)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -155,9 +285,9 @@ export const UserManagement = () => {
         setDialogOpen(open);
         if (!open) resetForm();
       }}>
-        <DialogContent>
+        <DialogContent dir="rtl">
           <DialogHeader>
-            <DialogTitle>تعديل مستخدم</DialogTitle>
+            <DialogTitle className="text-right">تعديل مستخدم</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
@@ -189,6 +319,35 @@ export const UserManagement = () => {
               تحديث
             </Button>
           </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
+        <DialogContent dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="text-right">تعيين دورة</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="course">اختر الدورة</Label>
+              <select
+                id="course"
+                className="w-full p-2 border rounded-md"
+                value={selectedCourseId || ""}
+                onChange={(e) => setSelectedCourseId(Number(e.target.value))}
+              >
+                <option value="">اختر دورة...</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.id}>
+                    {course.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <Button onClick={handleAssignCourse} className="w-full">
+              تعيين
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

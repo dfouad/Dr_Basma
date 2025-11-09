@@ -131,6 +131,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+# For whitenoise
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 
 # Media files
 MEDIA_URL = '/media/'
@@ -168,7 +170,7 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://your-frontend.vercel.app',  
+    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://https://drbasma.vercel.app/',  
 ).split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -181,4 +183,8 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
+]
+
+
+CSRF_TRUSTED_ORIGINS = [ "https://Dr_Basma_backend.onrender.com",
 ]

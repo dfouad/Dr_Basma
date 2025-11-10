@@ -4,8 +4,9 @@ djangorestframework-simplejwt==5.3.1
 django-cors-headers==4.3.1
 dj-database-url==1.2.0
 psycopg2-binary==2.9.9
-gunicorn
+gunicorn==21.2.0
 whitenoise==6.4.0
 python-decouple==3.8
 Pillow==11.0.0
-python-dotenv
+python-dotenv==1.0.1
+neon-postgres==0.3.0

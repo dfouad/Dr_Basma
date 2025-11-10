@@ -1,29 +1,31 @@
 """
 Django settings for Arabic Online Course Platform.
 """
-
+from dotenv import load_dotenv
+import os
 from pathlib import Path
+import dj_database_url
 from decouple import config
 from datetime import timedelta
-import os
-import dj_database_url
-from dotenv import load_dotenv
-load_dotenv()
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR, "config", ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+#SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 #ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='https://drbasma-production.up.railway.app/,localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
-
+#ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 
 # Application definition
 
@@ -61,7 +63,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,20 +80,16 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
-import os
-import dj_database_url
-from pathlib import Path
-from dotenv import load_dotenv
+db_url = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
 
-# Load environment variables from .env (important for local dev)
-load_dotenv()
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-DATABASES = {
-    "default": dj_database_url.config(
-        default="sqlite:///" + str(BASE_DIR / "db.sqlite3"),
+if 'sqlite' in db_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=db_url)
+    }
+else:
+   DATABASES = {
+     "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL", "sqlite:///db.sqlite3"),
         conn_max_age=600,
         ssl_require=True,   # ✅ Forces SSL for Neon/Railway Postgres
     )
@@ -146,6 +144,10 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 # For whitenoise
 MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+# WhiteNoise for serving static files on Railway
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Media files
 MEDIA_URL = '/media/'

@@ -186,5 +186,5 @@ CORS_ALLOW_METHODS = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = [ "https://Dr_Basma_backend.onrender.com",
+CSRF_TRUSTED_ORIGINS = [ "https://*.up.railway.app",
 ]

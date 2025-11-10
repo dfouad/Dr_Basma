@@ -25,7 +25,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 #ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='https://drbasma-production.up.railway.app/,localhost,127.0.0.1').split(',')
 #ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,drbasma-production.up.railway.app").split(",")
 
 # Application definition
 
@@ -201,5 +201,7 @@ CORS_ALLOW_METHODS = [
 ]
 
 
-CSRF_TRUSTED_ORIGINS = [ "https://drbasma-production.up.railway.app/","https://drbasma.vercel.app/",
+CSRF_TRUSTED_ORIGINS = [
+    "https://drbasma-production.up.railway.app",
+    "https://drbasma.vercel.app",
 ]

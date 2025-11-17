@@ -117,5 +117,23 @@ class Certificate(models.Model):
     class Meta:
         unique_together = ('user', 'course')
         ordering = ['-issue_date']
+
+
+class Feedback(models.Model):
+    """Feedback/Review model for courses."""
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='feedbacks')
+    rating = models.PositiveIntegerField(help_text='Rating from 1 to 5')
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('user', 'course')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f'{self.user.email} - {self.course.title} ({self.rating}⭐)'
     
    

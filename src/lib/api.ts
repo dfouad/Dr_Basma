@@ -204,4 +204,18 @@ export const certificatesAPI = {
     api.delete(`/admin/certificates/${id}/delete/`),
 };
 
+export const feedbackAPI = {
+  getAll: (courseId?: number) =>
+    api.get('/feedbacks/', { params: courseId ? { course: courseId } : {} }),
+  
+  create: (data: { course: number; rating: number; comment: string }) =>
+    api.post('/feedbacks/', data),
+  
+  update: (id: number, data: { rating?: number; comment?: string }) =>
+    api.patch(`/feedbacks/${id}/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/feedbacks/${id}/`),
+};
+
 export default api;

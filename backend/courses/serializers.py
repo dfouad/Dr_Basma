@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Video, Enrollment, Category, PDF, Certificate
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -207,3 +207,39 @@ class AdminUnassignCourseSerializer(serializers.Serializer):
     
     user_id = serializers.IntegerField()
     course_id = serializers.IntegerField()
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    """Serializer for course feedback/reviews."""
+    
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    
+    class Meta:
+        model = Feedback
+        fields = ('id', 'user', 'user_email', 'user_name', 'course', 'course_title', 'rating', 'comment', 'created_at', 'updated_at')
+        read_only_fields = ('user', 'created_at', 'updated_at')
+    
+    def get_user_name(self, obj):
+        """Get user's full name or email."""
+        if obj.user.first_name and obj.user.last_name:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return obj.user.email
+    
+    def validate_rating(self, value):
+        """Validate rating is between 1 and 5."""
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+    
+    def validate(self, data):
+        """Validate that user is enrolled in the course."""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            course = data.get('course') or self.instance.course if self.instance else None
+            if course:
+                is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
+                if not is_enrolled:
+                    raise serializers.ValidationError("You must be enrolled in this course to leave feedback")
+        return data

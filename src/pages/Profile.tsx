@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import CourseCard from "@/components/CourseCard";
 import CertificateDownloadDialog from "@/components/CertificateDownloadDialog";
+import FeedbackDialog from "@/components/FeedbackDialog";
 
 interface EnrolledCourse {
   id: number;
@@ -221,6 +222,14 @@ const Profile = () => {
                                 متابعة التعلم
                               </Button>
                             </Link>
+
+                            {/* Feedback Button */}
+                            <div className="mt-2">
+                              <FeedbackDialog
+                                courseId={enrollment.course.id}
+                                courseTitle={enrollment.course.title}
+                              />
+                            </div>
 
                             {/* ✅ Show certificate only when progress = 100 AND not already issued */}
                             {enrollment.progress === 100 && !hasCertificate && (

@@ -8,6 +8,7 @@ from .views import (
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
+    FeedbackListCreateView, FeedbackDetailView,
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -25,6 +26,8 @@ urlpatterns = [
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
     path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='generate-certificate'),
     path('videos/free/', FreeVideoListView.as_view(), name='free_videos'),
+    path('feedbacks/', FeedbackListCreateView.as_view(), name='feedback_list_create'),
+    path('feedbacks/<int:pk>/', FeedbackDetailView.as_view(), name='feedback_detail'),
 
 
 # Admin endpoints

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Course, Video, Enrollment, PDF, Certificate
+from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback
 
 
 @admin.register(Category)
@@ -91,3 +91,22 @@ class CertificateAdmin(admin.ModelAdmin):
 
     # Optional: search bar for easier lookup
     search_fields = ( 'user__username', 'course__title')
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    """Admin for Feedback model."""
+    
+    list_display = ('user', 'course', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at', 'course')
+    search_fields = ('user__email', 'course__title', 'comment')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Feedback Details', {
+            'fields': ('user', 'course', 'rating', 'comment')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )

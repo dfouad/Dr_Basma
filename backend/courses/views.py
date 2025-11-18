@@ -328,34 +328,36 @@ class AdminPDFDeleteView(generics.DestroyAPIView):
     permission_classes = (IsStaffUser,)
 
 
-class UserCertificateListView(generics.ListAPIView):
-    queryset = Certificate.objects.all()
+class UserCertificateListView(generics.ListCreateAPIView):
     serializer_class = CertificateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # Only return current user's certificates
         return Certificate.objects.filter(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get("course_id")
+        full_name = request.data.get("full_name")
 
         if not course_id:
-            return Response({"error": "Course ID required"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "course_id is required"}, status=400)
 
-        # Check if already exists
-        existing = Certificate.objects.filter(user=user, course_id=course_id).first()
-        if existing:
-            return Response(
-                {"message": "Certificate already exists"},
-                status=status.HTTP_200_OK
-            )  
+        if not full_name:
+            return Response({"error": "full_name is required"}, status=400)
 
-        # Create new certificate
-        certificate = Certificate.objects.create(user=user, course_id=course_id)
+        # Prevent duplicates
+        if Certificate.objects.filter(user=user, course_id=course_id).exists():
+            return Response({"message": "Certificate already exists"}, status=200)
+
+        certificate = Certificate.objects.create(
+            user=user,
+            course_id=course_id,
+            full_name=full_name,
+        )
+
         serializer = self.get_serializer(certificate)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=201)
 
 
 class AdminAssignCourseView(generics.CreateAPIView):

@@ -42,28 +42,24 @@ useEffect(() => {
   const checkCertificateStatus = async () => {
     try {
       const res = await certificatesAPI.getUserCertificates();
-      const exists = res.data?.some((cert: any) => cert.course === courseId);
+
+      const list = res.data.results ?? res.data;   // supports paginated & non-paginated API
+
+      const exists = list.some((cert: any) => cert.course === courseId);
 
       if (exists) {
         setIssued(true);
-
-        // Sync localStorage
-        const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
-        if (!local.includes(courseId)) {
-          local.push(courseId);
-          localStorage.setItem("issuedCertificates", JSON.stringify(local));
-        }
+        localStorage.setItem("issuedCertificates", JSON.stringify([courseId]));
       } else {
-        // Deleted in backend → remove local flag
-        const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
-        const updated = local.filter((id: number) => id !== courseId);
-        localStorage.setItem("issuedCertificates", JSON.stringify(updated));
-
         setIssued(false);
+        localStorage.setItem("issuedCertificates", JSON.stringify([]));
       }
-    } catch (e) {
+
+    } catch (error) {
+      console.warn("Backend unreachable, using localStorage fallback.");
+
       const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
-      if (local.includes(courseId)) setIssued(true);
+      setIssued(local.includes(courseId));
     }
   };
 
@@ -114,7 +110,7 @@ useEffect(() => {
 
           <div style="position:absolute;bottom:135px;right:430px;">
             <p style="font-size:25px;color:#555;">
-              ${new Date().toLocaleDateString("en-EG")}
+              ${new Date().toLocaleDateString("ar-AR")}
             </p>
           </div>
         </div>`;
@@ -142,7 +138,10 @@ useEffect(() => {
       document.body.removeChild(temp);
 
       // Save to backend
-      await certificatesAPI.create({ course_id: courseId });
+      await certificatesAPI.create({
+  course_id: courseId,
+  full_name: userName, 
+});
 
 
       // Save to localStorage

@@ -68,7 +68,7 @@ export const authAPI = {
   getProfile: () =>
     api.get('/auth/profile/'),
   
-  updateProfile: (data: { first_name?: string; last_name?: string }) =>
+  updateProfile: (data: { email: string;first_name?: string; last_name?: string }) =>
     api.patch('/auth/profile/', data),
   
   changePassword: (oldPassword: string, newPassword: string) =>
@@ -188,19 +188,11 @@ export const pdfsAPI = {
 
 // Certificates API
 export const certificatesAPI = {
-  getUserCertificates: () =>
-    api.get('/certificates/'),
+  getUserCertificates: () =>api.get('/certificates/'),
   
-  getAllAdmin: () =>
-    api.get('/admin/certificates/'),
-  
-  create: (data) => api.post('/certificates/create/', data),
+ create: (data: { course_id: number; full_name: string }) =>
+    api.post("/certificates/", data),
 
-  update: (id: number, data: { template_text?: string }) =>
-    api.put(`/admin/certificates/${id}/update/`, data),
-  
-  delete: (id: number) =>
-    api.delete(`/admin/certificates/${id}/delete/`),
 };
 
 export const feedbackAPI = {

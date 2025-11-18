@@ -72,6 +72,7 @@ class Enrollment(models.Model):
     enrolled_at = models.DateTimeField(auto_now_add=True)
     progress = models.PositiveIntegerField(default=0, help_text='Progress percentage (0-100)')
     last_watched = models.ForeignKey(Video, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_watched_by')
+    watched_video_ids = models.JSONField(default=list, blank=True, help_text='List of watched video IDs')
     
     class Meta:
         unique_together = ('user', 'course')
@@ -86,24 +87,11 @@ class Enrollment(models.Model):
         if total_videos == 0:
             self.progress = 0
         else:
-            watched_count = self.watched_videos.count()
+            watched_count = len(self.watched_video_ids)
             self.progress = int((watched_count / total_videos) * 100)
         self.save()
 
 
-class WatchedVideo(models.Model):
-    """Model to track which videos a user has watched in their enrollment."""
-    
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='watched_videos')
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    watched_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('enrollment', 'video')
-        ordering = ['watched_at']
-    
-    def __str__(self):
-        return f"{self.enrollment.user.email} watched {self.video.title}"
 
 
 class PDF(models.Model):

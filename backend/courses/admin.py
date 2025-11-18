@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback, ReviewPhoto, WatchedVideo
+from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback, ReviewPhoto
 
 
 @admin.register(Category)
@@ -128,31 +128,5 @@ class ReviewPhotoAdmin(admin.ModelAdmin):
         }),
         ('Timestamps', {
             'fields': ('uploaded_at',)
-        }),
-    )
-
-
-@admin.register(WatchedVideo)
-class WatchedVideoAdmin(admin.ModelAdmin):
-    """Admin for WatchedVideo model."""
-    
-    list_display = ('get_user', 'get_course', 'video', 'watched_at')
-    list_filter = ('watched_at', 'enrollment__course')
-    search_fields = ('enrollment__user__email', 'enrollment__course__title', 'video__title')
-    readonly_fields = ('watched_at',)
-    
-    def get_user(self, obj):
-        return obj.enrollment.user.email
-    get_user.short_description = 'User'
-    get_user.admin_order_field = 'enrollment__user__email'
-    
-    def get_course(self, obj):
-        return obj.enrollment.course.title
-    get_course.short_description = 'Course'
-    get_course.admin_order_field = 'enrollment__course__title'
-    
-    fieldsets = (
-        ('Watch Record', {
-            'fields': ('enrollment', 'video', 'watched_at')
         }),
     )

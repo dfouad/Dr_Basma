@@ -14,19 +14,12 @@ The video progress tracking feature allows the system to:
 
 ### 1. Database Model
 
-A new `WatchedVideo` model was added to `backend/courses/models.py`:
+The `Enrollment` model was updated with a JSONField to track watched videos:
 
 ```python
-class WatchedVideo(models.Model):
-    """Model to track which videos a user has watched in their enrollment."""
-    
-    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='watched_videos')
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    watched_at = models.DateTimeField(auto_now_add=True)
-    
-    class Meta:
-        unique_together = ('enrollment', 'video')
-        ordering = ['watched_at']
+class Enrollment(models.Model):
+    # ... existing fields ...
+    watched_video_ids = models.JSONField(default=list, blank=True, help_text='List of watched video IDs')
 ```
 
 ### 2. Enrollment Model Updates
@@ -40,7 +33,7 @@ def update_progress(self):
     if total_videos == 0:
         self.progress = 0
     else:
-        watched_count = self.watched_videos.count()
+        watched_count = len(self.watched_video_ids)
         self.progress = int((watched_count / total_videos) * 100)
     self.save()
 ```
@@ -65,7 +58,7 @@ A new endpoint was added to mark videos as watched:
 ### 4. Serializer Updates
 
 The `EnrollmentSerializer` now includes:
-- `watched_video_ids`: List of video IDs the user has watched
+- `watched_video_ids`: List of video IDs the user has watched (stored directly in the enrollment)
 
 ## Frontend Changes
 
@@ -119,7 +112,7 @@ python manage.py migrate courses
 ### Verify in admin:
 
 1. Log in to Django admin
-2. Check the `WatchedVideo` records
+2. Check the `Enrollment` records and inspect `watched_video_ids` field
 3. Verify enrollment progress percentages
 
 ## Progress Calculation
@@ -136,11 +129,11 @@ For example:
 
 ## Important Notes
 
-1. **Unique Tracking:** Each video can only be marked as watched once per enrollment
+1. **Unique Tracking:** Each video ID is stored only once in the watched_video_ids list
 2. **Automatic Updates:** Progress updates automatically when a video is watched
 3. **Real-time Feedback:** Users see immediate visual feedback (checkmarks, progress)
 4. **Last Watched:** The `last_watched` field in enrollment is updated with the most recent video
-5. **Idempotent:** Clicking the same video multiple times won't create duplicate records
+5. **Idempotent:** Clicking the same video multiple times won't create duplicate entries
 
 ## API Usage Examples
 

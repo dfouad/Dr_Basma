@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto, WatchedVideo
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -188,11 +188,12 @@ class MarkVideoWatchedView(APIView):
             # Get the video
             video = get_object_or_404(Video, id=video_id, course_id=course_id)
             
-            # Create or get watched video record
-            watched_video, created = WatchedVideo.objects.get_or_create(
-                enrollment=enrollment,
-                video=video
-            )
+            # Check if already watched
+            is_new = video_id not in enrollment.watched_video_ids
+            
+            # Add video to watched list if not already there
+            if is_new:
+                enrollment.watched_video_ids.append(video_id)
             
             # Update last watched
             enrollment.last_watched = video
@@ -204,7 +205,7 @@ class MarkVideoWatchedView(APIView):
             return Response({
                 'message': 'Video marked as watched',
                 'progress': enrollment.progress,
-                'is_new': created
+                'is_new': is_new
             }, status=status.HTTP_200_OK)
             
         except Enrollment.DoesNotExist:

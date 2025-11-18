@@ -72,6 +72,7 @@ class Enrollment(models.Model):
     enrolled_at = models.DateTimeField(auto_now_add=True)
     progress = models.PositiveIntegerField(default=0, help_text='Progress percentage (0-100)')
     last_watched = models.ForeignKey(Video, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_watched_by')
+    watched_video_ids = models.JSONField(default=list, blank=True, help_text='List of watched video IDs')
     
     class Meta:
         unique_together = ('user', 'course')
@@ -79,6 +80,32 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f'{self.user.email} enrolled in {self.course.title}'
+    
+    def update_progress(self):
+        """Calculate and update progress based on watched videos."""
+        # Ensure watched_video_ids is always a list of unique integers
+        watched_ids = self.watched_video_ids or []
+        if not isinstance(watched_ids, list):
+            try:
+                import json
+                watched_ids = json.loads(watched_ids) if watched_ids else []
+            except Exception:
+                watched_ids = []
+
+        # Normalise and deduplicate IDs
+        normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+
+        total_videos = self.course.videos.count()
+        if total_videos <= 0:
+            self.progress = 0
+        else:
+            self.progress = int((len(normalized_ids) / total_videos) * 100)
+
+        # Persist normalized list back to the field
+        self.watched_video_ids = sorted(normalized_ids)
+        self.save()
+
+
 
 
 class PDF(models.Model):

@@ -83,12 +83,26 @@ class Enrollment(models.Model):
     
     def update_progress(self):
         """Calculate and update progress based on watched videos."""
+        # Ensure watched_video_ids is always a list of unique integers
+        watched_ids = self.watched_video_ids or []
+        if not isinstance(watched_ids, list):
+            try:
+                import json
+                watched_ids = json.loads(watched_ids) if watched_ids else []
+            except Exception:
+                watched_ids = []
+
+        # Normalise and deduplicate IDs
+        normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+
         total_videos = self.course.videos.count()
-        if total_videos == 0:
+        if total_videos <= 0:
             self.progress = 0
         else:
-            watched_count = len(self.watched_video_ids)
-            self.progress = int((watched_count / total_videos) * 100)
+            self.progress = int((len(normalized_ids) / total_videos) * 100)
+
+        # Persist normalized list back to the field
+        self.watched_video_ids = sorted(normalized_ids)
         self.save()
 
 

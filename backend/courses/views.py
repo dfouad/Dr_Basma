@@ -173,7 +173,7 @@ class FreeVideoListView(generics.ListAPIView):
 
 
 class MarkVideoWatchedView(APIView):
-    """API endpoint to mark a video as watched."""
+    """API endpoint to mark a video as watched and update progress."""
     
     permission_classes = (IsAuthenticated,)
     
@@ -208,19 +208,26 @@ class MarkVideoWatchedView(APIView):
             if is_new:
                 normalized_ids.add(video_id_int)
 
+            # Persist watched IDs and last watched video
             enrollment.watched_video_ids = sorted(normalized_ids)
-
-            # Update last watched
             enrollment.last_watched = video
 
-            # Update progress (also saves the enrollment)
-            enrollment.update_progress()
+            # Calculate and persist progress based on watched videos
+            total_videos = Video.objects.filter(course_id=course_id).count()
+            if total_videos <= 0:
+                enrollment.progress = 0
+            else:
+                enrollment.progress = int((len(normalized_ids) / total_videos) * 100)
+
+            enrollment.save(update_fields=["watched_video_ids", "last_watched", "progress"])
 
             return Response(
                 {
                     "message": "Video marked as watched",
                     "progress": enrollment.progress,
                     "is_new": is_new,
+                    "watched_video_ids": enrollment.watched_video_ids,
+                    "total_videos": total_videos,
                 },
                 status=status.HTTP_200_OK,
             )

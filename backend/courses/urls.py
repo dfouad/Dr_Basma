@@ -8,8 +8,8 @@ from .views import (
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
-    FeedbackListCreateView, FeedbackDetailView,
-)
+    
+    FeedbackListCreateView, FeedbackDetailView)
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 #router.register(r'certificates', UserCertificateListView, basename='certificate')
@@ -28,7 +28,11 @@ urlpatterns = [
     path('videos/free/', FreeVideoListView.as_view(), name='free_videos'),
     path('feedbacks/', FeedbackListCreateView.as_view(), name='feedback_list_create'),
     path('feedbacks/<int:pk>/', FeedbackDetailView.as_view(), name='feedback_detail'),
-
+  #  path('certificates', UserCertificateListView.as_view(), name='user-certificates'),
+    
+    path("api/certificates/", UserCertificateListView.as_view(), name="user-certificates"),
+    path('create/', UserCertificateListView.as_view(), name='create-certificate'),
+    
 
 # Admin endpoints
     path('admin/courses/', AdminCourseListView.as_view(), name='admin_course_list'),

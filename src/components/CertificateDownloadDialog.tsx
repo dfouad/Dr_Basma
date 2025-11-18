@@ -14,12 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Award, Download, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import {certificatesAPI} from "@/lib/api";
+import api from "@/lib/api";
 
 interface CertificateDownloadDialogProps {
   courseTitle: string;
   courseId: number;
   progress: number;
 }
+
 
 const CertificateDownloadDialog = ({
   courseTitle,
@@ -29,30 +32,59 @@ const CertificateDownloadDialog = ({
   const [open, setOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [issued, setIssued] = useState(false); // ✅ track if certificate issued
+  const [issued, setIssued] = useState(false);
   const { toast } = useToast();
 
-  // ✅ Check if already issued (from localStorage)
-  useEffect(() => {
-    const issuedCourses = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
-    if (issuedCourses.includes(courseId)) {
-      setIssued(true);
-    }
-  }, [courseId]);
+  // ======================================
+  // ✅ Correct backend check (not admin)
+  // ======================================
+useEffect(() => {
+  const checkCertificateStatus = async () => {
+    try {
+      const res = await certificatesAPI.getUserCertificates();
+      const exists = res.data?.some((cert: any) => cert.course === courseId);
 
+      if (exists) {
+        setIssued(true);
+
+        // Sync localStorage
+        const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
+        if (!local.includes(courseId)) {
+          local.push(courseId);
+          localStorage.setItem("issuedCertificates", JSON.stringify(local));
+        }
+      } else {
+        // Deleted in backend → remove local flag
+        const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
+        const updated = local.filter((id: number) => id !== courseId);
+        localStorage.setItem("issuedCertificates", JSON.stringify(updated));
+
+        setIssued(false);
+      }
+    } catch (e) {
+      const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
+      if (local.includes(courseId)) setIssued(true);
+    }
+  };
+
+  checkCertificateStatus();
+}, [courseId]);
+
+
+  // ======================================
+  // Handle PDF download
+  // ======================================
   const handleDownload = async () => {
     if (!userName.trim()) {
-      toast({
-        title: "يرجى إدخال اسمك",
-        variant: "destructive",
-      });
+      toast({ title: "يرجى إدخال اسمك", variant: "destructive" });
       return;
     }
 
     setLoading(true);
+
     try {
-      // ✅ Certificate HTML Template
-      const certificateHTML = `
+      // Generate PDF
+      const html = `
         <div class="certificate" dir="rtl" lang="ar" 
           style="
             width: 1200px;
@@ -64,91 +96,71 @@ const CertificateDownloadDialog = ({
             font-family: 'Amiri', serif;
             border: 16px double #667eea;
             border-radius: 20px;
-            position: relative;
-          ">
+            position: relative;">
           
-          <!-- Name -->
-          <div 
-            style="
-              font-size:45px;
-              font-weight:bold;
-              color: rgb(97, 122, 144);
-              margin:280px auto 10px;
-              width:fit-content;
-              padding:0 20px;
-            "
-          >
+          <div style="
+              font-size:45px; font-weight:bold; color: rgb(97, 122, 144);
+              margin:280px auto 10px;">
             ${userName}
           </div>
 
-          <!-- Course -->
-          <p style="font-size:22px;margin-top:20px;margin-bottom:5px;
-              color: #8B4D8B;">تُمنح هذه الشهادة تقديرًا لاجتهادها وإتمامها متطلبات البرنامج التدريبي بنجاح
+          <p style="font-size:22px;color:#8B4D8B;">
+            تُمنح هذه الشهادة تقديرًا لاجتهادها وإتمامها متطلبات البرنامج التدريبي بنجاح
           </p>
 
-          <div style="font-size:30px;font-weight:700;color: #8B4D8B;
-              margin:20px auto 0; max-width:80%;">
-             برنامج  ${courseTitle}
+          <div style="font-size:30px;color:#8B4D8B;font-weight:700;">
+            برنامج ${courseTitle}
           </div>
 
-          <!-- Date -->
-          <div 
-            style="
-              position: absolute;
-              bottom: 135px;
-              right: 430px;
-              text-align: right;
-            "
-          >
-            <p style="font-size:25px; color:#555; margin-top:10px;">
+          <div style="position:absolute;bottom:135px;right:430px;">
+            <p style="font-size:25px;color:#555;">
               ${new Date().toLocaleDateString("en-EG")}
             </p>
           </div>
-        </div> `;
+        </div>`;
 
-      // Create hidden container
-      const tempDiv = document.createElement("div");
-      tempDiv.innerHTML = certificateHTML;
-      document.body.appendChild(tempDiv);
+      const temp = document.createElement("div");
+      temp.innerHTML = html;
+      document.body.appendChild(temp);
 
-      const element = tempDiv.querySelector(".certificate") as HTMLElement;
+      const certificateEl = temp.querySelector(".certificate") as HTMLElement | null;
+      if (!certificateEl) {
+        document.body.removeChild(temp);
+        throw new Error("Certificate element not found");
+      }
 
-      // ✅ PDF export options
-      const opt = {
-        margin: 0,
-        filename: `certificate-${courseTitle.replace(/\s+/g, "-")}.pdf`,
-        image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: {
-          unit: "px",
-          format: [1200, 850] as [number, number],
-          orientation: "landscape" as const,
-        },
-      };
+      await html2pdf()
+        .from(certificateEl)
+        .set({
+          margin: 0,
+          filename: `certificate-${courseTitle}.pdf`,
+          html2canvas: { scale: 2 },
+          jsPDF: { unit: "px", format: [1200, 850], orientation: "landscape" },
+        })
+        .save();
 
-      await html2pdf().set(opt).from(element).save();
-      document.body.removeChild(tempDiv);
+      document.body.removeChild(temp);
 
-      toast({
-        title: "تم تحميل الشهادة بنجاح",
-        description: "تم حفظها بصيغة PDF.",
-      });
+      // Save to backend
+      await certificatesAPI.create({ course_id: courseId });
 
-      // ✅ Mark certificate as issued in localStorage
-      const issuedCourses = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
-      if (!issuedCourses.includes(courseId)) {
-        issuedCourses.push(courseId);
-        localStorage.setItem("issuedCertificates", JSON.stringify(issuedCourses));
+
+      // Save to localStorage
+      const local = JSON.parse(localStorage.getItem("issuedCertificates") || "[]");
+      if (!local.includes(courseId)) {
+        local.push(courseId);
+        localStorage.setItem("issuedCertificates", JSON.stringify(local));
       }
 
       setIssued(true);
       setOpen(false);
       setUserName("");
-    } catch (error) {
-      console.error("Download error:", error);
+
+      toast({ title: "تم تحميل الشهادة بنجاح" });
+    } catch (err) {
       toast({
-        title: "خطأ في التحميل",
-        description: "حاول مرة أخرى",
+        title: "خطأ",
+        description: "حدث خطأ أثناء تحميل الشهادة",
         variant: "destructive",
       });
     } finally {
@@ -156,10 +168,11 @@ const CertificateDownloadDialog = ({
     }
   };
 
-  // Hide completely if not complete
+  // ======================================
+  // UI Conditions
+  // ======================================
   if (progress < 100) return null;
 
-  // ✅ Show "تم إصدار الشهادة" if already issued
   if (issued) {
     return (
       <Button variant="default" className="w-full mt-2" disabled>
@@ -169,7 +182,6 @@ const CertificateDownloadDialog = ({
     );
   }
 
-  // Otherwise, show the download dialog
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -178,42 +190,21 @@ const CertificateDownloadDialog = ({
           تحميل الشهادة
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>تحميل شهادة الإتمام</DialogTitle>
-          <DialogDescription>
-            أدخل اسمك كما تريد أن يظهر في الشهادة
-          </DialogDescription>
+          <DialogDescription>أدخل اسمك كما تريد أن يظهر</DialogDescription>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
-          <div className="grid gap-2">
-            <Label htmlFor="name">الاسم الكامل</Label>
-            <Input
-              id="name"
-              placeholder="أدخل اسمك الكامل"
-              value={userName}
-              onChange={(e) => setUserName(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleDownload()}
-            />
-          </div>
-          <div className="bg-muted p-3 rounded-lg">
-            <p className="text-sm text-muted-foreground">
-              <strong>الدورة:</strong> {courseTitle}
-            </p>
-          </div>
+        <div className="py-4">
+          <Label>الاسم الكامل</Label>
+          <Input value={userName} onChange={(e) => setUserName(e.target.value)} />
         </div>
 
         <DialogFooter>
-          <Button onClick={handleDownload} disabled={loading || !userName.trim()}>
-            {loading ? (
-              "جاري التحميل..."
-            ) : (
-              <>
-                <Download className="h-4 w-4 ml-2" />
-                تحميل PDF
-              </>
-            )}
+          <Button disabled={!userName.trim() || loading} onClick={handleDownload}>
+            {loading ? "جاري التحميل..." : "تحميل PDF"}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle } from "lucide-react";
+import freeBadge from "@/assets/free-badge.png";
 
 // Utility function to get full image URL
 const getFullImageUrl = (url: string): string => {
@@ -75,9 +76,11 @@ const CourseCard = ({
             {title}
           </h3>
           {(price === null || price === 0) && (
-            <span className="bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-              Free
-            </span>
+            <img 
+              src={freeBadge} 
+              alt="مجاني" 
+              className="w-16 h-16 object-contain drop-shadow-lg"
+            />
           )}
         </div>
 

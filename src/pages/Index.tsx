@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
 import { useState, useEffect } from "react";
-import { videosAPI, reviewPhotosAPI } from "@/lib/api";
+import { videosAPI, reviewPhotosAPI, coursesAPI } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
@@ -17,15 +17,20 @@ const Index = () => {
   const [freeVideos, setFreeVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
   const [reviewPhotos, setReviewPhotos] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
 
   useEffect(() => {
     if (activeTab === "videos") {
       fetchFreeVideos();
+    } else if (activeTab === "courses") {
+      fetchCourses();
     }
   }, [activeTab]);
 
   useEffect(() => {
     fetchReviewPhotos();
+    fetchCourses();
   }, []);
 
   const fetchReviewPhotos = async () => {
@@ -35,6 +40,33 @@ const Index = () => {
       setReviewPhotos(photosData);
     } catch (error) {
       console.error("Failed to fetch review photos", error);
+    }
+  };
+
+  const fetchCourses = async () => {
+    setLoadingCourses(true);
+    try {
+      const response = await coursesAPI.getAll();
+      const coursesData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      
+      // Map courses to ensure thumbnail field is properly set
+      const mappedCourses = coursesData.map((course: any) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        duration: course.duration,
+        videoCount: course.video_count,
+        thumbnail: course.thumbnail_url || course.thumbnail,
+        price: course.price,
+      }));
+      
+      setCourses(mappedCourses);
+    } catch (error) {
+      console.error("Failed to fetch courses", error);
+    } finally {
+      setLoadingCourses(false);
     }
   };
 
@@ -52,33 +84,6 @@ const Index = () => {
       setLoadingVideos(false);
     }
   };
-
-  const featuredCourses = [
-    {
-      id: 1,
-      title: "يوميات زوجه واعية",
-      description: "طوّر مهارات القيادة الأساسية لإلهام فريقك وتوجيهه نحو النجاح.",
-      duration: "6 أسابيع",
-      videoCount: 24,
-      thumbnail: "/media/course_thumbnails/wayaa.jpg",
-    },
-    {
-      id: 2,
-      title: "عطاء أمن",
-      description: "أتقن فن التواصل الفعّال في الحياة الشخصية والمهنية.",
-      duration: "4 أسابيع",
-      videoCount: 18,
-      thumbnail: "/media/course_thumbnails/Ataa.jpg",
-    },
-    {
-      id: 3,
-      title: "ستوب ووتش",
-      description: "اكتشف إمكاناتك من خلال استراتيجيات العقلية وتقنيات الأداء المثبتة.",
-      duration: "8 أسابيع",
-      videoCount: 32,
-      thumbnail: "/media/course_thumbnails/stop.jpg",
-    },
-  ];
 
   const benefits = [
     "الصحة النفسية: نصائح وإرشادات تعزز الاستقرار النفسي",
@@ -170,18 +175,30 @@ const Index = () => {
 
           {activeTab === "courses" && (
             <>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {featuredCourses.map((course) => (
-                  <CourseCard key={course.id} {...course} />
-                ))}
-              </div>
-              <div className="text-center mt-12">
-                <Link to="/courses">
-                  <Button variant="outline" size="lg">
-                    عرض جميع الدورات
-                  </Button>
-                </Link>
-              </div>
+              {loadingCourses ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">جاري تحميل الدورات...</p>
+                </div>
+              ) : courses.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">لا توجد دورات متاحة حالياً</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {courses.map((course) => (
+                      <CourseCard key={course.id} {...course} />
+                    ))}
+                  </div>
+                  <div className="text-center mt-12">
+                    <Link to="/courses">
+                      <Button variant="outline" size="lg">
+                        عرض جميع الدورات
+                      </Button>
+                    </Link>
+                  </div>
+                </>
+              )}
             </>
           )}
 

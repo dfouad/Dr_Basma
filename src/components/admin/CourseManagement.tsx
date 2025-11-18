@@ -6,10 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2, Plus, Upload, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { coursesAPI } from "@/lib/api";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Course {
   id: number;
@@ -44,6 +45,10 @@ export const CourseManagement = () => {
     price: "",
     is_published: true,
   });
+
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  const [thumbnailMode, setThumbnailMode] = useState<"upload" | "link">("upload");
 
   useEffect(() => {
     fetchCourses();
@@ -102,19 +107,49 @@ export const CourseManagement = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const payload = {
-        ...formData,
-        category: parseInt(formData.category),
-        price: formData.price ? parseFloat(formData.price) : null,
-      };
+      let response;
 
-      if (editingCourse) {
-        await coursesAPI.update(editingCourse.id, payload);
-        toast({ title: "تم التحديث", description: "تم تحديث الدورة بنجاح" });
+      if (thumbnailFile) {
+        // Upload with file
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", formData.title);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("thumbnail", thumbnailFile);
+        formDataToSend.append("category", formData.category);
+        formDataToSend.append("duration", formData.duration);
+        formDataToSend.append("is_published", String(formData.is_published));
+        if (formData.price) {
+          formDataToSend.append("price", formData.price);
+        }
+
+        if (editingCourse) {
+          response = await api.put(`/courses/${editingCourse.id}/`, formDataToSend, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        } else {
+          response = await api.post("/courses/", formDataToSend, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        }
       } else {
-        await coursesAPI.create(payload);
-        toast({ title: "تم الإنشاء", description: "تم إنشاء الدورة بنجاح" });
+        // Use URL link
+        const payload = {
+          ...formData,
+          category: parseInt(formData.category),
+          price: formData.price ? parseFloat(formData.price) : null,
+        };
+
+        if (editingCourse) {
+          response = await coursesAPI.update(editingCourse.id, payload);
+        } else {
+          response = await coursesAPI.create(payload);
+        }
       }
+
+      toast({ 
+        title: editingCourse ? "تم التحديث" : "تم الإنشاء", 
+        description: editingCourse ? "تم تحديث الدورة بنجاح" : "تم إنشاء الدورة بنجاح" 
+      });
 
       setDialogOpen(false);
       resetForm();
@@ -171,6 +206,21 @@ export const CourseManagement = () => {
       price: "",
       is_published: true,
     });
+    setThumbnailFile(null);
+    setThumbnailPreview("");
+    setThumbnailMode("upload");
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setThumbnailFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setThumbnailPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -187,11 +237,11 @@ export const CourseManagement = () => {
               إضافة دورة
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogContent className="max-w-2xl max-h-[90vh]" dir="rtl">
             <DialogHeader>
               <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto max-h-[calc(90vh-120px)] px-1">
               <div>
                 <Label htmlFor="title">عنوان الدورة</Label>
                 <Input
@@ -212,26 +262,60 @@ export const CourseManagement = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="thumbnail">رابط الصورة</Label>
-                <Input
-                  id="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-                {formData.thumbnail && (
-                  <div className="mt-2">
-                    <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
-                    <img 
-                      src={formData.thumbnail} 
-                      alt="معاينة" 
-                      className="mt-1 h-32 w-full object-cover rounded-lg border"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
+                <Label>صورة الدورة</Label>
+                <Tabs value={thumbnailMode} onValueChange={(value) => setThumbnailMode(value as "upload" | "link")} className="mt-2">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="upload" className="gap-2">
+                      <Upload className="h-4 w-4" />
+                      رفع من الجهاز
+                    </TabsTrigger>
+                    <TabsTrigger value="link" className="gap-2">
+                      <LinkIcon className="h-4 w-4" />
+                      رابط خارجي
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="upload" className="space-y-3">
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="cursor-pointer"
                     />
-                  </div>
-                )}
+                    {thumbnailPreview && (
+                      <div className="mt-2">
+                        <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                        <img 
+                          src={thumbnailPreview} 
+                          alt="معاينة" 
+                          className="mt-1 h-32 w-full object-cover rounded-lg border"
+                        />
+                      </div>
+                    )}
+                  </TabsContent>
+                  
+                  <TabsContent value="link" className="space-y-3">
+                    <Input
+                      id="thumbnail"
+                      value={formData.thumbnail}
+                      onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                      placeholder="https://example.com/image.jpg"
+                    />
+                    {formData.thumbnail && (
+                      <div className="mt-2">
+                        <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                        <img 
+                          src={formData.thumbnail} 
+                          alt="معاينة" 
+                          className="mt-1 h-32 w-full object-cover rounded-lg border"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                      </div>
+                    )}
+                  </TabsContent>
+                </Tabs>
               </div>
               <div>
                 <Label htmlFor="category">الفئة</Label>

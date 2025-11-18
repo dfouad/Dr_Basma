@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback
+from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback, ReviewPhoto
 
 
 @admin.register(Category)
@@ -108,5 +108,25 @@ class FeedbackAdmin(admin.ModelAdmin):
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+
+@admin.register(ReviewPhoto)
+class ReviewPhotoAdmin(admin.ModelAdmin):
+    """Admin for ReviewPhoto model."""
+    
+    list_display = ('title', 'show_on_homepage', 'order', 'uploaded_at')
+    list_filter = ('show_on_homepage', 'uploaded_at')
+    search_fields = ('title',)
+    list_editable = ('show_on_homepage', 'order')
+    readonly_fields = ('uploaded_at',)
+    
+    fieldsets = (
+        ('Review Photo Information', {
+            'fields': ('title', 'image', 'show_on_homepage', 'order')
+        }),
+        ('Timestamps', {
+            'fields': ('uploaded_at',)
         }),
     )

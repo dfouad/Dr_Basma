@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -243,3 +243,23 @@ class FeedbackSerializer(serializers.ModelSerializer):
                 if not is_enrolled:
                     raise serializers.ValidationError("You must be enrolled in this course to leave feedback")
         return data
+
+
+class ReviewPhotoSerializer(serializers.ModelSerializer):
+    """Serializer for review photos."""
+    
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ReviewPhoto
+        fields = ('id', 'title', 'image', 'image_url', 'show_on_homepage', 'uploaded_at', 'order')
+        read_only_fields = ('uploaded_at',)
+    
+    def get_image_url(self, obj):
+        """Return the full image URL."""
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None

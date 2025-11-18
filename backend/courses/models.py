@@ -136,4 +136,19 @@ class Feedback(models.Model):
     def __str__(self):
         return f'{self.user.email} - {self.course.title} ({self.rating}⭐)'
     
+
+class ReviewPhoto(models.Model):
+    """Model to store review photos for display on homepage."""
+    
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='reviews/')
+    show_on_homepage = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order', '-uploaded_at']
+    
+    def __str__(self):
+        return self.title
    

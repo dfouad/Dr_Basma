@@ -29,15 +29,7 @@ urlpatterns = [
     path('videos/free/', FreeVideoListView.as_view(), name='free_videos'),
     path('feedbacks/', FeedbackListCreateView.as_view(), name='feedback_list_create'),
     path('feedbacks/<int:pk>/', FeedbackDetailView.as_view(), name='feedback_detail'),
-<<<<<<< HEAD
     path("certificates/", UserCertificateListView.as_view(), name="user_certificates"),
-=======
-    path('reviews/', ReviewPhotoListView.as_view(), name='review_photo_list'),
-  #  path('certificates', UserCertificateListView.as_view(), name='user-certificates'),
-    
-    path("api/certificates/", UserCertificateListView.as_view(), name="user-certificates"),
-    path('create/', UserCertificateListView.as_view(), name='create-certificate'),
->>>>>>> origin/main
     
 
 

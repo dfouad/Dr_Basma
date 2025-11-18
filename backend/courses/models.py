@@ -79,6 +79,31 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f'{self.user.email} enrolled in {self.course.title}'
+    
+    def update_progress(self):
+        """Calculate and update progress based on watched videos."""
+        total_videos = self.course.videos.count()
+        if total_videos == 0:
+            self.progress = 0
+        else:
+            watched_count = self.watched_videos.count()
+            self.progress = int((watched_count / total_videos) * 100)
+        self.save()
+
+
+class WatchedVideo(models.Model):
+    """Model to track which videos a user has watched in their enrollment."""
+    
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE, related_name='watched_videos')
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    watched_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('enrollment', 'video')
+        ordering = ['watched_at']
+    
+    def __str__(self):
+        return f"{self.enrollment.user.email} watched {self.video.title}"
 
 
 class PDF(models.Model):

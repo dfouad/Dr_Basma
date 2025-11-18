@@ -3,8 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download } from "lucide-react";
-import { coursesAPI, enrollmentsAPI, videosAPI } from "@/lib/api";
+import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download, Star } from "lucide-react";
+import { coursesAPI, enrollmentsAPI, videosAPI, feedbackAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -41,6 +41,18 @@ interface Course {
   thumbnail_url?: string;
   is_enrolled?: boolean;
   price?: number | null;
+}
+
+interface Review {
+  id: number;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+  };
+  rating: number;
+  comment: string;
+  created_at: string;
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -99,6 +111,7 @@ const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [pdfs, setPdfs] = useState<PDF[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
@@ -110,6 +123,17 @@ const CourseDetail = () => {
       try {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
+        
+        // Fetch reviews for the course
+        try {
+          const reviewsResponse = await feedbackAPI.getAll(Number(id));
+          const reviewsList = Array.isArray(reviewsResponse.data) 
+            ? reviewsResponse.data 
+            : (reviewsResponse.data?.results || []);
+          setReviews(reviewsList);
+        } catch (error) {
+          console.log("Error fetching reviews:", error);
+        }
         
         // Set enrollment status from course data
         if (isAuthenticated && courseResponse.data.is_enrolled) {
@@ -513,6 +537,58 @@ const CourseDetail = () => {
                               <Download className="h-4 w-4 ml-2" />
                               عرض
                             </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews Section */}
+              {reviews.length > 0 && (
+                <div className="mt-12">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Star className="h-6 w-6 text-primary" />
+                    آراء الطلاب
+                  </h3>
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div
+                        key={review.id}
+                        className="bg-card rounded-lg border border-border p-6 hover:shadow-lg transition-shadow"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="font-semibold text-foreground">
+                                  {review.user.username}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString('ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                              <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`h-5 w-5 ${
+                                      star <= review.rating
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-foreground leading-relaxed">
+                              {review.comment}
+                            </p>
                           </div>
                         </div>
                       </div>

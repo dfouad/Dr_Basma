@@ -9,6 +9,8 @@ import logo from "@/assets/logo.jpg";
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -39,7 +41,9 @@ const Auth = () => {
           throw new Error("كلمات المرور غير متطابقة");
         }
         await register(formData.email, formData.password, formData.firstName, formData.lastName);
-        navigate('/profile');
+        // Show success message instead of navigating
+        setRegistrationSuccess(true);
+        setRegisteredEmail(formData.email);
       }
     } catch (error) {
       console.error("Authentication error:", error);
@@ -67,7 +71,38 @@ const Auth = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {registrationSuccess ? (
+            <div className="space-y-4">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                  تم إرسال رسالة التأكيد!
+                </h3>
+                <p className="text-green-700 text-sm mb-2">
+                  لقد أرسلنا رسالة تأكيد إلى:
+                </p>
+                <p className="font-semibold text-green-900 mb-3">{registeredEmail}</p>
+                <p className="text-green-700 text-sm">
+                  يرجى التحقق من بريدك الإلكتروني والنقر على رابط التأكيد لإكمال عملية التسجيل.
+                  <br />
+                  <span className="text-xs text-green-600 mt-2 block">
+                    (تحقق من مجلد الرسائل غير المرغوب فيها إذا لم تجد الرسالة)
+                  </span>
+                </p>
+              </div>
+              <Button 
+                onClick={() => {
+                  setRegistrationSuccess(false);
+                  setIsLogin(true);
+                }}
+                className="w-full"
+                size="lg"
+              >
+                العودة لتسجيل الدخول
+              </Button>
+            </div>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
             {!isLogin && (
               <>
                 <div className="space-y-2">
@@ -144,13 +179,18 @@ const Auth = () => {
           <div className="text-center space-y-2">
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin);
+                setRegistrationSuccess(false);
+              }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
               {isLogin ? "ليس لديك حساب؟ " : "لديك حساب بالفعل؟ "}
               <span className="text-primary font-semibold">{isLogin ? "سجّل الآن" : "تسجيل الدخول"}</span>
             </button>
           </div>
+            </>
+          )}
         </div>
 
         <div className="text-center mt-6">

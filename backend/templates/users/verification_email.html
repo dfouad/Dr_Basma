@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تأكيد البريد الإلكتروني</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .email-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            text-align: center;
+            color: #ffffff;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .email-body {
+            padding: 40px 30px;
+            color: #333333;
+            line-height: 1.8;
+        }
+        .email-body h2 {
+            color: #667eea;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .email-body p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        .verification-button {
+            display: inline-block;
+            padding: 15px 40px;
+            margin: 30px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .verification-button:hover {
+            transform: scale(1.05);
+        }
+        .email-footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            color: #6c757d;
+            font-size: 14px;
+            border-top: 1px solid #e9ecef;
+        }
+        .warning-text {
+            background-color: #fff3cd;
+            border-right: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-header">
+            <h1>مرحباً بك في دكتور سعادة</h1>
+        </div>
+        
+        <div class="email-body">
+            <h2>مرحباً {{ first_name }}،</h2>
+            
+            <p>شكراً لتسجيلك في منصة دكتور سعادة! نحن سعداء بانضمامك إلى عائلتنا.</p>
+            
+            <p>لإكمال عملية التسجيل، يرجى تأكيد عنوان بريدك الإلكتروني بالضغط على الزر أدناه:</p>
+            
+            <div style="text-align: center;">
+                <a href="{{ verification_url }}" class="verification-button">
+                    تأكيد البريد الإلكتروني
+                </a>
+            </div>
+            
+            <p>أو يمكنك نسخ الرابط التالي ولصقه في المتصفح:</p>
+            <p style="word-break: break-all; background-color: #f8f9fa; padding: 15px; border-radius: 4px; font-family: monospace; font-size: 14px;">
+                {{ verification_url }}
+            </p>
+            
+            <div class="warning-text">
+                <strong>ملاحظة مهمة:</strong> هذا الرابط صالح لمدة 24 ساعة فقط. إذا لم تقم بتأكيد بريدك الإلكتروني خلال هذه المدة، ستحتاج إلى التسجيل مرة أخرى.
+            </div>
+            
+            <p>إذا لم تقم بإنشاء حساب في منصة دكتور سعادة، يرجى تجاهل هذا البريد الإلكتروني.</p>
+            
+            <p style="margin-top: 30px;">
+                مع أطيب التمنيات،<br>
+                <strong>فريق دكتور سعادة</strong>
+            </p>
+        </div>
+        
+        <div class="email-footer">
+            <p>© 2025 دكتور سعادة. جميع الحقوق محفوظة.</p>
+            <p>هذا البريد الإلكتروني تم إرساله إلى: {{ email }}</p>
+        </div>
+    </div>
+</body>
+</html>

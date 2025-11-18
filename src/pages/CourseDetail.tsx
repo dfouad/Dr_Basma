@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download } from "lucide-react";
-import { coursesAPI, enrollmentsAPI } from "@/lib/api";
+import { coursesAPI, enrollmentsAPI, videosAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +15,12 @@ interface Video {
   duration: string;
   order: number;
   video_url_display: string;
+}
+
+interface Enrollment {
+  id: number;
+  progress: number;
+  watched_video_ids: number[];
 }
 
 interface PDF {
@@ -96,6 +102,8 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
+  const [watchedVideoIds, setWatchedVideoIds] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -106,6 +114,23 @@ const CourseDetail = () => {
         // Set enrollment status from course data
         if (isAuthenticated && courseResponse.data.is_enrolled) {
           setEnrolled(true);
+          
+          // Fetch enrollment data to get watched videos
+          try {
+            const enrollmentsResponse = await enrollmentsAPI.getAll();
+            const userEnrollments = Array.isArray(enrollmentsResponse.data) 
+              ? enrollmentsResponse.data 
+              : enrollmentsResponse.data?.results || [];
+            const courseEnrollment = userEnrollments.find(
+              (e: Enrollment) => e.id === Number(id) || (e as any).course?.id === Number(id)
+            );
+            if (courseEnrollment) {
+              setEnrollment(courseEnrollment);
+              setWatchedVideoIds(courseEnrollment.watched_video_ids || []);
+            }
+          } catch (error) {
+            console.log("Error fetching enrollment data:", error);
+          }
           
           // Fetch videos and PDFs for enrolled users
           try {
@@ -144,6 +169,33 @@ const CourseDetail = () => {
 
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
+
+  const handleVideoSelect = async (video: Video) => {
+    setSelectedVideo(video);
+    
+    // Mark video as watched if enrolled and not already watched
+    if (enrolled && !watchedVideoIds.includes(video.id)) {
+      try {
+        const response = await videosAPI.markVideoWatched(Number(id), video.id);
+        setWatchedVideoIds([...watchedVideoIds, video.id]);
+        
+        // Update enrollment progress
+        if (enrollment) {
+          setEnrollment({
+            ...enrollment,
+            progress: response.data.progress
+          });
+        }
+        
+        toast({
+          title: "تم تسجيل المشاهدة",
+          description: `التقدم: ${response.data.progress}%`,
+        });
+      } catch (error) {
+        console.error("Error marking video as watched:", error);
+      }
+    }
+  };
 
   const handleEnrollClick = async () => {
     if (!isAuthenticated) {
@@ -384,25 +436,32 @@ const CourseDetail = () => {
                               <p className="font-semibold text-sm">الوحدة {Number(moduleIndex) + 1}</p>
                             </div>
                             <div className="divide-y divide-border">
-                              {moduleVideos.map((video) => (
-                                <div
-                                  key={video.id}
-                                  className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
-                                    selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
-                                  }`}
-                                  onClick={() => setSelectedVideo(video)}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-                                      selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
-                                    }`} />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
-                                      <span className="text-xs text-muted-foreground">{video.duration}</span>
+                              {moduleVideos.map((video) => {
+                                const isWatched = watchedVideoIds.includes(video.id);
+                                return (
+                                  <div
+                                    key={video.id}
+                                    className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
+                                      selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
+                                    }`}
+                                    onClick={() => handleVideoSelect(video)}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      {isWatched ? (
+                                        <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-500" />
+                                      ) : (
+                                        <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                                          selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
+                                        }`} />
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
+                                        <span className="text-xs text-muted-foreground">{video.duration}</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         ))}

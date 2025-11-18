@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto, WatchedVideo
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -170,6 +170,48 @@ class FreeVideoListView(generics.ListAPIView):
     queryset = Video.objects.filter(is_free=True).order_by('order')
     serializer_class = VideoSerializer
     permission_classes = (AllowAny,)
+
+
+class MarkVideoWatchedView(APIView):
+    """API endpoint to mark a video as watched."""
+    
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, course_id, video_id):
+        try:
+            # Get the enrollment
+            enrollment = Enrollment.objects.get(
+                user=request.user,
+                course_id=course_id
+            )
+            
+            # Get the video
+            video = get_object_or_404(Video, id=video_id, course_id=course_id)
+            
+            # Create or get watched video record
+            watched_video, created = WatchedVideo.objects.get_or_create(
+                enrollment=enrollment,
+                video=video
+            )
+            
+            # Update last watched
+            enrollment.last_watched = video
+            enrollment.save()
+            
+            # Update progress
+            enrollment.update_progress()
+            
+            return Response({
+                'message': 'Video marked as watched',
+                'progress': enrollment.progress,
+                'is_new': created
+            }, status=status.HTTP_200_OK)
+            
+        except Enrollment.DoesNotExist:
+            return Response(
+                {'error': 'You are not enrolled in this course'},
+                status=status.HTTP_404_NOT_FOUND
+            )
 
 
 # Admin Views

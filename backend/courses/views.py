@@ -182,36 +182,53 @@ class MarkVideoWatchedView(APIView):
             # Get the enrollment
             enrollment = Enrollment.objects.get(
                 user=request.user,
-                course_id=course_id
+                course_id=course_id,
             )
-            
+
             # Get the video
             video = get_object_or_404(Video, id=video_id, course_id=course_id)
-            
+
+            # Ensure watched_video_ids is a list
+            watched_ids = enrollment.watched_video_ids or []
+            if not isinstance(watched_ids, list):
+                try:
+                    import json
+                    watched_ids = json.loads(watched_ids) if watched_ids else []
+                except Exception:
+                    watched_ids = []
+
+            # Normalise to integers for comparison
+            normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+            video_id_int = int(video_id)
+
             # Check if already watched
-            is_new = video_id not in enrollment.watched_video_ids
-            
+            is_new = video_id_int not in normalized_ids
+
             # Add video to watched list if not already there
             if is_new:
-                enrollment.watched_video_ids.append(video_id)
-            
+                normalized_ids.add(video_id_int)
+
+            enrollment.watched_video_ids = sorted(normalized_ids)
+
             # Update last watched
             enrollment.last_watched = video
-            enrollment.save()
-            
-            # Update progress
+
+            # Update progress (also saves the enrollment)
             enrollment.update_progress()
-            
-            return Response({
-                'message': 'Video marked as watched',
-                'progress': enrollment.progress,
-                'is_new': is_new
-            }, status=status.HTTP_200_OK)
-            
+
+            return Response(
+                {
+                    "message": "Video marked as watched",
+                    "progress": enrollment.progress,
+                    "is_new": is_new,
+                },
+                status=status.HTTP_200_OK,
+            )
+
         except Enrollment.DoesNotExist:
             return Response(
-                {'error': 'You are not enrolled in this course'},
-                status=status.HTTP_404_NOT_FOUND
+                {"error": "You are not enrolled in this course"},
+                status=status.HTTP_404_NOT_FOUND,
             )
 
 

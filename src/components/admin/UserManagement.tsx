@@ -261,17 +261,19 @@ export const UserManagement = () => {
                   <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-SA')}</TableCell>
                   <TableCell className="text-left">
                     <div className="flex gap-2 justify-start">
-                      {!user.is_staff && (
-                        <Button variant="outline" size="sm" onClick={() => openAssignDialog(user.id)}>
-                          تعيين دورة
-                        </Button>
-                      )}
+                      
                       <Button variant="ghost" size="sm" onClick={() => openEditDialog(user)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => handleDelete(user.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
+
+                      {!user.is_staff && (
+                        <Button variant="outline" size="sm" onClick={() => openAssignDialog(user.id)}>
+                          تعيين دورة
+                        </Button>
+                      )}
                     </div>
                   </TableCell>
                 </TableRow>

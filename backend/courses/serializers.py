@@ -95,11 +95,12 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     course_thumbnail = serializers.SerializerMethodField()
     last_watched_title = serializers.CharField(source='last_watched.title', read_only=True)
     course = CourseListSerializer(read_only=True)  # nested course data
+    watched_video_ids = serializers.SerializerMethodField()
     
     class Meta:
         model = Enrollment
-        fields = ('id', 'course', 'course_title', 'course_thumbnail', 'enrolled_at', 
-                  'progress', 'last_watched', 'last_watched_title')
+        fields = ('id', 'course', 'course_title', 'course_thumbnail', 'enrolled_at',
+                  'progress', 'last_watched', 'last_watched_title', 'watched_video_ids')
         read_only_fields = ('enrolled_at',)
     
     def get_course_thumbnail(self, obj):
@@ -110,6 +111,10 @@ class EnrollmentSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.course.thumbnail.url)
             return obj.course.thumbnail.url
         return None
+    
+    def get_watched_video_ids(self, obj):
+        """Return list of watched video IDs for this enrollment."""
+        return list(obj.watched_videos.values_list('video_id', flat=True))
 
 
 class EnrollmentCreateSerializer(serializers.ModelSerializer):

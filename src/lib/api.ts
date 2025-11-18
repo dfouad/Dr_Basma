@@ -209,4 +209,29 @@ export const feedbackAPI = {
     api.delete(`/feedbacks/${id}/`),
 };
 
+export const reviewPhotosAPI = {
+  getAll: () =>
+    api.get('/reviews/'),
+  
+  getAllAdmin: () =>
+    api.get('/admin/reviews/'),
+  
+  create: (data: FormData) =>
+    api.post('/admin/reviews/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  update: (id: number, data: FormData) =>
+    api.patch(`/admin/reviews/${id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/reviews/${id}/`),
+};
+
 export default api;

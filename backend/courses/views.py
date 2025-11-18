@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -15,7 +15,7 @@ import uuid
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
-    AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer,
+    AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer, ReviewPhotoSerializer,
 )
 from .permissions import IsStaffUser
 
@@ -442,3 +442,32 @@ class FeedbackDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         """Users can only access their own feedback."""
         return Feedback.objects.filter(user=self.request.user)
+
+
+# ==================== Review Photo Views ====================
+
+class ReviewPhotoListView(generics.ListAPIView):
+    """API endpoint for listing review photos for homepage (public)."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (AllowAny,)
+    
+    def get_queryset(self):
+        """Only return photos marked to show on homepage."""
+        return ReviewPhoto.objects.filter(show_on_homepage=True)
+
+
+class AdminReviewPhotoListCreateView(generics.ListCreateAPIView):
+    """Admin API endpoint for listing and creating review photos."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ReviewPhoto.objects.all()
+
+
+class AdminReviewPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Admin API endpoint for viewing, updating, or deleting review photos."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ReviewPhoto.objects.all()

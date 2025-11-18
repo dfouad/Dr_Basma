@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle } from "lucide-react";
+import freeBadge from "@/assets/free-badge.png";
 
 // Utility function to get full image URL
 const getFullImageUrl = (url: string): string => {
@@ -60,6 +61,15 @@ const CourseCard = ({
         {/* 🌗 Always-visible gradient overlay for contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
 
+        {/* 🏷️ Free badge for free courses - top right corner */}
+        {(price === null || price === 0) && (
+          <img 
+            src={freeBadge} 
+            alt="مجاني" 
+            className="absolute top-3 right-3 w-16 h-16 z-10"
+          />
+        )}
+
         {/* 📝 Optional fallback text if no thumbnail */}
         {!thumbnail && (
           <div className="absolute inset-0 flex items-center justify-center text-white text-sm font-medium bg-black/30">
@@ -70,20 +80,9 @@ const CourseCard = ({
 
       {/* 📋 Course info */}
       <div className="p-6 space-y-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors flex-1">
-            {title}
-          </h3>
-          {price === null || price === 0 ? (
-            <span className="bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-              مجاناً
-            </span>
-          ) : (
-            <span className="bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-              {price} جنيه
-            </span>
-          )}
-        </div>
+        <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
+          {title}
+        </h3>
 
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}

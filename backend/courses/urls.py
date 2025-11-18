@@ -8,8 +8,9 @@ from .views import (
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
-    
-    FeedbackListCreateView, FeedbackDetailView)
+    FeedbackListCreateView, FeedbackDetailView, ReviewPhotoListView,
+    AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView
+)
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 #router.register(r'certificates', UserCertificateListView, basename='certificate')
@@ -28,7 +29,15 @@ urlpatterns = [
     path('videos/free/', FreeVideoListView.as_view(), name='free_videos'),
     path('feedbacks/', FeedbackListCreateView.as_view(), name='feedback_list_create'),
     path('feedbacks/<int:pk>/', FeedbackDetailView.as_view(), name='feedback_detail'),
+<<<<<<< HEAD
     path("certificates/", UserCertificateListView.as_view(), name="user_certificates"),
+=======
+    path('reviews/', ReviewPhotoListView.as_view(), name='review_photo_list'),
+  #  path('certificates', UserCertificateListView.as_view(), name='user-certificates'),
+    
+    path("api/certificates/", UserCertificateListView.as_view(), name="user-certificates"),
+    path('create/', UserCertificateListView.as_view(), name='create-certificate'),
+>>>>>>> origin/main
     
 
 
@@ -52,4 +61,6 @@ urlpatterns = [
     path('admin/assign-course/', AdminAssignCourseView.as_view(), name='admin_assign_course'),
     path('admin/unassign-course/', AdminUnassignCourseView.as_view(), name='admin_unassign_course'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
+    path('admin/reviews/', AdminReviewPhotoListCreateView.as_view(), name='admin_review_list_create'),
+    path('admin/reviews/<int:pk>/', AdminReviewPhotoDetailView.as_view(), name='admin_review_detail'),
 ]+ router.urls

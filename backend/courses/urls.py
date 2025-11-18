@@ -9,7 +9,7 @@ from .views import (
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
     FeedbackListCreateView, FeedbackDetailView, ReviewPhotoListView,
-    AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView
+    AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView, MarkVideoWatchedView
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -22,6 +22,7 @@ urlpatterns = [
     path('courses/<int:course_id>/videos/', CourseVideosView.as_view(), name='course_videos'),
     path('courses/<int:course_id>/pdfs/', CoursePDFsView.as_view(), name='course_pdfs'),
     path('courses/<int:course_id>/enroll/', EnrollmentCreateView.as_view(), name='course_enroll'),
+    path('courses/<int:course_id>/videos/<int:video_id>/watch/', MarkVideoWatchedView.as_view(), name='mark_video_watched'),
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
     path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),

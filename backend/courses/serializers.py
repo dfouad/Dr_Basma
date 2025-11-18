@@ -98,12 +98,10 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Enrollment
-        fields = ('id', 'course', 'course_title', 'course_thumbnail', 'enrolled_at', 
-                  'progress', 'last_watched', 'last_watched_title')
-        read_only_fields = ('enrolled_at',)
+        fields = ('id', 'user', 'course', 'enrolled_at', 'progress', 'last_watched', 'course_title', 'course_thumbnail', 'last_watched_title', 'watched_video_ids')
     
     def get_course_thumbnail(self, obj):
-        """Return the full course thumbnail URL."""
+        """Return the full thumbnail URL."""
         if obj.course.thumbnail:
             request = self.context.get('request')
             if request:

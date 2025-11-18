@@ -117,6 +117,9 @@ export const videosAPI = {
   getFreeVideos: () =>
     api.get('/videos/free/'),
   
+  markVideoWatched: (courseId: number, videoId: number) =>
+    api.post(`/courses/${courseId}/videos/${videoId}/watch/`),
+  
   create: (data: any) =>
     api.post('/admin/videos/create/', data),
   

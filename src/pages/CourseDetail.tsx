@@ -3,8 +3,8 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download } from "lucide-react";
-import { coursesAPI, enrollmentsAPI } from "@/lib/api";
+import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download, Star } from "lucide-react";
+import { coursesAPI, enrollmentsAPI, videosAPI, feedbackAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +15,12 @@ interface Video {
   duration: string;
   order: number;
   video_url_display: string;
+}
+
+interface Enrollment {
+  id: number;
+  progress: number;
+  watched_video_ids: number[];
 }
 
 interface PDF {
@@ -35,6 +41,18 @@ interface Course {
   thumbnail_url?: string;
   is_enrolled?: boolean;
   price?: number | null;
+}
+
+interface Review {
+  id: number;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+  };
+  rating: number;
+  comment: string;
+  created_at: string;
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -93,9 +111,12 @@ const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [pdfs, setPdfs] = useState<PDF[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
+  const [watchedVideoIds, setWatchedVideoIds] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -103,9 +124,37 @@ const CourseDetail = () => {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
         
+        // Fetch reviews for the course
+        try {
+          const reviewsResponse = await feedbackAPI.getAll(Number(id));
+          const reviewsList = Array.isArray(reviewsResponse.data) 
+            ? reviewsResponse.data 
+            : (reviewsResponse.data?.results || []);
+          setReviews(reviewsList);
+        } catch (error) {
+          console.log("Error fetching reviews:", error);
+        }
+        
         // Set enrollment status from course data
         if (isAuthenticated && courseResponse.data.is_enrolled) {
           setEnrolled(true);
+          
+          // Fetch enrollment data to get watched videos
+          try {
+            const enrollmentsResponse = await enrollmentsAPI.getAll();
+            const userEnrollments = Array.isArray(enrollmentsResponse.data) 
+              ? enrollmentsResponse.data 
+              : enrollmentsResponse.data?.results || [];
+            const courseEnrollment = userEnrollments.find(
+              (e: Enrollment) => e.id === Number(id) || (e as any).course?.id === Number(id)
+            );
+            if (courseEnrollment) {
+              setEnrollment(courseEnrollment);
+              setWatchedVideoIds(courseEnrollment.watched_video_ids || []);
+            }
+          } catch (error) {
+            console.log("Error fetching enrollment data:", error);
+          }
           
           // Fetch videos and PDFs for enrolled users
           try {
@@ -144,6 +193,44 @@ const CourseDetail = () => {
 
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
+
+  const handleVideoSelect = async (video: Video) => {
+    setSelectedVideo(video);
+    
+    // Mark video as watched if enrolled and not already watched
+    if (enrolled && !watchedVideoIds.includes(video.id)) {
+      try {
+        const response = await videosAPI.markVideoWatched(Number(id), video.id);
+
+        // Locally update watched video IDs
+        const updatedWatchedIds = [...watchedVideoIds, video.id];
+        const uniqueWatchedCount = new Set(updatedWatchedIds).size;
+        setWatchedVideoIds(updatedWatchedIds);
+
+        // Prefer backend progress, but fall back to client-side calculation
+        let progressFromApi = Number(response?.data?.progress);
+        const totalVideos = Array.isArray(videos) ? videos.length : 0;
+
+        if ((!progressFromApi || Number.isNaN(progressFromApi)) && totalVideos > 0) {
+          progressFromApi = Math.round((uniqueWatchedCount / totalVideos) * 100);
+        }
+
+        if (enrollment) {
+          setEnrollment({
+            ...enrollment,
+            progress: progressFromApi || enrollment.progress,
+          });
+        }
+
+        toast({
+          title: "تم تسجيل المشاهدة",
+          description: `التقدم: ${progressFromApi || enrollment?.progress || 0}%`,
+        });
+      } catch (error) {
+        console.error("Error marking video as watched:", error);
+      }
+    }
+  };
 
   const handleEnrollClick = async () => {
     if (!isAuthenticated) {
@@ -384,25 +471,32 @@ const CourseDetail = () => {
                               <p className="font-semibold text-sm">الوحدة {Number(moduleIndex) + 1}</p>
                             </div>
                             <div className="divide-y divide-border">
-                              {moduleVideos.map((video) => (
-                                <div
-                                  key={video.id}
-                                  className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
-                                    selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
-                                  }`}
-                                  onClick={() => setSelectedVideo(video)}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-                                      selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
-                                    }`} />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
-                                      <span className="text-xs text-muted-foreground">{video.duration}</span>
+                              {moduleVideos.map((video) => {
+                                const isWatched = watchedVideoIds.includes(video.id);
+                                return (
+                                  <div
+                                    key={video.id}
+                                    className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
+                                      selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
+                                    }`}
+                                    onClick={() => handleVideoSelect(video)}
+                                  >
+                                    <div className="flex items-start gap-3">
+                                      {isWatched ? (
+                                        <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0 text-green-500" />
+                                      ) : (
+                                        <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
+                                          selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
+                                        }`} />
+                                      )}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
+                                        <span className="text-xs text-muted-foreground">{video.duration}</span>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
@@ -443,6 +537,58 @@ const CourseDetail = () => {
                               <Download className="h-4 w-4 ml-2" />
                               عرض
                             </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Reviews Section */}
+              {reviews.length > 0 && (
+                <div className="mt-12">
+                  <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <Star className="h-6 w-6 text-primary" />
+                    آراء الطلاب
+                  </h3>
+                  <div className="space-y-4">
+                    {reviews.map((review) => (
+                      <div
+                        key={review.id}
+                        className="bg-card rounded-lg border border-border p-6 hover:shadow-lg transition-shadow"
+                      >
+                        <div className="flex items-start gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-3">
+                              <div>
+                                <p className="font-semibold text-foreground">
+                                  {review.user.username}
+                                </p>
+                                <p className="text-sm text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString('ar-EG', {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                              <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <Star
+                                    key={star}
+                                    className={`h-5 w-5 ${
+                                      star <= review.rating
+                                        ? 'fill-yellow-400 text-yellow-400'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                            <p className="text-foreground leading-relaxed">
+                              {review.comment}
+                            </p>
                           </div>
                         </div>
                       </div>

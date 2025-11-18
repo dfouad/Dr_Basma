@@ -172,6 +172,73 @@ class FreeVideoListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
+class MarkVideoWatchedView(APIView):
+    """API endpoint to mark a video as watched and update progress."""
+    
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, course_id, video_id):
+        try:
+            # Get the enrollment
+            enrollment = Enrollment.objects.get(
+                user=request.user,
+                course_id=course_id,
+            )
+
+            # Get the video
+            video = get_object_or_404(Video, id=video_id, course_id=course_id)
+
+            # Ensure watched_video_ids is a list
+            watched_ids = enrollment.watched_video_ids or []
+            if not isinstance(watched_ids, list):
+                try:
+                    import json
+                    watched_ids = json.loads(watched_ids) if watched_ids else []
+                except Exception:
+                    watched_ids = []
+
+            # Normalise to integers for comparison
+            normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+            video_id_int = int(video_id)
+
+            # Check if already watched
+            is_new = video_id_int not in normalized_ids
+
+            # Add video to watched list if not already there
+            if is_new:
+                normalized_ids.add(video_id_int)
+
+            # Persist watched IDs and last watched video
+            enrollment.watched_video_ids = sorted(normalized_ids)
+            enrollment.last_watched = video
+
+            # Calculate and persist progress based on watched videos
+            total_videos = Video.objects.filter(course_id=course_id).count()
+            if total_videos <= 0:
+                enrollment.progress = 0
+            else:
+                enrollment.progress = int((len(normalized_ids) / total_videos) * 100)
+
+            enrollment.save(update_fields=["watched_video_ids", "last_watched", "progress"])
+
+            return Response(
+                {
+                    "message": "Video marked as watched",
+                    "progress": enrollment.progress,
+                    "is_new": is_new,
+                    "watched_video_ids": enrollment.watched_video_ids,
+                    "total_videos": total_videos,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Enrollment.DoesNotExist:
+            return Response(
+                {"error": "You are not enrolled in this course"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
 # Admin Views
 class AdminCourseListView(generics.ListAPIView):
     """Admin endpoint for listing all courses (including unpublished)."""

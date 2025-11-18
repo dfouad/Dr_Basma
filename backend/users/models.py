@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils import timezone
+from datetime import timedelta
+import uuid
 
 
 class UserManager(BaseUserManager):
@@ -53,3 +56,31 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         """Return the user's full name."""
         return f'{self.first_name} {self.last_name}'.strip() or self.email
+
+
+class PendingUser(models.Model):
+    """Temporary user model for email verification before account creation."""
+    
+    email = models.EmailField(unique=True, db_index=True)
+    password = models.CharField(max_length=255)  # Will store hashed password
+    first_name = models.CharField(max_length=150, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    token = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    
+    class Meta:
+        verbose_name = 'Pending User'
+        verbose_name_plural = 'Pending Users'
+    
+    def __str__(self):
+        return self.email
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(hours=24)
+        super().save(*args, **kwargs)
+    
+    def is_expired(self):
+        """Check if the verification token has expired."""
+        return timezone.now() > self.expires_at

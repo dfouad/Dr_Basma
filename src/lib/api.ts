@@ -194,9 +194,8 @@ export const certificatesAPI = {
   getAllAdmin: () =>
     api.get('/admin/certificates/'),
   
-  create: (data: { user: number; course: number; enrollment?: number; template_text?: string }) =>
-    api.post('/admin/certificates/create/', data),
-  
+  create: (data) => api.post('/certificates/create/', data),
+
   update: (id: number, data: { template_text?: string }) =>
     api.put(`/admin/certificates/${id}/update/`, data),
   

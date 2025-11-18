@@ -237,11 +237,11 @@ export const CourseManagement = () => {
               إضافة دورة
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogContent className="max-w-2xl max-h-[90vh]" dir="rtl">
             <DialogHeader>
               <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto max-h-[calc(90vh-120px)] px-1">
               <div>
                 <Label htmlFor="title">عنوان الدورة</Label>
                 <Input

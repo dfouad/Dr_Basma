@@ -50,7 +50,19 @@ const Index = () => {
       const coursesData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
-      setCourses(coursesData);
+      
+      // Map courses to ensure thumbnail field is properly set
+      const mappedCourses = coursesData.map((course: any) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        duration: course.duration,
+        videoCount: course.video_count,
+        thumbnail: course.thumbnail_url || course.thumbnail,
+        price: course.price,
+      }));
+      
+      setCourses(mappedCourses);
     } catch (error) {
       console.error("Failed to fetch courses", error);
     } finally {

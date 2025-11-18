@@ -290,18 +290,19 @@ const Index = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {reviewPhotos.length > 0 ? (
-              reviewPhotos.map((photo) => (
-                <div key={photo.id} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                  <img 
-                    src={photo.image_url} 
-                    alt={photo.title} 
-                    className="w-full h-auto object-cover"
-                  />
-                </div>
-              ))
-            ) : (
+          <div className="overflow-x-auto pb-4">
+            <div className="flex gap-6 max-w-6xl mx-auto px-4">
+              {reviewPhotos.length > 0 ? (
+                reviewPhotos.map((photo) => (
+                  <div key={photo.id} className="flex-shrink-0 w-80 bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                    <img 
+                      src={photo.image_url} 
+                      alt={photo.title} 
+                      className="w-full h-auto object-cover"
+                    />
+                  </div>
+                ))
+              ) : (
               <>
                 <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
               <div className="flex gap-1 mb-4">
@@ -364,6 +365,7 @@ const Index = () => {
             </div>
               </>
             )}
+            </div>
           </div>
         </div>
       </section>

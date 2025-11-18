@@ -177,19 +177,30 @@ const CourseDetail = () => {
     if (enrolled && !watchedVideoIds.includes(video.id)) {
       try {
         const response = await videosAPI.markVideoWatched(Number(id), video.id);
-        setWatchedVideoIds([...watchedVideoIds, video.id]);
-        
-        // Update enrollment progress
+
+        // Locally update watched video IDs
+        const updatedWatchedIds = [...watchedVideoIds, video.id];
+        const uniqueWatchedCount = new Set(updatedWatchedIds).size;
+        setWatchedVideoIds(updatedWatchedIds);
+
+        // Prefer backend progress, but fall back to client-side calculation
+        let progressFromApi = Number(response?.data?.progress);
+        const totalVideos = Array.isArray(videos) ? videos.length : 0;
+
+        if ((!progressFromApi || Number.isNaN(progressFromApi)) && totalVideos > 0) {
+          progressFromApi = Math.round((uniqueWatchedCount / totalVideos) * 100);
+        }
+
         if (enrollment) {
           setEnrollment({
             ...enrollment,
-            progress: response.data.progress
+            progress: progressFromApi || enrollment.progress,
           });
         }
-        
+
         toast({
           title: "تم تسجيل المشاهدة",
-          description: `التقدم: ${response.data.progress}%`,
+          description: `التقدم: ${progressFromApi || enrollment?.progress || 0}%`,
         });
       } catch (error) {
         console.error("Error marking video as watched:", error);

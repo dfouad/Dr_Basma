@@ -74,13 +74,9 @@ const CourseCard = ({
           <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors flex-1">
             {title}
           </h3>
-          {price === null || price === 0 ? (
+          {(price === null || price === 0) && (
             <span className="bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-              مجاناً
-            </span>
-          ) : (
-            <span className="bg-primary/10 text-primary text-xs font-semibold px-3 py-1 rounded-full whitespace-nowrap">
-              {price} جنيه
+              Free
             </span>
           )}
         </div>

@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category, PDF, Certificate
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -15,7 +15,7 @@ import uuid
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
-    AdminAssignCourseSerializer, AdminUnassignCourseSerializer,
+    AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer,
 )
 from .permissions import IsStaffUser
 
@@ -411,3 +411,32 @@ class AdminUserEnrollmentsView(generics.ListAPIView):
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
         return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')
+
+
+class FeedbackListCreateView(generics.ListCreateAPIView):
+    """API endpoint for listing and creating feedback."""
+    
+    serializer_class = FeedbackSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        """Get all feedback for a specific course or user's feedback."""
+        course_id = self.request.query_params.get('course')
+        if course_id:
+            return Feedback.objects.filter(course_id=course_id).select_related('user', 'course')
+        return Feedback.objects.filter(user=self.request.user).select_related('user', 'course')
+    
+    def perform_create(self, serializer):
+        """Automatically set the user when creating feedback."""
+        serializer.save(user=self.request.user)
+
+
+class FeedbackDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """API endpoint for viewing, updating, or deleting specific feedback."""
+    
+    serializer_class = FeedbackSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        """Users can only access their own feedback."""
+        return Feedback.objects.filter(user=self.request.user)

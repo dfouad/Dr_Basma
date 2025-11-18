@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.trim() || 'http://127.0.0.1:8000/api';
+
 
 const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+   withCredentials: false, // set true only if using cookies/session auth
 });
 
 // Request interceptor to add auth token
@@ -192,14 +194,27 @@ export const certificatesAPI = {
   getAllAdmin: () =>
     api.get('/admin/certificates/'),
   
-  create: (data: { user: number; course: number; enrollment?: number; template_text?: string }) =>
-    api.post('/admin/certificates/create/', data),
-  
+  create: (data) => api.post('/certificates/create/', data),
+
   update: (id: number, data: { template_text?: string }) =>
     api.put(`/admin/certificates/${id}/update/`, data),
   
   delete: (id: number) =>
     api.delete(`/admin/certificates/${id}/delete/`),
+};
+
+export const feedbackAPI = {
+  getAll: (courseId?: number) =>
+    api.get('/feedbacks/', { params: courseId ? { course: courseId } : {} }),
+  
+  create: (data: { course: number; rating: number; comment: string }) =>
+    api.post('/feedbacks/', data),
+  
+  update: (id: number, data: { rating?: number; comment?: string }) =>
+    api.patch(`/feedbacks/${id}/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/feedbacks/${id}/`),
 };
 
 export default api;

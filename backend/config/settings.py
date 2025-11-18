@@ -1,28 +1,31 @@
 """
 Django settings for Arabic Online Course Platform.
 """
-
+from dotenv import load_dotenv
+import os
 from pathlib import Path
+import dj_database_url
 from decouple import config
 from datetime import timedelta
-import os
-import dj_database_url
-from dotenv import load_dotenv
-load_dotenv()
+
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv(os.path.join(BASE_DIR, "config", ".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+#SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
-
+#ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='https://drbasma-production.up.railway.app/,localhost,127.0.0.1').split(',')
+#ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,drbasma-production.up.railway.app").split(",")
 
 # Application definition
 
@@ -42,6 +45,10 @@ INSTALLED_APPS = [
     # Local apps
     'users',
     'courses',
+
+    #hosting cloud for media files
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +67,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        "DIRS": [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -77,13 +84,21 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
+db_url = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
 
-DATABASES = {
-        'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
+if 'sqlite' in db_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=db_url)
+    }
+else:
+   DATABASES = {
+     "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL", "sqlite:///db.sqlite3"),
         conn_max_age=600,
+        ssl_require=True,   # ✅ Forces SSL for Neon/Railway Postgres
     )
+
+
     # 'default': {
     #     'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
     #     'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3'),
@@ -130,11 +145,27 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# For whitenoise
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+# WhiteNoise for serving static files on Railway
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 # Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#hosting for images and media files
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dq7urqatl',
+    'API_KEY': '956228355176117',
+    'API_SECRET': 'jYHqC6bKKXiTrNy_vIgJYL-D5GQ',
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -168,7 +199,7 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080'
+    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://drbasma.vercel.app/',  
 ).split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -181,4 +212,10 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'POST',
     'PUT',
+]
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://drbasma-production.up.railway.app",
+    "https://drbasma.vercel.app",
 ]

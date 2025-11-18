@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
 import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
 import { useState, useEffect } from "react";
-import { videosAPI } from "@/lib/api";
+import { videosAPI, reviewPhotosAPI } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
@@ -16,12 +16,27 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<"courses" | "videos">("courses");
   const [freeVideos, setFreeVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
+  const [reviewPhotos, setReviewPhotos] = useState<any[]>([]);
 
   useEffect(() => {
     if (activeTab === "videos") {
       fetchFreeVideos();
     }
   }, [activeTab]);
+
+  useEffect(() => {
+    fetchReviewPhotos();
+  }, []);
+
+  const fetchReviewPhotos = async () => {
+    try {
+      const response = await reviewPhotosAPI.getAll();
+      const photosData = Array.isArray(response.data) ? response.data : response.data?.results || [];
+      setReviewPhotos(photosData);
+    } catch (error) {
+      console.error("Failed to fetch review photos", error);
+    }
+  };
 
   const fetchFreeVideos = async () => {
     setLoadingVideos(true);
@@ -276,7 +291,19 @@ const Index = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
+            {reviewPhotos.length > 0 ? (
+              reviewPhotos.map((photo) => (
+                <div key={photo.id} className="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                  <img 
+                    src={photo.image_url} 
+                    alt={photo.title} 
+                    className="w-full h-auto object-cover"
+                  />
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
               <div className="flex gap-1 mb-4">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
@@ -335,6 +362,8 @@ const Index = () => {
                 </div>
               </div>
             </div>
+              </>
+            )}
           </div>
         </div>
       </section>

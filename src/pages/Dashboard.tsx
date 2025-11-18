@@ -3,13 +3,14 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BookOpen, Video, Users, BarChart3, FileText } from "lucide-react";
+import { BookOpen, Video, Users, BarChart3, FileText, Star } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { CourseManagement } from "@/components/admin/CourseManagement";
 import { VideoManagement } from "@/components/admin/VideoManagement";
 import { UserManagement } from "@/components/admin/UserManagement";
 import { PDFManagement } from "@/components/admin/PDFManagement";
+import { ReviewManagement } from "@/components/admin/ReviewManagement";
 import api from "@/lib/api";
 
 interface Stats {
@@ -151,16 +152,26 @@ const Dashboard = () => {
       ملفات PDF
     </TabsTrigger>
 
-    <TabsTrigger
-      value="users"
-      className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
-                 data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
-                 data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
-                 data-[state=active]:before:bg-primary rounded-lg transition-all"
-    >
-      المستخدمون
-    </TabsTrigger>
-  </TabsList>
+  <TabsTrigger
+    value="users"
+    className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+               data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+               data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+               data-[state=active]:before:bg-primary rounded-lg transition-all"
+  >
+    المستخدمون
+  </TabsTrigger>
+
+  <TabsTrigger
+    value="reviews"
+    className="relative px-4 py-2 text-sm font-medium text-gray-600 data-[state=active]:text-primary
+               data-[state=active]:font-bold data-[state=active]:before:absolute data-[state=active]:before:right-0 
+               data-[state=active]:before:top-0 data-[state=active]:before:bottom-0 data-[state=active]:before:w-1 
+               data-[state=active]:before:bg-primary rounded-lg transition-all"
+  >
+    التقييمات
+  </TabsTrigger>
+</TabsList>
 
   <TabsContent value="courses" className="bg-card rounded-lg p-6 border border-border">
     <CourseManagement />
@@ -176,6 +187,10 @@ const Dashboard = () => {
 
   <TabsContent value="users" className="bg-card rounded-lg p-6 border border-border">
     <UserManagement />
+  </TabsContent>
+
+  <TabsContent value="reviews" className="bg-card rounded-lg p-6 border border-border">
+    <ReviewManagement />
   </TabsContent>
 </Tabs>
 

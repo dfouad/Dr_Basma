@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { authAPI } from "@/lib/api";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 interface User {
   id: number;
@@ -23,12 +35,16 @@ interface ProfileEditDialogProps {
 const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
+
+  // separate loading for each tab (optional but nicer UX)
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
   // Profile form state
+  const [email, setEmail] = useState(user.email || "");
   const [firstName, setFirstName] = useState(user.first_name || "");
   const [lastName, setLastName] = useState(user.last_name || "");
-  
+
   // Password form state
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -36,12 +52,34 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+
+    // basic email validation
+    if (!email.trim()) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال البريد الإلكتروني",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      toast({
+        title: "خطأ",
+        description: "صيغة البريد الإلكتروني غير صحيحة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setProfileLoading(true);
 
     try {
       await authAPI.updateProfile({
         first_name: firstName,
         last_name: lastName,
+        email: email.trim(),
       });
 
       toast({
@@ -49,16 +87,23 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         description: "تم حفظ التغييرات بنجاح",
       });
 
-      onUpdate();
+      onUpdate();    // refresh profile data in parent
       setOpen(false);
     } catch (error: any) {
+      const data = error?.response?.data;
+      const emailError =
+        data?.email?.[0] ||
+        data?.detail ||
+        data?.message ||
+        "حاول مرة أخرى لاحقاً";
+
       toast({
         title: "خطأ في التحديث",
-        description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
+        description: emailError,
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setProfileLoading(false);
     }
   };
 
@@ -83,7 +128,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       return;
     }
 
-    setLoading(true);
+    setPasswordLoading(true);
 
     try {
       await authAPI.changePassword(oldPassword, newPassword);
@@ -97,13 +142,20 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       setNewPassword("");
       setConfirmPassword("");
     } catch (error: any) {
+      const data = error?.response?.data;
+      const msg =
+        data?.old_password?.[0] ||
+        data?.detail ||
+        data?.message ||
+        "حاول مرة أخرى لاحقاً";
+
       toast({
         title: "خطأ في تغيير كلمة المرور",
-        description: error.response?.data?.old_password?.[0] || error.response?.data?.message || "حاول مرة أخرى لاحقاً",
+        description: msg,
         variant: "destructive",
       });
     } finally {
-      setLoading(false);
+      setPasswordLoading(false);
     }
   };
 
@@ -126,6 +178,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
             <TabsTrigger value="password">كلمة المرور</TabsTrigger>
           </TabsList>
 
+          {/* معلومات شخصية */}
           <TabsContent value="profile" className="space-y-4 pt-4">
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div className="space-y-2">
@@ -133,13 +186,10 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                 <Input
                   id="email"
                   type="email"
-                  value={user.email}
-                  disabled
-                  className="bg-muted"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="أدخل البريد الإلكتروني"
                 />
-                <p className="text-xs text-muted-foreground">
-                  لا يمكن تغيير البريد الإلكتروني
-                </p>
               </div>
 
               <div className="space-y-2">
@@ -164,12 +214,13 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
+              <Button type="submit" className="w-full" disabled={profileLoading}>
+                {profileLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
               </Button>
             </form>
           </TabsContent>
 
+          {/* تغيير كلمة المرور */}
           <TabsContent value="password" className="space-y-4 pt-4">
             <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-2">
@@ -208,8 +259,8 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                 />
               </div>
 
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "جاري التغيير..." : "تغيير كلمة المرور"}
+              <Button type="submit" className="w-full" disabled={passwordLoading}>
+                {passwordLoading ? "جاري التغيير..." : "تغيير كلمة المرور"}
               </Button>
             </form>
           </TabsContent>

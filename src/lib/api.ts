@@ -68,7 +68,7 @@ export const authAPI = {
   getProfile: () =>
     api.get('/auth/profile/'),
   
-  updateProfile: (data: { first_name?: string; last_name?: string }) =>
+  updateProfile: (data: { email: string;first_name?: string; last_name?: string }) =>
     api.patch('/auth/profile/', data),
   
   changePassword: (oldPassword: string, newPassword: string) =>

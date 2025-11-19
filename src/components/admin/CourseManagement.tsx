@@ -143,21 +143,26 @@ export const CourseManagement = () => {
           });
         }
       } else {
-        // Use URL link
-        const payload = {
-          title: formData.title,
-          description: formData.description,
-          thumbnail: formData.thumbnail,
-          category_id: parseInt(formData.category),
-          duration: formData.duration,
-          is_published: formData.is_published,
-          price: formData.price ? parseFloat(formData.price) : null,
-        };
+        // Use URL link - send as FormData
+        const formDataToSend = new FormData();
+        formDataToSend.append("title", formData.title);
+        formDataToSend.append("description", formData.description);
+        formDataToSend.append("thumbnail", formData.thumbnail);
+        formDataToSend.append("category_id", formData.category);
+        formDataToSend.append("duration", formData.duration);
+        formDataToSend.append("is_published", formData.is_published ? "true" : "false");
+        if (formData.price) {
+          formDataToSend.append("price", formData.price);
+        }
 
         if (editingCourse) {
-          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, payload);
+          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         } else {
-          response = await api.post("/admin/courses/create/", payload);
+          response = await api.post("/admin/courses/create/", formDataToSend, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
         }
       }
 

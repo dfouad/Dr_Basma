@@ -124,14 +124,13 @@ export const CourseManagement = () => {
       return;
     }
 
-    // Validate image URL loaded successfully
+    // Show warning if image URL has load error, but allow submission
     if (thumbnailMode === "link" && formData.thumbnail && imageLoadError) {
       toast({
-        title: "رابط صورة غير صالح",
-        description: "فشل تحميل الصورة من الرابط المقدم. يرجى التحقق من الرابط والمحاولة مرة أخرى",
-        variant: "destructive",
+        title: "تحذير",
+        description: "فشل تحميل معاينة الصورة. سيتم حفظ الرابط على أي حال.",
+        variant: "default",
       });
-      return;
     }
     
     try {

@@ -115,7 +115,7 @@ export const CourseManagement = () => {
         formDataToSend.append("title", formData.title);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("thumbnail", thumbnailFile);
-        formDataToSend.append("category", formData.category);
+        formDataToSend.append("category_id", formData.category);
         formDataToSend.append("duration", formData.duration);
         formDataToSend.append("is_published", String(formData.is_published));
         if (formData.price) {
@@ -135,7 +135,7 @@ export const CourseManagement = () => {
         // Use URL link
         const payload = {
           ...formData,
-          category: parseInt(formData.category),
+          category_id: parseInt(formData.category),
           price: formData.price ? parseFloat(formData.price) : null,
         };
 

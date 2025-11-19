@@ -123,11 +123,11 @@ export const CourseManagement = () => {
         }
 
         if (editingCourse) {
-          response = await api.put(`/courses/${editingCourse.id}/`, formDataToSend, {
+          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
             headers: { "Content-Type": "multipart/form-data" },
           });
         } else {
-          response = await api.post("/courses/", formDataToSend, {
+          response = await api.post("/admin/courses/create/", formDataToSend, {
             headers: { "Content-Type": "multipart/form-data" },
           });
         }

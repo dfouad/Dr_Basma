@@ -71,7 +71,7 @@ export const CourseManagement = () => {
   };*/
   const fetchCourses = async () => {
   try {
-    const response = await api.get("/courses/");
+    const response = await api.get("/admin/courses/");
     
     // Handle both paginated and non-paginated responses
     const courseList = Array.isArray(response.data)
@@ -413,7 +413,7 @@ export const CourseManagement = () => {
                   <TableCell className="text-right">{course.duration}</TableCell>
                   <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {course.is_published ? 'منشور' : 'مسودة'}
+                      {course.is_published ? 'منشور' : 'غير منشور'}
                     </span>
                   </TableCell>
                   <TableCell className="text-left">

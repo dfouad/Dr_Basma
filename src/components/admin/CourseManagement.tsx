@@ -133,9 +133,10 @@ export const CourseManagement = () => {
         }
       } else {
         // Use URL link
+        const { category, ...restFormData } = formData;
         const payload = {
-          ...formData,
-          category_id: parseInt(formData.category),
+          ...restFormData,
+          category_id: parseInt(category),
           price: formData.price ? parseFloat(formData.price) : null,
         };
 

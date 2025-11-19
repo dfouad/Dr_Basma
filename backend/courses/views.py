@@ -252,7 +252,7 @@ class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     
     queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
+    serializer_class = CourseListSerializer
     permission_classes = (IsStaffUser,)
 
 
@@ -260,7 +260,7 @@ class AdminCourseUpdateView(generics.UpdateAPIView):
     """Admin endpoint for updating courses."""
     
     queryset = Course.objects.all()
-    serializer_class = CourseDetailSerializer
+    serializer_class = CourseListSerializer
     permission_classes = (IsStaffUser,)
 
 

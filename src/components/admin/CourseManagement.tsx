@@ -71,7 +71,7 @@ export const CourseManagement = () => {
   };*/
   const fetchCourses = async () => {
   try {
-    const response = await api.get("/courses/");
+    const response = await api.get("/admin/courses/");
     
     // Handle both paginated and non-paginated responses
     const courseList = Array.isArray(response.data)
@@ -106,6 +106,17 @@ export const CourseManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that an image is provided
+    if (!thumbnailFile && !formData.thumbnail) {
+      toast({
+        title: "صورة مطلوبة",
+        description: "يرجى إضافة صورة للدورة قبل الحفظ",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       let response;
 
@@ -115,27 +126,28 @@ export const CourseManagement = () => {
         formDataToSend.append("title", formData.title);
         formDataToSend.append("description", formData.description);
         formDataToSend.append("thumbnail", thumbnailFile);
-        formDataToSend.append("category", formData.category);
+        formDataToSend.append("category_id", formData.category);
         formDataToSend.append("duration", formData.duration);
-        formDataToSend.append("is_published", String(formData.is_published));
+        formDataToSend.append("is_published", formData.is_published ? "true" : "false");
         if (formData.price) {
           formDataToSend.append("price", formData.price);
         }
 
         if (editingCourse) {
-          response = await api.put(`/courses/${editingCourse.id}/`, formDataToSend, {
+          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
             headers: { "Content-Type": "multipart/form-data" },
           });
         } else {
-          response = await api.post("/courses/", formDataToSend, {
+          response = await api.post("/admin/courses/create/", formDataToSend, {
             headers: { "Content-Type": "multipart/form-data" },
           });
         }
       } else {
         // Use URL link
+        const { category, ...restFormData } = formData;
         const payload = {
-          ...formData,
-          category: parseInt(formData.category),
+          ...restFormData,
+          category_id: parseInt(category),
           price: formData.price ? parseFloat(formData.price) : null,
         };
 
@@ -181,6 +193,36 @@ export const CourseManagement = () => {
     }
   };
 
+  const handleTogglePublish = async (course: Course) => {
+    try {
+      // Only send the essential fields, excluding thumbnail to avoid URL issues
+      const payload = {
+        title: course.title,
+        description: course.description,
+        category_id: course.category.id,
+        duration: course.duration,
+        price: course.price || null,
+        is_published: !course.is_published,
+      };
+
+      await api.patch(`/admin/courses/${course.id}/update/`, payload);
+      
+      toast({ 
+        title: "تم التحديث", 
+        description: `تم ${!course.is_published ? 'نشر' : 'إلغاء نشر'} الدورة بنجاح` 
+      });
+      
+      fetchCourses();
+    } catch (error) {
+      console.error("Error toggling publish status:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث حالة النشر",
+        variant: "destructive",
+      });
+    }
+  };
+
   const openEditDialog = (course: Course) => {
     setEditingCourse(course);
     setFormData({
@@ -215,12 +257,19 @@ export const CourseManagement = () => {
     const file = e.target.files?.[0];
     if (file) {
       setThumbnailFile(file);
+      setFormData({ ...formData, thumbnail: "" }); // Clear URL when uploading file
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnailPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleThumbnailUrlChange = (url: string) => {
+    setFormData({ ...formData, thumbnail: url });
+    setThumbnailFile(null); // Clear file when using URL
+    setThumbnailPreview("");
   };
 
   return (
@@ -298,7 +347,7 @@ export const CourseManagement = () => {
                     <Input
                       id="thumbnail"
                       value={formData.thumbnail}
-                      onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                      onChange={(e) => handleThumbnailUrlChange(e.target.value)}
                       placeholder="https://example.com/image.jpg"
                     />
                     {formData.thumbnail && (
@@ -382,6 +431,7 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">نشر</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
@@ -393,8 +443,15 @@ export const CourseManagement = () => {
                   <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
                   <TableCell className="text-right">{course.duration}</TableCell>
                   <TableCell className="text-right">
+                    <Checkbox
+                      checked={course.is_published}
+                      onCheckedChange={() => handleTogglePublish(course)}
+                      aria-label="تبديل حالة النشر"
+                    />
+                  </TableCell>
+                  <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {course.is_published ? 'منشور' : 'مسودة'}
+                      {course.is_published ? 'منشور' : 'غير منشور'}
                     </span>
                   </TableCell>
                   <TableCell className="text-left">

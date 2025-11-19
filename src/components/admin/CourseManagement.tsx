@@ -195,17 +195,17 @@ export const CourseManagement = () => {
 
   const handleTogglePublish = async (course: Course) => {
     try {
+      // Only send the essential fields, excluding thumbnail to avoid URL issues
       const payload = {
         title: course.title,
         description: course.description,
-        thumbnail: course.thumbnail,
         category_id: course.category.id,
         duration: course.duration,
         price: course.price || null,
         is_published: !course.is_published,
       };
 
-      await coursesAPI.update(course.id, payload);
+      await api.patch(`/admin/courses/${course.id}/update/`, payload);
       
       toast({ 
         title: "تم التحديث", 

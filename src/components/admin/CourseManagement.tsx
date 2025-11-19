@@ -144,17 +144,20 @@ export const CourseManagement = () => {
         }
       } else {
         // Use URL link
-        const { category, ...restFormData } = formData;
         const payload = {
-          ...restFormData,
-          category_id: parseInt(category),
+          title: formData.title,
+          description: formData.description,
+          thumbnail: formData.thumbnail,
+          category_id: parseInt(formData.category),
+          duration: formData.duration,
+          is_published: formData.is_published,
           price: formData.price ? parseFloat(formData.price) : null,
         };
 
         if (editingCourse) {
-          response = await coursesAPI.update(editingCourse.id, payload);
+          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, payload);
         } else {
-          response = await coursesAPI.create(payload);
+          response = await api.post("/admin/courses/create/", payload);
         }
       }
 

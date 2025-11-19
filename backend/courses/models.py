@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
 User = get_user_model()
 
 
@@ -114,7 +115,12 @@ class PDF(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    pdf_file = models.FileField(upload_to='course_pdfs/')
+    pdf_file =  models.FileField(
+        upload_to='course_pdfs/',
+        storage=RawMediaCloudinaryStorage(),
+        blank=True,
+        null=True,
+    )
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -193,6 +193,36 @@ export const CourseManagement = () => {
     }
   };
 
+  const handleTogglePublish = async (course: Course) => {
+    try {
+      const payload = {
+        title: course.title,
+        description: course.description,
+        thumbnail: course.thumbnail,
+        category_id: course.category.id,
+        duration: course.duration,
+        price: course.price || null,
+        is_published: !course.is_published,
+      };
+
+      await coursesAPI.update(course.id, payload);
+      
+      toast({ 
+        title: "تم التحديث", 
+        description: `تم ${!course.is_published ? 'نشر' : 'إلغاء نشر'} الدورة بنجاح` 
+      });
+      
+      fetchCourses();
+    } catch (error) {
+      console.error("Error toggling publish status:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث حالة النشر",
+        variant: "destructive",
+      });
+    }
+  };
+
   const openEditDialog = (course: Course) => {
     setEditingCourse(course);
     setFormData({
@@ -401,6 +431,7 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">نشر</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
@@ -411,6 +442,13 @@ export const CourseManagement = () => {
                   <TableCell className="font-medium text-right">{course.title}</TableCell>
                   <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
                   <TableCell className="text-right">{course.duration}</TableCell>
+                  <TableCell className="text-right">
+                    <Checkbox
+                      checked={course.is_published}
+                      onCheckedChange={() => handleTogglePublish(course)}
+                      aria-label="تبديل حالة النشر"
+                    />
+                  </TableCell>
                   <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {course.is_published ? 'منشور' : 'غير منشور'}

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpg";
 
 const Auth = () => {
@@ -21,6 +22,7 @@ const Auth = () => {
 
   const { login, register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -38,7 +40,13 @@ const Auth = () => {
         navigate('/profile');
       } else {
         if (formData.password !== formData.confirmPassword) {
-          throw new Error("كلمات المرور غير متطابقة");
+          toast({
+            title: "خطأ في التسجيل",
+            description: "كلمات المرور غير متطابقة",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
         }
         await register(formData.email, formData.password, formData.firstName, formData.lastName);
         // Show success message instead of navigating

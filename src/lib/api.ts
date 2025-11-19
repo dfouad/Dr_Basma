@@ -191,11 +191,18 @@ export const pdfsAPI = {
 
 // Certificates API
 export const certificatesAPI = {
-  getUserCertificates: () =>api.get('/certificates/'),
+  getUserCertificates: () => api.get('/certificates/'),
   
- create: (data: { course_id: number; full_name: string }) =>
+  getAllAdmin: () => api.get('/admin/certificates/'),
+  
+  create: (data: { course_id: number; full_name: string } | { user: number; course: number; template_text?: string }) =>
     api.post("/certificates/", data),
-
+  
+  update: (id: number, data: { template_text?: string }) =>
+    api.patch(`/admin/certificates/${id}/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/certificates/${id}/`),
 };
 
 export const feedbackAPI = {

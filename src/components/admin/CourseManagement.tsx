@@ -149,16 +149,11 @@ export const CourseManagement = () => {
 
       // Add thumbnail based on mode
       if (thumbnailMode === "upload" && thumbnailFile) {
-        // Upload file mode - send file and clear URL
+        // Upload file mode - only send file
         formDataToSend.append("thumbnail", thumbnailFile);
-        formDataToSend.append("thumbnail_url", ""); // Clear URL
       } else if (thumbnailMode === "link" && formData.thumbnail) {
-        // URL mode - send URL and ensure no file is sent
+        // URL mode - only send URL
         formDataToSend.append("thumbnail_url", formData.thumbnail);
-        // Don't append empty thumbnail field
-      } else if (editingCourse) {
-        // When editing without changes, preserve existing by not sending either field
-        // Backend will keep existing values
       }
 
       if (editingCourse) {

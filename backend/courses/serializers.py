@@ -79,15 +79,22 @@ class CourseListSerializer(serializers.ModelSerializer):
         """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
         # If thumbnail_url is provided, handle it
         if 'thumbnail_url' in validated_data:
-            if validated_data['thumbnail_url']:
+            thumbnail_url = validated_data.get('thumbnail_url')
+            if thumbnail_url:
                 # User is setting a URL, clear any existing file
                 if instance.thumbnail:
                     instance.thumbnail.delete(save=False)
                 instance.thumbnail = None
-            validated_data.pop('thumbnail', None)  # Don't process thumbnail field
+                instance.thumbnail_url = thumbnail_url
+            # Remove from validated_data as we manually set it
+            validated_data.pop('thumbnail_url', None)
+        
         # If thumbnail file is provided, clear the thumbnail_url
-        elif 'thumbnail' in validated_data and validated_data['thumbnail']:
-            instance.thumbnail_url = None
+        if 'thumbnail' in validated_data:
+            thumbnail_file = validated_data.get('thumbnail')
+            if thumbnail_file:
+                # User is uploading a file, clear URL
+                instance.thumbnail_url = None
         
         return super().update(instance, validated_data)
 

@@ -128,7 +128,7 @@ export const CourseManagement = () => {
         formDataToSend.append("thumbnail", thumbnailFile);
         formDataToSend.append("category_id", formData.category);
         formDataToSend.append("duration", formData.duration);
-        formDataToSend.append("is_published", String(formData.is_published));
+        formDataToSend.append("is_published", formData.is_published ? "true" : "false");
         if (formData.price) {
           formDataToSend.append("price", formData.price);
         }

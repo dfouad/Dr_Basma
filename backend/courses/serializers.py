@@ -49,7 +49,11 @@ class CourseListSerializer(serializers.ModelSerializer):
       #  fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
      fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
     def get_thumbnail_url(self, obj):
-        """Return the full thumbnail URL."""
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
         if obj.thumbnail:
             request = self.context.get('request')
             if request:
@@ -72,7 +76,11 @@ class CourseDetailSerializer(serializers.ModelSerializer):
                   'videos', 'is_enrolled', 'created_at', 'updated_at')
     
     def get_thumbnail_url(self, obj):
-        """Return the full thumbnail URL."""
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
         if obj.thumbnail:
             request = self.context.get('request')
             if request:

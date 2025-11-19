@@ -130,51 +130,35 @@ export const CourseManagement = () => {
     
     try {
       let response;
+      const formDataToSend = new FormData();
+      
+      // Add common fields
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("description", formData.description);
+      formDataToSend.append("category_id", formData.category);
+      formDataToSend.append("duration", formData.duration);
+      formDataToSend.append("is_published", formData.is_published ? "true" : "false");
+      if (formData.price) {
+        formDataToSend.append("price", formData.price);
+      }
 
-      if (thumbnailFile) {
-        // Upload with file
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", formData.title);
-        formDataToSend.append("description", formData.description);
+      // Add thumbnail based on mode
+      if (thumbnailMode === "upload" && thumbnailFile) {
+        // Upload file mode
         formDataToSend.append("thumbnail", thumbnailFile);
-        formDataToSend.append("category_id", formData.category);
-        formDataToSend.append("duration", formData.duration);
-        formDataToSend.append("is_published", formData.is_published ? "true" : "false");
-        if (formData.price) {
-          formDataToSend.append("price", formData.price);
-        }
+      } else if (thumbnailMode === "link" && formData.thumbnail) {
+        // URL mode - send as thumbnail_url
+        formDataToSend.append("thumbnail_url", formData.thumbnail);
+      }
 
-        if (editingCourse) {
-          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        } else {
-          response = await api.post("/admin/courses/create/", formDataToSend, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
+      if (editingCourse) {
+        response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       } else {
-        // Use URL link - send as FormData
-        const formDataToSend = new FormData();
-        formDataToSend.append("title", formData.title);
-        formDataToSend.append("description", formData.description);
-        formDataToSend.append("thumbnail", formData.thumbnail);
-        formDataToSend.append("category_id", formData.category);
-        formDataToSend.append("duration", formData.duration);
-        formDataToSend.append("is_published", formData.is_published ? "true" : "false");
-        if (formData.price) {
-          formDataToSend.append("price", formData.price);
-        }
-
-        if (editingCourse) {
-          response = await api.put(`/admin/courses/${editingCourse.id}/update/`, formDataToSend, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        } else {
-          response = await api.post("/admin/courses/create/", formDataToSend, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        }
+        response = await api.post("/admin/courses/create/", formDataToSend, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
       }
 
       toast({ 

@@ -66,27 +66,27 @@ class CourseListSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """Handle creation - ensure only one thumbnail type is used."""
-        # If thumbnail_url is provided, don't use thumbnail file
+        # If thumbnail_url is provided, don't save thumbnail file
         if validated_data.get('thumbnail_url'):
-            validated_data['thumbnail'] = None
-        # If thumbnail file is provided, don't use thumbnail_url
+            validated_data.pop('thumbnail', None)
+        # If thumbnail file is provided, don't save thumbnail_url
         elif validated_data.get('thumbnail'):
-            validated_data['thumbnail_url'] = None
+            validated_data.pop('thumbnail_url', None)
         
         return super().create(validated_data)
     
     def update(self, instance, validated_data):
         """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
-        # If thumbnail_url is provided and not empty, clear the thumbnail file
+        # If thumbnail_url is provided, handle it
         if 'thumbnail_url' in validated_data:
-            if validated_data.get('thumbnail_url'):
+            if validated_data['thumbnail_url']:
+                # User is setting a URL, clear any existing file
+                if instance.thumbnail:
+                    instance.thumbnail.delete(save=False)
                 instance.thumbnail = None
-            else:
-                # Empty thumbnail_url means clear it
-                validated_data['thumbnail_url'] = None
-        
+            validated_data.pop('thumbnail', None)  # Don't process thumbnail field
         # If thumbnail file is provided, clear the thumbnail_url
-        if 'thumbnail' in validated_data and validated_data.get('thumbnail'):
+        elif 'thumbnail' in validated_data and validated_data['thumbnail']:
             instance.thumbnail_url = None
         
         return super().update(instance, validated_data)

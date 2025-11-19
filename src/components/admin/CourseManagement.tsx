@@ -216,12 +216,19 @@ export const CourseManagement = () => {
     const file = e.target.files?.[0];
     if (file) {
       setThumbnailFile(file);
+      setFormData({ ...formData, thumbnail: "" }); // Clear URL when uploading file
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnailPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleThumbnailUrlChange = (url: string) => {
+    setFormData({ ...formData, thumbnail: url });
+    setThumbnailFile(null); // Clear file when using URL
+    setThumbnailPreview("");
   };
 
   return (
@@ -299,7 +306,7 @@ export const CourseManagement = () => {
                     <Input
                       id="thumbnail"
                       value={formData.thumbnail}
-                      onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+                      onChange={(e) => handleThumbnailUrlChange(e.target.value)}
                       placeholder="https://example.com/image.jpg"
                     />
                     {formData.thumbnail && (

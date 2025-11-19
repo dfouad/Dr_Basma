@@ -49,6 +49,7 @@ export const CourseManagement = () => {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
   const [thumbnailMode, setThumbnailMode] = useState<"upload" | "link">("upload");
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -112,6 +113,16 @@ export const CourseManagement = () => {
       toast({
         title: "صورة مطلوبة",
         description: "يرجى إضافة صورة للدورة قبل الحفظ",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate image URL loaded successfully
+    if (thumbnailMode === "link" && formData.thumbnail && imageLoadError) {
+      toast({
+        title: "رابط صورة غير صالح",
+        description: "فشل تحميل الصورة من الرابط المقدم. يرجى التحقق من الرابط والمحاولة مرة أخرى",
         variant: "destructive",
       });
       return;
@@ -264,6 +275,7 @@ export const CourseManagement = () => {
     setThumbnailFile(null);
     setThumbnailPreview("");
     setThumbnailMode("upload");
+    setImageLoadError(false);
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -283,6 +295,7 @@ export const CourseManagement = () => {
     setFormData({ ...formData, thumbnail: url });
     setThumbnailFile(null); // Clear file when using URL
     setThumbnailPreview("");
+    setImageLoadError(false); // Reset error when URL changes
   };
 
   return (
@@ -372,7 +385,11 @@ export const CourseManagement = () => {
                       value={formData.thumbnail}
                       onChange={(e) => handleThumbnailUrlChange(e.target.value)}
                       placeholder="https://example.com/image.jpg"
+                      className={imageLoadError ? "border-destructive" : ""}
                     />
+                    {imageLoadError && formData.thumbnail && (
+                      <p className="text-sm text-destructive">فشل تحميل الصورة من هذا الرابط</p>
+                    )}
                     {formData.thumbnail && (
                       <div className="mt-2">
                         <Label className="text-sm text-muted-foreground">{editingCourse ? "الصورة الحالية:" : "معاينة الصورة:"}</Label>
@@ -380,9 +397,8 @@ export const CourseManagement = () => {
                           src={formData.thumbnail} 
                           alt="معاينة" 
                           className="mt-1 h-32 w-full object-cover rounded-lg border"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
+                          onLoad={() => setImageLoadError(false)}
+                          onError={() => setImageLoadError(true)}
                         />
                       </div>
                     )}

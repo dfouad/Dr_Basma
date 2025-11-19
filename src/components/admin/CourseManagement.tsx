@@ -106,6 +106,17 @@ export const CourseManagement = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate that an image is provided
+    if (!thumbnailFile && !formData.thumbnail) {
+      toast({
+        title: "صورة مطلوبة",
+        description: "يرجى إضافة صورة للدورة قبل الحفظ",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     try {
       let response;
 

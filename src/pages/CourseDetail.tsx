@@ -259,6 +259,23 @@ const CourseDetail = () => {
         setCourse(courseResponse.data);
         setEnrolled(true);
         
+        // Fetch enrollment data
+        try {
+          const enrollmentsResponse = await enrollmentsAPI.getAll();
+          const userEnrollments = Array.isArray(enrollmentsResponse.data) 
+            ? enrollmentsResponse.data 
+            : enrollmentsResponse.data?.results || [];
+          const courseEnrollment = userEnrollments.find(
+            (e: Enrollment) => e.id === Number(id) || (e as any).course?.id === Number(id)
+          );
+          if (courseEnrollment) {
+            setEnrollment(courseEnrollment);
+            setWatchedVideoIds(courseEnrollment.watched_video_ids || []);
+          }
+        } catch (error) {
+          console.log("Error fetching enrollment data:", error);
+        }
+        
         // Fetch videos and PDFs
         try {
           const [videosResponse, pdfsResponse] = await Promise.all([

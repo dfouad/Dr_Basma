@@ -234,6 +234,11 @@ export const CourseManagement = () => {
       price: course.price?.toString() || "",
       is_published: course.is_published,
     });
+    // Set thumbnail preview for existing image
+    if (course.thumbnail) {
+      setThumbnailMode("link");
+      setThumbnailPreview(course.thumbnail);
+    }
     setDialogOpen(true);
   };
 
@@ -325,6 +330,16 @@ export const CourseManagement = () => {
                   </TabsList>
                   
                   <TabsContent value="upload" className="space-y-3">
+                    {editingCourse && formData.thumbnail && !thumbnailFile && (
+                      <div className="mb-3">
+                        <Label className="text-sm text-muted-foreground">الصورة الحالية:</Label>
+                        <img 
+                          src={formData.thumbnail} 
+                          alt="الصورة الحالية" 
+                          className="mt-1 h-32 w-full object-cover rounded-lg border"
+                        />
+                      </div>
+                    )}
                     <Input
                       type="file"
                       accept="image/*"
@@ -333,7 +348,7 @@ export const CourseManagement = () => {
                     />
                     {thumbnailPreview && (
                       <div className="mt-2">
-                        <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                        <Label className="text-sm text-muted-foreground">معاينة الصورة الجديدة:</Label>
                         <img 
                           src={thumbnailPreview} 
                           alt="معاينة" 
@@ -352,7 +367,7 @@ export const CourseManagement = () => {
                     />
                     {formData.thumbnail && (
                       <div className="mt-2">
-                        <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
+                        <Label className="text-sm text-muted-foreground">{editingCourse ? "الصورة الحالية:" : "معاينة الصورة:"}</Label>
                         <img 
                           src={formData.thumbnail} 
                           alt="معاينة" 

@@ -34,21 +34,24 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     """Serializer for course list view."""
     
-  #  category_name = serializers.CharField(source='category.name', read_only=True)
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
         source="category",
         queryset=Category.objects.all(),
         write_only=True
     )
-
-    thumbnail_url = serializers.SerializerMethodField()
+    thumbnail_url_display = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
-     model = Course
-      #  fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
-     fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
-    def get_thumbnail_url(self, obj):
+        model = Course
+        fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "thumbnail_url_display", 
+                  "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
+        extra_kwargs = {
+            'thumbnail': {'required': False, 'allow_null': True},
+            'thumbnail_url': {'required': False, 'allow_null': True, 'allow_blank': True},
+        }
+    
+    def get_thumbnail_url_display(self, obj):
         """Return the full thumbnail URL (prioritize URL over file)."""
         # First check if there's a direct URL
         if obj.thumbnail_url:
@@ -60,6 +63,33 @@ class CourseListSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return None
+    
+    def create(self, validated_data):
+        """Handle creation - ensure only one thumbnail type is used."""
+        # If thumbnail_url is provided, don't use thumbnail file
+        if validated_data.get('thumbnail_url'):
+            validated_data['thumbnail'] = None
+        # If thumbnail file is provided, don't use thumbnail_url
+        elif validated_data.get('thumbnail'):
+            validated_data['thumbnail_url'] = None
+        
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
+        # If thumbnail_url is provided and not empty, clear the thumbnail file
+        if 'thumbnail_url' in validated_data:
+            if validated_data.get('thumbnail_url'):
+                instance.thumbnail = None
+            else:
+                # Empty thumbnail_url means clear it
+                validated_data['thumbnail_url'] = None
+        
+        # If thumbnail file is provided, clear the thumbnail_url
+        if 'thumbnail' in validated_data and validated_data.get('thumbnail'):
+            instance.thumbnail_url = None
+        
+        return super().update(instance, validated_data)
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):

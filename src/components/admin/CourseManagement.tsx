@@ -16,7 +16,7 @@ interface Course {
   id: number;
   title: string;
   description: string;
-  thumbnail: string;
+  thumbnail: string; // This will contain the display URL from backend
   category: { id: number; name: string };
   duration: string;
   is_published: boolean;
@@ -71,25 +71,31 @@ export const CourseManagement = () => {
     }
   };*/
   const fetchCourses = async () => {
-  try {
-    const response = await api.get("/admin/courses/");
-    
-    // Handle both paginated and non-paginated responses
-    const courseList = Array.isArray(response.data)
-      ? response.data
-      : response.data.results || [];
-    
-    setCourses(courseList);
-  } catch (error) {
-    toast({
-      title: "خطأ",
-      description: "فشل تحميل الدورات",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
+    try {
+      const response = await api.get("/admin/courses/");
+      
+      // Handle both paginated and non-paginated responses
+      const courseList = Array.isArray(response.data)
+        ? response.data
+        : response.data.results || [];
+      
+      // Map thumbnail_url_display to thumbnail for consistent interface
+      const mappedCourses = courseList.map((course: any) => ({
+        ...course,
+        thumbnail: course.thumbnail_url_display || course.thumbnail_url || course.thumbnail || ''
+      }));
+      
+      setCourses(mappedCourses);
+    } catch (error) {
+      toast({
+        title: "خطأ",
+        description: "فشل تحميل الدورات",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   const fetchCategories = async () => {
@@ -144,11 +150,16 @@ export const CourseManagement = () => {
 
       // Add thumbnail based on mode
       if (thumbnailMode === "upload" && thumbnailFile) {
-        // Upload file mode
+        // Upload file mode - send file and clear URL
         formDataToSend.append("thumbnail", thumbnailFile);
+        formDataToSend.append("thumbnail_url", ""); // Clear URL
       } else if (thumbnailMode === "link" && formData.thumbnail) {
-        // URL mode - send as thumbnail_url
+        // URL mode - send URL and ensure no file is sent
         formDataToSend.append("thumbnail_url", formData.thumbnail);
+        // Don't append empty thumbnail field
+      } else if (editingCourse) {
+        // When editing without changes, preserve existing by not sending either field
+        // Backend will keep existing values
       }
 
       if (editingCourse) {
@@ -239,8 +250,10 @@ export const CourseManagement = () => {
     });
     // Set thumbnail preview for existing image
     if (course.thumbnail) {
+      // Always show as link mode when editing with existing thumbnail
       setThumbnailMode("link");
-      setThumbnailPreview(course.thumbnail);
+      setThumbnailPreview("");
+      setImageLoadError(false);
     }
     setDialogOpen(true);
   };
@@ -267,6 +280,7 @@ export const CourseManagement = () => {
     if (file) {
       setThumbnailFile(file);
       setFormData({ ...formData, thumbnail: "" }); // Clear URL when uploading file
+      setImageLoadError(false); // Reset error state
       const reader = new FileReader();
       reader.onloadend = () => {
         setThumbnailPreview(reader.result as string);

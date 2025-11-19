@@ -7,6 +7,7 @@ import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download, Star } 
 import { coursesAPI, enrollmentsAPI, videosAPI, feedbackAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
+       
 
 interface Video {
   id: number;

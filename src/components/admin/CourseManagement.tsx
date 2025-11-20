@@ -19,6 +19,7 @@ interface Course {
   thumbnail: string; // This will contain the display URL from backend
   category: { id: number; name: string };
   duration: string;
+  duration_in_days: number;
   is_published: boolean;
   price?: number;
 }
@@ -42,6 +43,7 @@ export const CourseManagement = () => {
     thumbnail: "",
     category: "",
     duration: "",
+    duration_in_days: "1",
     price: "",
     is_published: true,
   });
@@ -142,6 +144,7 @@ export const CourseManagement = () => {
       formDataToSend.append("description", formData.description);
       formDataToSend.append("category_id", formData.category);
       formDataToSend.append("duration", formData.duration);
+      formDataToSend.append("duration_in_days", formData.duration_in_days);
       formDataToSend.append("is_published", formData.is_published ? "true" : "false");
       if (formData.price) {
         formDataToSend.append("price", formData.price);
@@ -209,6 +212,7 @@ export const CourseManagement = () => {
         description: course.description,
         category_id: course.category.id,
         duration: course.duration,
+        duration_in_days: course.duration_in_days,
         price: course.price || null,
         is_published: !course.is_published,
       };
@@ -239,6 +243,7 @@ export const CourseManagement = () => {
       thumbnail: course.thumbnail,
       category: course.category.id.toString(),
       duration: course.duration,
+      duration_in_days: course.duration_in_days?.toString() || "1",
       price: course.price?.toString() || "",
       is_published: course.is_published,
     });
@@ -260,6 +265,7 @@ export const CourseManagement = () => {
       thumbnail: "",
       category: "",
       duration: "",
+      duration_in_days: "1",
       price: "",
       is_published: true,
     });
@@ -421,6 +427,21 @@ export const CourseManagement = () => {
                   placeholder="مثال: 4 ساعات"
                   required
                 />
+              </div>
+              <div>
+                <Label htmlFor="duration_in_days">مدة الدورة بالأيام</Label>
+                <Input
+                  id="duration_in_days"
+                  type="number"
+                  min="1"
+                  value={formData.duration_in_days}
+                  onChange={(e) => setFormData({ ...formData, duration_in_days: e.target.value })}
+                  placeholder="مثال: 5"
+                  required
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  يستخدم لحساب التقدم: كل فيديو يشاهده الطالب يمثل يوم واحد
+                </p>
               </div>
               <div>
                 <Label htmlFor="price">السعر (اختياري)</Label>

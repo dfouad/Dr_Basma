@@ -45,7 +45,7 @@ class CourseListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "thumbnail_url_display", 
-                  "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
+                  "duration", "duration_in_days", "price", "is_published", "category", "category_id", "video_count", "created_at"]
         extra_kwargs = {
             'thumbnail': {'required': False, 'allow_null': True},
             'thumbnail_url': {'required': False, 'allow_null': True, 'allow_blank': True},

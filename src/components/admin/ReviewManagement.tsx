@@ -28,7 +28,7 @@ export const ReviewManagement = () => {
   const [formData, setFormData] = useState({
     title: "",
     image: null as File | null,
-    show_on_homepage: false,
+    show_on_homepage: true,
     order: 0,
   });
 
@@ -150,7 +150,7 @@ export const ReviewManagement = () => {
     setFormData({
       title: "",
       image: null,
-      show_on_homepage: false,
+      show_on_homepage: true,
       order: 0,
     });
   };

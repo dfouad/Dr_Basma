@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
+import ReviewsCarousel from "@/components/ReviewsCarousel"; 
 import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
 import { useState, useEffect } from "react";
 import { videosAPI, reviewPhotosAPI, coursesAPI } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
+import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 
@@ -19,6 +22,7 @@ const Index = () => {
   const [reviewPhotos, setReviewPhotos] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
+
 
   useEffect(() => {
     if (activeTab === "videos") {
@@ -298,94 +302,7 @@ const Index = () => {
       </section>
 
       {/* Reviews Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">آراء المتدربين</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              تجارب حقيقية من متدربين نجحوا في تحقيق أهدافهم
-            </p>
-          </div>
-
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-6 max-w-6xl mx-auto px-4">
-              {reviewPhotos.length > 0 ? (
-                reviewPhotos.map((photo) => (
-                  <div key={photo.id} className="flex-shrink-0 w-80 bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                    <img 
-                      src={photo.image_url} 
-                      alt={photo.title} 
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                ))
-              ) : (
-              <>
-                <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "دورة رائعة غيرت نظرتي للحياة. أسلوب د. بسمة في التدريب واضح وعملي ومؤثر جداً."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">م.س</span>
-                </div>
-                <div>
-                  <p className="font-semibold">أميرة إبراهيم</p>
-                  <p className="text-sm text-muted-foreground">رائدة أعمال</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "استفدت كثيراً من الدورات. المحتوى منظم وسهل المتابعة. شكراً د. بسمة على هذا الجهد الرائع."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">ن.ع</span>
-                </div>
-                <div>
-                  <p className="font-semibold">نور العتيبي</p>
-                  <p className="text-sm text-muted-foreground">مديرة تسويق</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "التدريب مع د. بسمة كان نقطة تحول في مسيرتي المهنية. أنصح به بشدة."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">ع.م</span>
-                </div>
-                <div>
-                  <p className="font-semibold">دعاء فؤاد</p>
-                  <p className="text-sm text-muted-foreground">مهندسة برمجيات</p>
-                </div>
-              </div>
-            </div>
-              </>
-            )}
-            </div>
-          </div>
-        </div>
-      </section>
+<ReviewsCarousel reviewPhotos={reviewPhotos} />
 
       {/* About Coach Section */}
       <section className="py-20 bg-muted/30">

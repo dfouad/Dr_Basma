@@ -16,12 +16,13 @@ interface Course {
   id: number;
   title: string;
   description: string;
-  thumbnail: string; // This will contain the display URL from backend
+  thumbnail: string;
   category: { id: number; name: string };
   duration: string;
   duration_in_days: number;
   is_published: boolean;
   price?: number;
+  is_free: boolean;
 }
 
 interface Category {
@@ -46,6 +47,7 @@ export const CourseManagement = () => {
     duration_in_days: "1",
     price: "",
     is_published: true,
+    is_free: false,
   });
 
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
@@ -155,6 +157,7 @@ export const CourseManagement = () => {
       formDataToSend.append("duration", formData.duration);
       formDataToSend.append("duration_in_days", formData.duration_in_days);
       formDataToSend.append("is_published", formData.is_published ? "true" : "false");
+      formDataToSend.append("is_free", formData.is_free ? "true" : "false");
       if (formData.price) {
         formDataToSend.append("price", formData.price);
       }
@@ -216,7 +219,6 @@ export const CourseManagement = () => {
 
   const handleTogglePublish = async (course: Course) => {
     try {
-      // Only send the essential fields, excluding thumbnail to avoid URL issues
       const payload = {
         title: course.title,
         description: course.description,
@@ -224,6 +226,7 @@ export const CourseManagement = () => {
         duration: course.duration,
         duration_in_days: course.duration_in_days,
         price: course.price || null,
+        is_free: course.is_free,
         is_published: !course.is_published,
       };
 
@@ -245,6 +248,37 @@ export const CourseManagement = () => {
     }
   };
 
+  const handleToggleFree = async (course: Course) => {
+    try {
+      const payload = {
+        title: course.title,
+        description: course.description,
+        category_id: course.category.id,
+        duration: course.duration,
+        duration_in_days: course.duration_in_days,
+        price: course.price || null,
+        is_free: !course.is_free,
+        is_published: course.is_published,
+      };
+
+      await api.patch(`/admin/courses/${course.id}/update/`, payload);
+      
+      toast({ 
+        title: "تم التحديث", 
+        description: `تم ${!course.is_free ? 'تحويل الدورة إلى مجانية' : 'تحويل الدورة إلى مدفوعة'}` 
+      });
+      
+      fetchCourses();
+    } catch (error) {
+      console.error("Error toggling free status:", error);
+      toast({
+        title: "خطأ",
+        description: "فشل تحديث حالة الدورة",
+        variant: "destructive",
+      });
+    }
+  };
+
   const openEditDialog = (course: Course) => {
     setEditingCourse(course);
     setFormData({
@@ -256,6 +290,7 @@ export const CourseManagement = () => {
       duration_in_days: course.duration_in_days?.toString() || "1",
       price: course.price?.toString() || "",
       is_published: course.is_published,
+      is_free: course.is_free || false,
     });
     // Set thumbnail preview for existing image
     if (course.thumbnail) {
@@ -278,6 +313,7 @@ export const CourseManagement = () => {
       duration_in_days: "1",
       price: "",
       is_published: true,
+      is_free: false,
     });
     setThumbnailFile(null);
     setThumbnailPreview("");
@@ -493,6 +529,7 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
+                <TableHead className="text-right">السعر</TableHead>
                 <TableHead className="text-right">نشر</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
@@ -504,6 +541,16 @@ export const CourseManagement = () => {
                   <TableCell className="font-medium text-right">{course.title}</TableCell>
                   <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
                   <TableCell className="text-right">{course.duration}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center gap-2 justify-end">
+                      <Checkbox
+                        checked={course.is_free}
+                        onCheckedChange={() => handleToggleFree(course)}
+                        aria-label="تبديل حالة المجانية"
+                      />
+                      <span>{course.is_free ? "مجاني" : (course.price ? `${course.price} جنيه` : "مجاني")}</span>
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right">
                     <Checkbox
                       checked={course.is_published}

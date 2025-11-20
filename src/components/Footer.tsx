@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import logo from "@/assets/logo.png";
 
 
@@ -41,17 +42,19 @@ const Footer = () => {
                 aria-label="Facebook"
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
+                
                 <Facebook className="h-5 w-5" />
-              </a>
+                 </a>
               <a
                 href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="WhatsApp"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
+               className="text-muted-foreground hover:text-primary transition-colors"
+                 >
+               <FaWhatsapp className="h-5 w-5" />
+               </a>
+             
               <a
                 href="https://www.instagram.com/"
                 target="_blank"

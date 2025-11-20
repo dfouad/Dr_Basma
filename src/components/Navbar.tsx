@@ -48,12 +48,12 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/auth">
+                <Link to="/auth?mode=login">
                   <Button variant="ghost" size="sm">
                     تسجيل الدخول
                   </Button>
                 </Link>
-                <Link to="/auth">
+                <Link to="/auth?mode=register">
                   <Button variant="default" size="sm">
                     إنشاء حساب
                   </Button>

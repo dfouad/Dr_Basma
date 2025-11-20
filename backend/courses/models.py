@@ -32,6 +32,7 @@ class Course(models.Model):
     duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
     duration_in_days = models.PositiveIntegerField(default=1, help_text='Course duration in days for progress calculation')
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text='Course price (null or 0 for free courses)')
+    is_free = models.BooleanField(default=False, help_text='Mark course as free')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)

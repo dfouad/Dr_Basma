@@ -180,7 +180,7 @@ class ReviewPhoto(models.Model):
     
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='reviews/')
-    show_on_homepage = models.BooleanField(default=True, help_text='Show this photo on homepage')
+    show_on_homepage = models.BooleanField(default=False)
     uploaded_at = models.DateTimeField(auto_now_add=True)
     order = models.IntegerField(default=0)
     

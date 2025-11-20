@@ -117,10 +117,19 @@ export const CourseManagement = () => {
     e.preventDefault();
     
     // Validate that an image is provided
-    if (!thumbnailFile && !formData.thumbnail) {
+    if (thumbnailMode === "upload" && !thumbnailFile) {
       toast({
         title: "صورة مطلوبة",
-        description: "يرجى إضافة صورة للدورة قبل الحفظ",
+        description: "يرجى رفع صورة للدورة",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (thumbnailMode === "link" && !formData.thumbnail) {
+      toast({
+        title: "رابط الصورة مطلوب",
+        description: "يرجى إدخال رابط الصورة",
         variant: "destructive",
       });
       return;
@@ -150,12 +159,13 @@ export const CourseManagement = () => {
         formDataToSend.append("price", formData.price);
       }
 
-      // Add thumbnail based on mode
+      // Add thumbnail based on mode - ONLY send the relevant field
       if (thumbnailMode === "upload" && thumbnailFile) {
-        // Upload file mode - only send file
+        // Upload file mode - only send file, clear URL
         formDataToSend.append("thumbnail", thumbnailFile);
+        formDataToSend.append("thumbnail_url", "");  // Explicitly clear URL
       } else if (thumbnailMode === "link" && formData.thumbnail) {
-        // URL mode - only send URL
+        // URL mode - only send URL, ensure no file
         formDataToSend.append("thumbnail_url", formData.thumbnail);
       }
 

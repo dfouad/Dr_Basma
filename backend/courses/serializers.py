@@ -66,12 +66,14 @@ class CourseListSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         """Handle creation - ensure only one thumbnail type is used."""
-        # If thumbnail_url is provided, don't save thumbnail file
-        if validated_data.get('thumbnail_url'):
+        # If thumbnail_url is provided and not empty, don't save thumbnail file
+        thumbnail_url = validated_data.get('thumbnail_url', '').strip()
+        if thumbnail_url:
             validated_data.pop('thumbnail', None)
+            validated_data['thumbnail_url'] = thumbnail_url
         # If thumbnail file is provided, don't save thumbnail_url
         elif validated_data.get('thumbnail'):
-            validated_data.pop('thumbnail_url', None)
+            validated_data['thumbnail_url'] = None
         
         return super().create(validated_data)
     
@@ -79,22 +81,21 @@ class CourseListSerializer(serializers.ModelSerializer):
         """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
         # If thumbnail_url is provided, handle it
         if 'thumbnail_url' in validated_data:
-            thumbnail_url = validated_data.get('thumbnail_url')
+            thumbnail_url = validated_data.pop('thumbnail_url', None)
             if thumbnail_url:
                 # User is setting a URL, clear any existing file
                 if instance.thumbnail:
                     instance.thumbnail.delete(save=False)
-                instance.thumbnail = None
+                    instance.thumbnail = None
                 instance.thumbnail_url = thumbnail_url
-            # Remove from validated_data as we manually set it
-            validated_data.pop('thumbnail_url', None)
+            else:
+                # Empty URL provided, clear it
+                instance.thumbnail_url = None
         
         # If thumbnail file is provided, clear the thumbnail_url
-        if 'thumbnail' in validated_data:
-            thumbnail_file = validated_data.get('thumbnail')
-            if thumbnail_file:
-                # User is uploading a file, clear URL
-                instance.thumbnail_url = None
+        if 'thumbnail' in validated_data and validated_data.get('thumbnail'):
+            # User is uploading a file, clear URL
+            instance.thumbnail_url = None
         
         return super().update(instance, validated_data)
 

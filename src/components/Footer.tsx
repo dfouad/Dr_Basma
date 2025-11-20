@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import logo from "@/assets/logo.png";
 
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -33,16 +34,40 @@ const Footer = () => {
           <div>
             <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://www.facebook.com/profile.php?id=100088086409991"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://www.instagram.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://www.linkedin.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>

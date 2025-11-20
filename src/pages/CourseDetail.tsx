@@ -307,7 +307,7 @@ const CourseDetail = () => {
       }
     } else {
       // Paid course - redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
+      const whatsappUrl = `https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
       window.open(whatsappUrl, '_blank');
     }
   };

@@ -259,7 +259,7 @@ export const UserManagement = () => {
                       <span className="text-muted-foreground">لا توجد دورات</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right">{formatGregorianDate(user.date_joined)}</TableCell>
+                  <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-EG')}</TableCell>
                   <TableCell className="text-left">
                     <div className="flex gap-2 justify-start">
                       

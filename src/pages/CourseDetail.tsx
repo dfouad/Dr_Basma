@@ -258,6 +258,11 @@ const CourseDetail = () => {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
         setEnrolled(true);
+
+         toast({
+          title:"تنشيط الصفحة",
+          description: "قم بتنشيط الصفحة لتحميل محتوي الدورة",
+        });
         
         // Fetch enrollment data
         try {
@@ -426,6 +431,7 @@ const CourseDetail = () => {
           <section className="py-16">
             <div className="container mx-auto px-4 max-w-6xl">
               <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>
+              
               
               {/* Videos Section */}
               {Array.isArray(videos) && videos.length > 0 && (

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Star, MessageSquare, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { feedbackAPI } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface FeedbackDialogProps {
   courseId: number;
@@ -25,35 +26,34 @@ const FeedbackDialog = ({ courseId, courseTitle }: FeedbackDialogProps) => {
   const [loading, setLoading] = useState(false);
   const [issued, setIssued] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
-  // ✅ Check if feedback exists in backend or localStorage
   useEffect(() => {
-    const checkFeedback = async () => {
-      try {
-        const res = await feedbackAPI.getAll(courseId);
-        const found = res.data.results?.some((f) => f.course === courseId);
-        if (found) {
-          setIssued(true);
-          localStorage.setItem(
-            "issuedFeedback",
-            JSON.stringify([...new Set([...(JSON.parse(localStorage.getItem("issuedFeedback") || "[]")), courseId])])
-          );
-        } else {
-          // ✅ Feedback deleted on server — clean up local copy
-          const issuedCourses = JSON.parse(localStorage.getItem("issuedFeedback") || "[]");
-          const updated = issuedCourses.filter((id: number) => id !== courseId);
-          localStorage.setItem("issuedFeedback", JSON.stringify(updated));
-          setIssued(false);
-        }
-      } catch {
-        // Fallback to localStorage if API fails
-        const issuedCourses = JSON.parse(localStorage.getItem("issuedFeedback") || "[]");
-        if (issuedCourses.includes(courseId)) setIssued(true);
-      }
-    };
+  const checkFeedback = async () => {
+    if (!user) return; // must be logged in
 
-    checkFeedback();
-  }, [courseId]);
+    try {
+      const res = await feedbackAPI.getAll(courseId);
+      const results = res.data.results ?? res.data ?? [];
+
+      const found = results.some((f: any) => {
+        const sameCourse =
+          f.course === courseId || f.course?.id === courseId;
+        const sameUser =
+          f.user === user.id || f.user?.id === user.id;
+        return sameCourse && sameUser;
+      });
+
+      setIssued(found);
+    } catch (err) {
+      console.error("Failed to check feedback:", err);
+      // optionally: setIssued(false);
+    }
+  };
+
+  checkFeedback();
+}, [courseId, user]);
+
 
   const handleSubmit = async () => {
     if (rating === 0) {

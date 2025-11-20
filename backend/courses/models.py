@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
 from cloudinary_storage.storage import RawMediaCloudinaryStorage
+from django.conf import settings
 User = get_user_model()
 
 
@@ -158,7 +159,7 @@ class Certificate(models.Model):
 class Feedback(models.Model):
     """Feedback/Review model for courses."""
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='feedbacks')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='feedbacks')
     rating = models.PositiveIntegerField(help_text='Rating from 1 to 5')
     comment = models.TextField()

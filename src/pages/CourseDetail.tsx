@@ -41,6 +41,7 @@ interface Course {
   thumbnail_url?: string;
   is_enrolled?: boolean;
   price?: number | null;
+  is_free?: boolean;
 }
 
 interface Review {
@@ -240,8 +241,8 @@ const CourseDetail = () => {
     
     if (enrolled) return;
     
-    // Check if course is free or paid
-    const isFree = !course?.price || course.price === 0;
+    // Check if course is free or paid using is_free field
+    const isFree = course?.is_free === true;
     
     if (isFree) {
       // Free course - enroll directly via API
@@ -409,7 +410,7 @@ const CourseDetail = () => {
                       ? "مسجل بالفعل"
                       : !isAuthenticated
                         ? "سجل الآن"
-                        : (!course?.price || course.price === 0)
+                        : course?.is_free
                           ? "ابدأ التعلم الآن"
                           : "اشترك الآن في الدورة"}
                   </Button>

@@ -29,7 +29,7 @@ class CourseAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Course Information', {
-            'fields': ('title', 'description', 'thumbnail', 'category', 'duration', 'price')
+            'fields': ('title', 'description', 'thumbnail', 'category', 'duration', 'duration_in_days', 'price')
         }),
         ('Publishing', {
             'fields': ('is_published',)

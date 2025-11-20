@@ -29,6 +29,7 @@ class Course(models.Model):
     thumbnail_url = models.URLField(blank=True, null=True, help_text='Alternative to uploading thumbnail file')
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
     duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
+    duration_in_days = models.PositiveIntegerField(default=1, help_text='Course duration in days for progress calculation')
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text='Course price (null or 0 for free courses)')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -84,7 +85,7 @@ class Enrollment(models.Model):
         return f'{self.user.email} enrolled in {self.course.title}'
     
     def update_progress(self):
-        """Calculate and update progress based on watched videos."""
+        """Calculate and update progress based on course duration in days."""
         # Ensure watched_video_ids is always a list of unique integers
         watched_ids = self.watched_video_ids or []
         if not isinstance(watched_ids, list):
@@ -97,11 +98,12 @@ class Enrollment(models.Model):
         # Normalise and deduplicate IDs
         normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
 
-        total_videos = self.course.videos.count()
-        if total_videos <= 0:
+        duration_in_days = self.course.duration_in_days
+        if duration_in_days <= 0:
             self.progress = 0
         else:
-            self.progress = int((len(normalized_ids) / total_videos) * 100)
+            watched_count = len(normalized_ids)
+            self.progress = min(100, int((watched_count / duration_in_days) * 100))
 
         # Persist normalized list back to the field
         self.watched_video_ids = sorted(normalized_ids)

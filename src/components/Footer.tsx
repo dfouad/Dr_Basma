@@ -26,37 +26,7 @@ const Footer = () => {
                   تصفح الدورات
                 </Link>
               </li>
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  عن المنصة
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  تواصل معنا
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">الدعم</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  مركز المساعدة
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  شروط الاستخدام
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  سياسة الخصوصية
-                </Link>
-              </li>
+              
             </ul>
           </div>
 

@@ -187,9 +187,14 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   id="email"
                   type="email"
                   value={email}
+                  disabled
+                  className="bg-muted"
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="أدخل البريد الإلكتروني"
+                  
                 />
+                  <p className="text-xs text-muted-foreground">
+                  لا يمكن تغيير البريد الإلكتروني
+                </p>
               </div>
 
               <div className="space-y-2">

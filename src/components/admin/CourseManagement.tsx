@@ -529,8 +529,8 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
-                <TableHead className="text-right">مجاني</TableHead>
-                <TableHead className="text-right">نشر</TableHead>
+                <TableHead className="text-center">مجاني</TableHead>
+                <TableHead className="text-center">نشر</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>

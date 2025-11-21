@@ -503,11 +503,23 @@ export const CourseManagement = () => {
                 </Tabs>
               </div>
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label htmlFor="category">الفئة</Label>
+                <Label htmlFor="category" className="block text-right mb-2">الفئة</Label>
+                <div className="flex gap-2">
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger id="category" className="flex-1">
+                      <SelectValue placeholder="اختر فئة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
                     <DialogTrigger asChild>
-                      <Button type="button" variant="outline" size="sm" className="h-8">
+                      <Button type="button" size="sm">
                         <Plus className="h-3 w-3 ml-1" />
                         إضافة فئة جديدة
                       </Button>
@@ -544,18 +556,6 @@ export const CourseManagement = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="اختر فئة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
               <div>
                 <Label htmlFor="duration">المدة</Label>

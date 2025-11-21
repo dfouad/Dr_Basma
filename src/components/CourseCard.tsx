@@ -69,7 +69,7 @@ const CourseCard = ({
           <img 
             src={freeBadge} 
             alt="مجاني" 
-            className="absolute top-3 right-3 w-16 h-16 z-10"
+            className="absolute top-0 right-0 w-16 h-16 z-10"
           />
         )}
 

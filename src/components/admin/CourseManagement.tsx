@@ -36,6 +36,8 @@ export const CourseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -112,6 +114,57 @@ export const CourseManagement = () => {
       setCategories(categoryList);
     } catch (error) {
       console.error("Failed to fetch categories", error);
+    }
+  };
+
+  const handleCreateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!newCategoryName.trim()) {
+      toast({
+        title: "خطأ",
+        description: "يرجى إدخال اسم الفئة",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const response = await api.post("/admin/categories/create/", {
+        name: newCategoryName.trim(),
+      });
+
+      toast({
+        title: "تم الإنشاء",
+        description: "تم إنشاء الفئة بنجاح",
+      });
+
+      // Refresh categories list
+      await fetchCategories();
+      
+      // Select the newly created category
+      setFormData({ ...formData, category: response.data.id.toString() });
+      
+      // Close dialog and reset
+      setCategoryDialogOpen(false);
+      setNewCategoryName("");
+    } catch (error: any) {
+      console.error("Error creating category:", error);
+      
+      // Check for duplicate name error
+      if (error.response?.data?.name?.[0]?.includes("unique")) {
+        toast({
+          title: "خطأ",
+          description: "اسم الفئة موجود بالفعل",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "خطأ",
+          description: "فشل إنشاء الفئة",
+          variant: "destructive",
+        });
+      }
     }
   };
 
@@ -450,19 +503,59 @@ export const CourseManagement = () => {
                 </Tabs>
               </div>
               <div>
-                <Label htmlFor="category">الفئة</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="اختر فئة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="category" className="block text-right mb-2">الفئة</Label>
+                <div className="flex gap-2">
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger id="category" className="flex-1">
+                      <SelectValue placeholder="اختر فئة" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id.toString()}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Dialog open={categoryDialogOpen} onOpenChange={setCategoryDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button type="button" size="sm">
+                        <Plus className="h-3 w-3 ml-1" />
+                        إضافة فئة جديدة
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent dir="rtl" className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle className="text-right">إضافة فئة جديدة</DialogTitle>
+                      </DialogHeader>
+                      <form onSubmit={handleCreateCategory} className="space-y-4">
+                        <div>
+                          <Label htmlFor="new-category">اسم الفئة</Label>
+                          <Input
+                            id="new-category"
+                            value={newCategoryName}
+                            onChange={(e) => setNewCategoryName(e.target.value)}
+                            placeholder="مثال: برمجة، تصميم، لغات"
+                            required
+                          />
+                        </div>
+                        <div className="flex gap-2 justify-end">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => {
+                              setCategoryDialogOpen(false);
+                              setNewCategoryName("");
+                            }}
+                          >
+                            إلغاء
+                          </Button>
+                          <Button type="submit">حفظ</Button>
+                        </div>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </div>
               </div>
               <div>
                 <Label htmlFor="duration">المدة</Label>
@@ -529,8 +622,8 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
-                <TableHead className="text-right">مجاني</TableHead>
-                <TableHead className="text-right">نشر</TableHead>
+                <TableHead className="text-center">مجاني</TableHead>
+                <TableHead className="text-center">نشر</TableHead>
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>

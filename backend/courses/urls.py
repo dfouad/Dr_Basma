@@ -9,7 +9,8 @@ from .views import (
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
     FeedbackListCreateView, FeedbackDetailView, ReviewPhotoListView,
-    AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView, MarkVideoWatchedView
+    AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView, MarkVideoWatchedView,
+    AdminCategoryCreateView, AdminCategoryUpdateView, AdminCategoryDeleteView
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -37,6 +38,9 @@ urlpatterns = [
 
 
 # Admin endpoints
+    path('admin/categories/create/', AdminCategoryCreateView.as_view(), name='admin_category_create'),
+    path('admin/categories/<int:pk>/update/', AdminCategoryUpdateView.as_view(), name='admin_category_update'),
+    path('admin/categories/<int:pk>/delete/', AdminCategoryDeleteView.as_view(), name='admin_category_delete'),
     path('admin/courses/', AdminCourseListView.as_view(), name='admin_course_list'),
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
     path('admin/courses/<int:pk>/update/', AdminCourseUpdateView.as_view(), name='admin_course_update'),

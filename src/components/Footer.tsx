@@ -24,6 +24,11 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
+                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  العودة للرئيسية
+                </Link>
+              </li>
+              <li>
                 <Link to="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   تصفح الدورات
                 </Link>

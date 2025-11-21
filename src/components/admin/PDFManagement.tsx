@@ -258,22 +258,34 @@ export function PDFManagement() {
               </div>
               <div>
                 <Label htmlFor="course">الدورة *</Label>
-                <Select
-                  value={formData.course}
-                  onValueChange={(value) => setFormData({ ...formData, course: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر دورة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id.toString()}>
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <Select
+  value={formData.course}
+  onValueChange={(value) => setFormData({ ...formData, course: value })}
+  required
+>
+  <SelectTrigger>
+    <SelectValue placeholder="اختر دورة" />
+  </SelectTrigger>
+
+  <SelectContent
+    position="popper"      // use popper positioning
+    side="bottom"          // always open downward
+    sideOffset={4}         // small spacing from trigger
+    collisionPadding={0}   // prevent auto-flip
+    className="z-50 bg-popover max-h-64 overflow-y-auto" // scrollable menu
+  >
+    {courses.map((course) => (
+      <SelectItem key={course.id} value={course.id.toString()}>
+        {course.title}
+      </SelectItem>
+    ))}
+  </SelectContent>
+</Select>
+
+
+
+
+                
               </div>
               <div>
                 <Label htmlFor="order">الترتيب</Label>

@@ -16,9 +16,13 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        الرئيسية
+            </Link>
             <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               الدورات
             </Link>
+            
           { /* <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               عن المنصة
             </Link>*/}

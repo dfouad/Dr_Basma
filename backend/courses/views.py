@@ -32,6 +32,29 @@ class CategoryListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
+class AdminCategoryCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating categories."""
+    
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCategoryUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating categories."""
+    
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCategoryDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting categories."""
+    
+    queryset = Category.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
 class CourseListView(generics.ListAPIView):
     """API endpoint for listing all published courses."""
     

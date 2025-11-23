@@ -3,12 +3,24 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
+<<<<<<< HEAD
 import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
 import { useState, useEffect } from "react";
 import { videosAPI } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
+=======
+import ReviewsCarousel from "@/components/ReviewsCarousel"; 
+import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
+import { useState, useEffect } from "react";
+import { videosAPI, reviewPhotosAPI, coursesAPI } from "@/lib/api";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import heroImage from "@/assets/hero-image.jpg";
+import certifiedBadge from "@/assets/certified-badge.png";
+import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+>>>>>>> sara-.D
 
 
 
@@ -16,13 +28,70 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<"courses" | "videos">("courses");
   const [freeVideos, setFreeVideos] = useState<any[]>([]);
   const [loadingVideos, setLoadingVideos] = useState(false);
+<<<<<<< HEAD
+=======
+  const [reviewPhotos, setReviewPhotos] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
+
+>>>>>>> sara-.D
 
   useEffect(() => {
     if (activeTab === "videos") {
       fetchFreeVideos();
+<<<<<<< HEAD
     }
   }, [activeTab]);
 
+=======
+    } else if (activeTab === "courses") {
+      fetchCourses();
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    fetchReviewPhotos();
+    fetchCourses();
+  }, []);
+
+  const fetchReviewPhotos = async () => {
+    try {
+      const response = await reviewPhotosAPI.getAll();
+      const photosData = Array.isArray(response.data) ? response.data : response.data?.results || [];
+      setReviewPhotos(photosData);
+    } catch (error) {
+      console.error("Failed to fetch review photos", error);
+    }
+  };
+
+  const fetchCourses = async () => {
+    setLoadingCourses(true);
+    try {
+      const response = await coursesAPI.getAll();
+      const coursesData = Array.isArray(response.data) 
+        ? response.data 
+        : (response.data?.results || []);
+      
+      // Map courses to ensure thumbnail field is properly set
+      const mappedCourses = coursesData.map((course: any) => ({
+        id: course.id,
+        title: course.title,
+        description: course.description,
+        duration: course.duration,
+        videoCount: course.video_count,
+        thumbnail: course.thumbnail_url || course.thumbnail,
+        price: course.price,
+      }));
+      
+      setCourses(mappedCourses);
+    } catch (error) {
+      console.error("Failed to fetch courses", error);
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
+>>>>>>> sara-.D
   const fetchFreeVideos = async () => {
     setLoadingVideos(true);
     try {
@@ -38,6 +107,7 @@ const Index = () => {
     }
   };
 
+<<<<<<< HEAD
   const featuredCourses = [
     {
       id: 1,
@@ -65,11 +135,19 @@ const Index = () => {
     },
   ];
 
+=======
+>>>>>>> sara-.D
   const benefits = [
     "الصحة النفسية: نصائح وإرشادات تعزز الاستقرار النفسي",
     "الإرشاد الأسري: حلول عملية للتعامل مع التحديات الأسرية",
     "مهارات الحياة: أفكار مبتكرة لتطوير الذات وبناء علاقات صحية",
     "دعم الأمهات: نصائح للتعامل مع المراهقين وتربية جيل واثق ومبدع",
+<<<<<<< HEAD
+=======
+    "تنمية المراهقات" ,
+    "التزكية النفسية"
+
+>>>>>>> sara-.D
   ];
 
   return (
@@ -88,16 +166,37 @@ const Index = () => {
               
               <div className="flex flex-wrap gap-4">
                 <Link to="/courses">
+<<<<<<< HEAD
                   <Button size="lg" variant="hero">
                     تصفح الدورات
+=======
+                  <Button size="lg" variant="hero">تصفحي الدورات
+>>>>>>> sara-.D
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/auth">
                   <Button size="lg" variant="outline">
+<<<<<<< HEAD
                     ابدأ مجاناً
                   </Button>
                 </Link>
+=======
+                    ابدأي مجاناً
+                  </Button>
+                </Link>
+                 <a
+                  href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                 >
+                  <Button size="lg" variant="outline">
+                   احجزي جلستك الآن
+                  </Button>
+                </a>
+                  
+               
+>>>>>>> sara-.D
               </div>
             </div>
 
@@ -139,7 +238,11 @@ const Index = () => {
               <>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+<<<<<<< HEAD
                   اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
+=======
+                  اكتشفي دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
+>>>>>>> sara-.D
                 </p>
               </>
             )}
@@ -155,6 +258,7 @@ const Index = () => {
 
           {activeTab === "courses" && (
             <>
+<<<<<<< HEAD
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {featuredCourses.map((course) => (
                   <CourseCard key={course.id} {...course} />
@@ -167,6 +271,32 @@ const Index = () => {
                   </Button>
                 </Link>
               </div>
+=======
+              {loadingCourses ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">جاري تحميل الدورات...</p>
+                </div>
+              ) : courses.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground">لا توجد دورات متاحة حالياً</p>
+                </div>
+              ) : (
+                <>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {courses.map((course) => (
+                      <CourseCard key={course.id} {...course} />
+                    ))}
+                  </div>
+                  <div className="text-center mt-12">
+                    <Link to="/courses">
+                      <Button variant="outline" size="lg">
+                        عرض جميع الدورات
+                      </Button>
+                    </Link>
+                  </div>
+                </>
+              )}
+>>>>>>> sara-.D
             </>
           )}
 
@@ -212,7 +342,11 @@ const Index = () => {
                               className="block"
                             >
                               <Button className="w-full" variant="default">
+<<<<<<< HEAD
                                 شاهد الآن
+=======
+                                شاهدى الآن
+>>>>>>> sara-.D
                               </Button>
                             </a>
                           )}
@@ -232,7 +366,11 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
+<<<<<<< HEAD
               <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختار دوراتنا؟</h2>
+=======
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختاري دوراتنا؟</h2>
+>>>>>>> sara-.D
               <p className="text-lg text-muted-foreground">
               نقدم لك محتوى مميز يهتم بدعم الأمهات والنساء في رحلتهن اليومية
               </p>
@@ -266,6 +404,7 @@ const Index = () => {
       </section>
 
       {/* Reviews Section */}
+<<<<<<< HEAD
       <section className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -338,6 +477,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+=======
+<ReviewsCarousel reviewPhotos={reviewPhotos} />
+>>>>>>> sara-.D
 
       {/* About Coach Section */}
       <section className="py-20 bg-muted/30">
@@ -349,10 +491,19 @@ const Index = () => {
             </div>
             
             <p className="text-lg text-muted-foreground leading-relaxed text-center">
+<<<<<<< HEAD
               مع أكثر من 15 عاماً من الخبرة في التدريب والتطوير الشخصي، ساعدت آلاف الأفراد
               على تحويل حياتهم وتحقيق نتائج استثنائية. مهمتي هي تزويدك بالأدوات والاستراتيجيات
               والدعم الذي تحتاجه لإطلاق إمكاناتك الكاملة.
             </p>
+=======
+ هي
+مدرِّبة أسرية وتربوية تهتم بتمكين المرأة والأم والفتاة من العيش بسلام داخلي وثقة في نفسها، من خلال تقديم برامج عملية تمزج بين العلم النفسي الحديث والإرشاد والهدي النبوي  والفطرة الإنسانية.
+بدايه من ٢٠١٧ قدّمت بسمه عشرات الورش والبرامج الموجهة للأمهات والفتيات والمقبلات على الزواج، وتتميّز بأسلوب قريب، بسيط، وعملي يساعد الحاضرات على فهم أنفسهن وبناء علاقات صحية في بيوتهن.
+وهي صاحبة مجموعة برامج قوية، منها: رُشد – احتواء – افضل نسخة منهم – حورية   – رابطة أمومة – خططي بنعومة – عطاء آمن 
+
+تؤمن أن كل امرأة تستحق أن تعيش بخفة، وسلام، ورسالة، وأن تهذب روحها لتخدم بيتها ونفسها دون جلد أو قسوة.</p>
+>>>>>>> sara-.D
 
             <div className="bg-card p-8 rounded-xl border border-border">
               <h4 className="text-xl font-bold mb-6 text-center">الشهادات والمؤهلات</h4>
@@ -360,20 +511,31 @@ const Index = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
+<<<<<<< HEAD
                     <p className="font-semibold">دكتوراه في علم النفس التطبيقي</p>
                     <p className="text-sm text-muted-foreground">جامعة القاهرة</p>
+=======
+                    <p className="font-semibold">معالج نفسي إسلامي معتمد </p>
+                    <p className="text-sm text-muted-foreground">البورد المصري</p>
+>>>>>>> sara-.D
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
+<<<<<<< HEAD
                     <p className="font-semibold">مدرب معتمد في البرمجة اللغوية العصبية</p>
                     <p className="text-sm text-muted-foreground">المعهد الدولي للتدريب</p>
+=======
+                    <p className="font-semibold">ماجستير مهني صحة نفسية </p>
+                    <p className="text-sm text-muted-foreground">جامعة سوهاج</p>
+>>>>>>> sara-.D
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
+<<<<<<< HEAD
                     <p className="font-semibold">مستشار تطوير القيادة</p>
                     <p className="text-sm text-muted-foreground">معهد القيادة الاستراتيجية</p>
                   </div>
@@ -387,11 +549,50 @@ const Index = () => {
                 </div>
               </div>
             </div>
+=======
+                    <p className="font-semibold">مدرب دولي معتمد </p>
+                    <p className="text-sm text-muted-foreground">جامعة الأسكندرية</p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="font-semibold">مستشار اسري وتربوي واخصائي تعديل سلوك</p>
+                  </div>
+                </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">مدرب مهارات الحياه للمراهقين والكبار</p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold"> معالج بالمدارس العلاجيه المختلفه ( علاج معرفي سلوكي - علاج جدلي سلوكي )</p>
+                  </div>
+                 
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">وكيل للمعهد العربي للصحة النفسيه </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">عضو في الجمعيه المصرية للمعالجين النفسيين</p>
+                  </div>
+            </div>
+          </div>
+>>>>>>> sara-.D
 
             <div className="text-center">
               <Link to="/auth">
                 <Button size="lg" variant="default">
+<<<<<<< HEAD
                   ابدأ رحلتك اليوم
+=======
+                  ابدأى رحلتك اليوم
+>>>>>>> sara-.D
                 </Button>
               </Link>
             </div>

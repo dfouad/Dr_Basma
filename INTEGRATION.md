@@ -143,14 +143,23 @@ All API calls include error handling with user-friendly toast notifications:
 Make sure your Django backend has CORS properly configured in `backend/config/settings.py`:
 ```python
 CORS_ALLOWED_ORIGINS = [
+<<<<<<< HEAD
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+=======
+    "http://localhost:8080",
+    "http://127.0.0.1:8080",
+>>>>>>> sara-.D
 ]
 ```
 
 ## Testing the Integration
 
+<<<<<<< HEAD
 1. **Start both servers** (backend on port 8000, frontend on port 5173)
+=======
+1. **Start both servers** (backend on port 8000, frontend on port 8080)
+>>>>>>> sara-.D
 2. **Create a superuser** in Django admin to add courses
 3. **Register a new user** through the frontend
 4. **Browse courses** and enroll in one

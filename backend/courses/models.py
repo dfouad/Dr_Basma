@@ -1,6 +1,11 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 import uuid
+<<<<<<< HEAD
+=======
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
+from django.conf import settings
+>>>>>>> sara-.D
 User = get_user_model()
 
 
@@ -25,9 +30,18 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     thumbnail = models.ImageField(upload_to='course_thumbnails/', blank=True, null=True)
+<<<<<<< HEAD
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
     duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
     price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text='Course price (null or 0 for free courses)')
+=======
+    thumbnail_url = models.URLField(blank=True, null=True, help_text='Alternative to uploading thumbnail file')
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
+    duration = models.CharField(max_length=50, help_text='e.g., 10 hours')
+    duration_in_days = models.PositiveIntegerField(default=1, help_text='Course duration in days for progress calculation')
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, help_text='Course price (null or 0 for free courses)')
+    is_free = models.BooleanField(default=False, help_text='Mark course as free')
+>>>>>>> sara-.D
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     is_published = models.BooleanField(default=False)
@@ -72,6 +86,10 @@ class Enrollment(models.Model):
     enrolled_at = models.DateTimeField(auto_now_add=True)
     progress = models.PositiveIntegerField(default=0, help_text='Progress percentage (0-100)')
     last_watched = models.ForeignKey(Video, on_delete=models.SET_NULL, null=True, blank=True, related_name='last_watched_by')
+<<<<<<< HEAD
+=======
+    watched_video_ids = models.JSONField(default=list, blank=True, help_text='List of watched video IDs')
+>>>>>>> sara-.D
     
     class Meta:
         unique_together = ('user', 'course')
@@ -79,6 +97,36 @@ class Enrollment(models.Model):
     
     def __str__(self):
         return f'{self.user.email} enrolled in {self.course.title}'
+<<<<<<< HEAD
+=======
+    
+    def update_progress(self):
+        """Calculate and update progress based on course duration in days."""
+        # Ensure watched_video_ids is always a list of unique integers
+        watched_ids = self.watched_video_ids or []
+        if not isinstance(watched_ids, list):
+            try:
+                import json
+                watched_ids = json.loads(watched_ids) if watched_ids else []
+            except Exception:
+                watched_ids = []
+
+        # Normalise and deduplicate IDs
+        normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+
+        duration_in_days = self.course.duration_in_days
+        if duration_in_days <= 0:
+            self.progress = 0
+        else:
+            watched_count = len(normalized_ids)
+            self.progress = min(100, int((watched_count / duration_in_days) * 100))
+
+        # Persist normalized list back to the field
+        self.watched_video_ids = sorted(normalized_ids)
+        self.save()
+
+
+>>>>>>> sara-.D
 
 
 class PDF(models.Model):
@@ -87,7 +135,16 @@ class PDF(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='pdfs')
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+<<<<<<< HEAD
     pdf_file = models.FileField(upload_to='course_pdfs/')
+=======
+    pdf_file =  models.FileField(
+        upload_to='course_pdfs/',
+        storage=RawMediaCloudinaryStorage(),
+        blank=True,
+        null=True,
+    )
+>>>>>>> sara-.D
     order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -117,5 +174,42 @@ class Certificate(models.Model):
     class Meta:
         unique_together = ('user', 'course')
         ordering = ['-issue_date']
+<<<<<<< HEAD
     
+=======
+
+
+class Feedback(models.Model):
+    """Feedback/Review model for courses."""
+    
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='feedbacks')
+    rating = models.PositiveIntegerField(help_text='Rating from 1 to 5')
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ('user', 'course')
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f'{self.user.email} - {self.course.title} ({self.rating}⭐)'
+    
+
+class ReviewPhoto(models.Model):
+    """Model to store review photos for display on homepage."""
+    
+    title = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='reviews/')
+    show_on_homepage = models.BooleanField(default=False)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order', '-uploaded_at']
+    
+    def __str__(self):
+        return self.title
+>>>>>>> sara-.D
    

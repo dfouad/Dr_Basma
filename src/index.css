@@ -85,3 +85,16 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 }
+<<<<<<< HEAD
+=======
+/* Hide scrollbar for Chrome, Safari, Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+>>>>>>> sara-.D

@@ -3,7 +3,11 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
+<<<<<<< HEAD
 from .models import Course, Video, Enrollment, Category, PDF, Certificate
+=======
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
+>>>>>>> sara-.D
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -15,7 +19,11 @@ import uuid
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
+<<<<<<< HEAD
     AdminAssignCourseSerializer, AdminUnassignCourseSerializer,
+=======
+    AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer, ReviewPhotoSerializer,
+>>>>>>> sara-.D
 )
 from .permissions import IsStaffUser
 
@@ -32,6 +40,32 @@ class CategoryListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
+<<<<<<< HEAD
+=======
+class AdminCategoryCreateView(generics.CreateAPIView):
+    """Admin endpoint for creating categories."""
+    
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCategoryUpdateView(generics.UpdateAPIView):
+    """Admin endpoint for updating categories."""
+    
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsStaffUser,)
+
+
+class AdminCategoryDeleteView(generics.DestroyAPIView):
+    """Admin endpoint for deleting categories."""
+    
+    queryset = Category.objects.all()
+    permission_classes = (IsStaffUser,)
+
+
+>>>>>>> sara-.D
 class CourseListView(generics.ListAPIView):
     """API endpoint for listing all published courses."""
     
@@ -172,6 +206,76 @@ class FreeVideoListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
+<<<<<<< HEAD
+=======
+class MarkVideoWatchedView(APIView):
+    """API endpoint to mark a video as watched and update progress."""
+    
+    permission_classes = (IsAuthenticated,)
+    
+    def post(self, request, course_id, video_id):
+        try:
+            # Get the enrollment
+            enrollment = Enrollment.objects.get(
+                user=request.user,
+                course_id=course_id,
+            )
+
+            # Get the video
+            video = get_object_or_404(Video, id=video_id, course_id=course_id)
+
+            # Ensure watched_video_ids is a list
+            watched_ids = enrollment.watched_video_ids or []
+            if not isinstance(watched_ids, list):
+                try:
+                    import json
+                    watched_ids = json.loads(watched_ids) if watched_ids else []
+                except Exception:
+                    watched_ids = []
+
+            # Normalise to integers for comparison
+            normalized_ids = {int(v) for v in watched_ids if str(v).isdigit()}
+            video_id_int = int(video_id)
+
+            # Check if already watched
+            is_new = video_id_int not in normalized_ids
+
+            # Add video to watched list if not already there
+            if is_new:
+                normalized_ids.add(video_id_int)
+
+            # Persist watched IDs and last watched video
+            enrollment.watched_video_ids = sorted(normalized_ids)
+            enrollment.last_watched = video
+
+            # Calculate and persist progress based on watched videos
+            total_videos = Video.objects.filter(course_id=course_id).count()
+            if total_videos <= 0:
+                enrollment.progress = 0
+            else:
+                enrollment.progress = int((len(normalized_ids) / total_videos) * 100)
+
+            enrollment.save(update_fields=["watched_video_ids", "last_watched", "progress"])
+
+            return Response(
+                {
+                    "message": "Video marked as watched",
+                    "progress": enrollment.progress,
+                    "is_new": is_new,
+                    "watched_video_ids": enrollment.watched_video_ids,
+                    "total_videos": total_videos,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except Enrollment.DoesNotExist:
+            return Response(
+                {"error": "You are not enrolled in this course"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
+>>>>>>> sara-.D
 # Admin Views
 class AdminCourseListView(generics.ListAPIView):
     """Admin endpoint for listing all courses (including unpublished)."""
@@ -185,7 +289,11 @@ class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     
     queryset = Course.objects.all()
+<<<<<<< HEAD
     serializer_class = CourseDetailSerializer
+=======
+    serializer_class = CourseListSerializer
+>>>>>>> sara-.D
     permission_classes = (IsStaffUser,)
 
 
@@ -193,7 +301,11 @@ class AdminCourseUpdateView(generics.UpdateAPIView):
     """Admin endpoint for updating courses."""
     
     queryset = Course.objects.all()
+<<<<<<< HEAD
     serializer_class = CourseDetailSerializer
+=======
+    serializer_class = CourseListSerializer
+>>>>>>> sara-.D
     permission_classes = (IsStaffUser,)
 
 
@@ -328,18 +440,26 @@ class AdminPDFDeleteView(generics.DestroyAPIView):
     permission_classes = (IsStaffUser,)
 
 
+<<<<<<< HEAD
 class UserCertificateListView(generics.ListAPIView):
     queryset = Certificate.objects.all()
+=======
+class UserCertificateListView(generics.ListCreateAPIView):
+>>>>>>> sara-.D
     serializer_class = CertificateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+<<<<<<< HEAD
         # Only return current user's certificates
+=======
+>>>>>>> sara-.D
         return Certificate.objects.filter(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get("course_id")
+<<<<<<< HEAD
 
         if not course_id:
             return Response({"error": "Course ID required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -356,6 +476,28 @@ class UserCertificateListView(generics.ListAPIView):
         certificate = Certificate.objects.create(user=user, course_id=course_id)
         serializer = self.get_serializer(certificate)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+=======
+        full_name = request.data.get("full_name")
+
+        if not course_id:
+            return Response({"error": "course_id is required"}, status=400)
+
+        if not full_name:
+            return Response({"error": "full_name is required"}, status=400)
+
+        # Prevent duplicates
+        if Certificate.objects.filter(user=user, course_id=course_id).exists():
+            return Response({"message": "Certificate already exists"}, status=200)
+
+        certificate = Certificate.objects.create(
+            user=user,
+            course_id=course_id,
+            full_name=full_name,
+        )
+
+        serializer = self.get_serializer(certificate)
+        return Response(serializer.data, status=201)
+>>>>>>> sara-.D
 
 
 class AdminAssignCourseView(generics.CreateAPIView):
@@ -410,4 +552,66 @@ class AdminUserEnrollmentsView(generics.ListAPIView):
     
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
+<<<<<<< HEAD
         return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')
+=======
+        return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')
+
+
+class FeedbackListCreateView(generics.ListCreateAPIView):
+    """API endpoint for listing and creating feedback."""
+    
+    serializer_class = FeedbackSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        """Get all feedback for a specific course or user's feedback."""
+        course_id = self.request.query_params.get('course')
+        if course_id:
+            return Feedback.objects.filter(course_id=course_id).select_related('user', 'course')
+        return Feedback.objects.filter(user=self.request.user).select_related('user', 'course')
+    
+    def perform_create(self, serializer):
+        """Automatically set the user when creating feedback."""
+        serializer.save(user=self.request.user)
+
+
+class FeedbackDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """API endpoint for viewing, updating, or deleting specific feedback."""
+    
+    serializer_class = FeedbackSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def get_queryset(self):
+        """Users can only access their own feedback."""
+        return Feedback.objects.filter(user=self.request.user)
+
+
+# ==================== Review Photo Views ====================
+
+class ReviewPhotoListView(generics.ListAPIView):
+    """API endpoint for listing review photos for homepage (public)."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (AllowAny,)
+    
+    def get_queryset(self):
+        """Only return photos marked to show on homepage."""
+        return ReviewPhoto.objects.filter(show_on_homepage=True)
+
+
+class AdminReviewPhotoListCreateView(generics.ListCreateAPIView):
+    """Admin API endpoint for listing and creating review photos."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ReviewPhoto.objects.all()
+
+
+class AdminReviewPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Admin API endpoint for viewing, updating, or deleting review photos."""
+    
+    serializer_class = ReviewPhotoSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ReviewPhoto.objects.all()
+>>>>>>> sara-.D

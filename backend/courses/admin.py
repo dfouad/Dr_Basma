@@ -1,5 +1,9 @@
 from django.contrib import admin
+<<<<<<< HEAD
 from .models import Category, Course, Video, Enrollment, PDF, Certificate
+=======
+from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback, ReviewPhoto
+>>>>>>> sara-.D
 
 
 @admin.register(Category)
@@ -29,7 +33,11 @@ class CourseAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Course Information', {
+<<<<<<< HEAD
             'fields': ('title', 'description', 'thumbnail', 'category', 'duration', 'price')
+=======
+            'fields': ('title', 'description', 'thumbnail', 'thumbnail_url', 'category', 'duration', 'duration_in_days', 'price', 'is_free')
+>>>>>>> sara-.D
         }),
         ('Publishing', {
             'fields': ('is_published',)
@@ -90,4 +98,47 @@ class CertificateAdmin(admin.ModelAdmin):
     ordering = ('-issue_date',)
 
     # Optional: search bar for easier lookup
+<<<<<<< HEAD
     search_fields = ( 'user__username', 'course__title')
+=======
+    search_fields = ( 'user__username', 'course__title')
+
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    """Admin for Feedback model."""
+    
+    list_display = ('user', 'course', 'rating', 'created_at')
+    list_filter = ('rating', 'created_at', 'course')
+    search_fields = ('user__email', 'course__title', 'comment')
+    readonly_fields = ('created_at', 'updated_at')
+    
+    fieldsets = (
+        ('Feedback Details', {
+            'fields': ('user', 'course', 'rating', 'comment')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at')
+        }),
+    )
+
+
+@admin.register(ReviewPhoto)
+class ReviewPhotoAdmin(admin.ModelAdmin):
+    """Admin for ReviewPhoto model."""
+    
+    list_display = ('title', 'show_on_homepage', 'order', 'uploaded_at')
+    list_filter = ('show_on_homepage', 'uploaded_at')
+    search_fields = ('title',)
+    list_editable = ('show_on_homepage', 'order')
+    readonly_fields = ('uploaded_at',)
+    
+    fieldsets = (
+        ('Review Photo Information', {
+            'fields': ('title', 'image', 'show_on_homepage', 'order')
+        }),
+        ('Timestamps', {
+            'fields': ('uploaded_at',)
+        }),
+    )
+>>>>>>> sara-.D

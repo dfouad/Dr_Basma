@@ -7,6 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { usersAPI } from "@/lib/api";
+<<<<<<< HEAD
+=======
+import { formatGregorianDate } from "@/lib/utils";
+>>>>>>> sara-.D
 
 interface User {
   id: number;
@@ -258,6 +262,7 @@ export const UserManagement = () => {
                       <span className="text-muted-foreground">لا توجد دورات</span>
                     )}
                   </TableCell>
+<<<<<<< HEAD
                   <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-SA')}</TableCell>
                   <TableCell className="text-left">
                     <div className="flex gap-2 justify-start">
@@ -266,12 +271,27 @@ export const UserManagement = () => {
                           تعيين دورة
                         </Button>
                       )}
+=======
+                  <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-EG')}</TableCell>
+                  <TableCell className="text-left">
+                    <div className="flex gap-2 justify-start">
+                      
+>>>>>>> sara-.D
                       <Button variant="ghost" size="sm" onClick={() => openEditDialog(user)}>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => handleDelete(user.id)}>
                         <Trash2 className="h-4 w-4 text-destructive" />
                       </Button>
+<<<<<<< HEAD
+=======
+
+                      {!user.is_staff && (
+                        <Button variant="outline" size="sm" onClick={() => openAssignDialog(user.id)}>
+                          تعيين دورة
+                        </Button>
+                      )}
+>>>>>>> sara-.D
                     </div>
                   </TableCell>
                 </TableRow>

@@ -12,16 +12,33 @@ from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+<<<<<<< HEAD
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+=======
+#load_dotenv(os.path.join(BASE_DIR, "config", ".env"))
+load_dotenv(os.path.join(BASE_DIR,".env"))
+
+# SECURITY WARNING: keep the secret key used in production secret!
+#SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
+SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
+
+>>>>>>> sara-.D
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')
 
+=======
+#ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='https://drbasma-production.up.railway.app/,localhost,127.0.0.1').split(',')
+#ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,drbasma-production.up.railway.app").split(",")
+>>>>>>> sara-.D
 
 # Application definition
 
@@ -41,6 +58,13 @@ INSTALLED_APPS = [
     # Local apps
     'users',
     'courses',
+<<<<<<< HEAD
+=======
+
+    #hosting cloud for media files
+    'cloudinary',
+    'cloudinary_storage',
+>>>>>>> sara-.D
 ]
 
 MIDDLEWARE = [
@@ -59,7 +83,11 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
+<<<<<<< HEAD
         'DIRS': [],
+=======
+        "DIRS": [BASE_DIR / "templates"],
+>>>>>>> sara-.D
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -76,6 +104,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
+<<<<<<< HEAD
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
@@ -83,6 +112,23 @@ DATABASES = {
         default=os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3'),
         conn_max_age=600,
     )
+=======
+db_url = os.getenv('DATABASE_URL', 'sqlite:///db.sqlite3')
+
+if 'sqlite' in db_url:
+    DATABASES = {
+        'default': dj_database_url.config(default=db_url)
+    }
+else:
+   DATABASES = {
+     "default": dj_database_url.config(
+        default=os.getenv("DATABASE_URL", "sqlite:///db.sqlite3"),
+        conn_max_age=600,
+        ssl_require=True,   # ✅ Forces SSL for Neon/Railway Postgres
+    )
+
+
+>>>>>>> sara-.D
     # 'default': {
     #     'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
     #     'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3'),
@@ -129,11 +175,35 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+<<<<<<< HEAD
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+=======
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# For whitenoise
+MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
+# WhiteNoise for serving static files on Railway
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+
+# Media files
+MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+#hosting for images and media files
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'dq7urqatl',
+    'API_KEY': '956228355176117',
+    'API_SECRET': 'jYHqC6bKKXiTrNy_vIgJYL-D5GQ',
+}
+>>>>>>> sara-.D
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -167,7 +237,11 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
+<<<<<<< HEAD
     default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://your-frontend.vercel.app',  
+=======
+    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://drbasma.vercel.app/',  
+>>>>>>> sara-.D
 ).split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -181,3 +255,24 @@ CORS_ALLOW_METHODS = [
     'POST',
     'PUT',
 ]
+<<<<<<< HEAD
+=======
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://drbasma-production.up.railway.app",
+    "https://drbasma.vercel.app",
+]
+
+# Email Configuration for Gmail SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
+
+# Frontend URL for email verification links
+FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:8080')
+>>>>>>> sara-.D

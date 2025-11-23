@@ -16,9 +16,19 @@ const Navbar = () => {
           </Link>
 
           <div className="hidden md:flex items-center gap-8">
+<<<<<<< HEAD
             <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               الدورات
             </Link>
+=======
+            <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+        الرئيسية
+            </Link>
+            <Link to="/courses" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              الدورات
+            </Link>
+            
+>>>>>>> sara-.D
           { /* <Link to="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
               عن المنصة
             </Link>*/}
@@ -48,12 +58,20 @@ const Navbar = () => {
               </>
             ) : (
               <>
+<<<<<<< HEAD
                 <Link to="/auth">
+=======
+                <Link to="/auth?mode=login">
+>>>>>>> sara-.D
                   <Button variant="ghost" size="sm">
                     تسجيل الدخول
                   </Button>
                 </Link>
+<<<<<<< HEAD
                 <Link to="/auth">
+=======
+                <Link to="/auth?mode=register">
+>>>>>>> sara-.D
                   <Button variant="default" size="sm">
                     إنشاء حساب
                   </Button>

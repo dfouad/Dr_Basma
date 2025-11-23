@@ -1,5 +1,9 @@
 from rest_framework import serializers
+<<<<<<< HEAD
 from .models import Course, Video, Enrollment, Category, PDF, Certificate
+=======
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
+>>>>>>> sara-.D
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -34,13 +38,17 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     """Serializer for course list view."""
     
+<<<<<<< HEAD
   #  category_name = serializers.CharField(source='category.name', read_only=True)
+=======
+>>>>>>> sara-.D
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
         source="category",
         queryset=Category.objects.all(),
         write_only=True
     )
+<<<<<<< HEAD
 
     thumbnail_url = serializers.SerializerMethodField()
     
@@ -50,12 +58,69 @@ class CourseListSerializer(serializers.ModelSerializer):
      fields = ["id", "title", "description", "thumbnail_url", "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""
+=======
+    thumbnail_url_display = serializers.SerializerMethodField(read_only=True)
+    
+    class Meta:
+        model = Course
+        fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "thumbnail_url_display", 
+                  "duration", "duration_in_days", "price", "is_free", "is_published", "category", "category_id", "video_count", "created_at"]
+        extra_kwargs = {
+            'thumbnail': {'required': False, 'allow_null': True},
+            'thumbnail_url': {'required': False, 'allow_null': True, 'allow_blank': True},
+        }
+    
+    def get_thumbnail_url_display(self, obj):
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
+>>>>>>> sara-.D
         if obj.thumbnail:
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return None
+<<<<<<< HEAD
+=======
+    
+    def create(self, validated_data):
+        """Handle creation - ensure only one thumbnail type is used."""
+        # If thumbnail_url is provided and not empty, don't save thumbnail file
+        thumbnail_url = validated_data.get('thumbnail_url', '').strip()
+        if thumbnail_url:
+            validated_data.pop('thumbnail', None)
+            validated_data['thumbnail_url'] = thumbnail_url
+        # If thumbnail file is provided, don't save thumbnail_url
+        elif validated_data.get('thumbnail'):
+            validated_data['thumbnail_url'] = None
+        
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
+        # If thumbnail_url is provided, handle it
+        if 'thumbnail_url' in validated_data:
+            thumbnail_url = validated_data.pop('thumbnail_url', None)
+            if thumbnail_url:
+                # User is setting a URL, clear any existing file
+                if instance.thumbnail:
+                    instance.thumbnail.delete(save=False)
+                    instance.thumbnail = None
+                instance.thumbnail_url = thumbnail_url
+            else:
+                # Empty URL provided, clear it
+                instance.thumbnail_url = None
+        
+        # If thumbnail file is provided, clear the thumbnail_url
+        if 'thumbnail' in validated_data and validated_data.get('thumbnail'):
+            # User is uploading a file, clear URL
+            instance.thumbnail_url = None
+        
+        return super().update(instance, validated_data)
+>>>>>>> sara-.D
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
@@ -68,11 +133,23 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Course
+<<<<<<< HEAD
         fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'price', 'video_count', 
                   'videos', 'is_enrolled', 'created_at', 'updated_at')
     
     def get_thumbnail_url(self, obj):
         """Return the full thumbnail URL."""
+=======
+        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'price', 'is_free', 'video_count', 
+                  'videos', 'is_enrolled', 'created_at', 'updated_at')
+    
+    def get_thumbnail_url(self, obj):
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
+>>>>>>> sara-.D
         if obj.thumbnail:
             request = self.context.get('request')
             if request:
@@ -98,12 +175,19 @@ class EnrollmentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Enrollment
+<<<<<<< HEAD
         fields = ('id', 'course', 'course_title', 'course_thumbnail', 'enrolled_at', 
                   'progress', 'last_watched', 'last_watched_title')
         read_only_fields = ('enrolled_at',)
     
     def get_course_thumbnail(self, obj):
         """Return the full course thumbnail URL."""
+=======
+        fields = ('id', 'user', 'course', 'enrolled_at', 'progress', 'last_watched', 'course_title', 'course_thumbnail', 'last_watched_title', 'watched_video_ids')
+    
+    def get_course_thumbnail(self, obj):
+        """Return the full thumbnail URL."""
+>>>>>>> sara-.D
         if obj.course.thumbnail:
             request = self.context.get('request')
             if request:
@@ -146,6 +230,7 @@ class PDFSerializer(serializers.ModelSerializer):
 
 
 class CertificateSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     """Serializer for certificates."""
     
     user_name = serializers.SerializerMethodField()
@@ -164,6 +249,25 @@ class CertificateSerializer(serializers.ModelSerializer):
             return f'{obj.user.first_name} {obj.user.last_name}'
         return obj.user.email
 
+=======
+    user_email = serializers.CharField(source="user.email", read_only=True)
+    course_title = serializers.CharField(source="course.title", read_only=True)
+
+    class Meta:
+        model = Certificate
+        fields = [
+            "id",
+            "user",
+            "user_email",
+            "course",
+            "course_title",
+            "full_name",
+            "coach_name",
+            "issue_date",
+            "pdf",
+        ]
+        read_only_fields = ["issue_date", "pdf"]
+>>>>>>> sara-.D
 
 class AdminAssignCourseSerializer(serializers.Serializer):
     """Serializer for admin to assign courses to users."""
@@ -207,3 +311,62 @@ class AdminUnassignCourseSerializer(serializers.Serializer):
     
     user_id = serializers.IntegerField()
     course_id = serializers.IntegerField()
+<<<<<<< HEAD
+=======
+
+
+class FeedbackSerializer(serializers.ModelSerializer):
+    """Serializer for course feedback/reviews."""
+    
+    user_email = serializers.CharField(source='user.email', read_only=True)
+    user_name = serializers.SerializerMethodField()
+    course_title = serializers.CharField(source='course.title', read_only=True)
+    
+    class Meta:
+        model = Feedback
+        fields = ('id', 'user', 'user_email', 'user_name', 'course', 'course_title', 'rating', 'comment', 'created_at', 'updated_at')
+        read_only_fields = ('user', 'created_at', 'updated_at')
+    
+    def get_user_name(self, obj):
+        """Get user's full name or email."""
+        if obj.user.first_name and obj.user.last_name:
+            return f"{obj.user.first_name} {obj.user.last_name}"
+        return obj.user.email
+    
+    def validate_rating(self, value):
+        """Validate rating is between 1 and 5."""
+        if value < 1 or value > 5:
+            raise serializers.ValidationError("Rating must be between 1 and 5")
+        return value
+    
+    def validate(self, data):
+        """Validate that user is enrolled in the course."""
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            course = data.get('course') or self.instance.course if self.instance else None
+            if course:
+                is_enrolled = Enrollment.objects.filter(user=request.user, course=course).exists()
+                if not is_enrolled:
+                    raise serializers.ValidationError("You must be enrolled in this course to leave feedback")
+        return data
+
+
+class ReviewPhotoSerializer(serializers.ModelSerializer):
+    """Serializer for review photos."""
+    
+    image_url = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = ReviewPhoto
+        fields = ('id', 'title', 'image', 'image_url', 'show_on_homepage', 'uploaded_at', 'order')
+        read_only_fields = ('uploaded_at',)
+    
+    def get_image_url(self, obj):
+        """Return the full image URL."""
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
+>>>>>>> sara-.D

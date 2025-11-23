@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth import get_user_model
+<<<<<<< HEAD
 
+=======
+from .models import PendingUser
+>>>>>>> sara-.D
 User = get_user_model()
 
 
@@ -27,3 +31,14 @@ class UserAdmin(BaseUserAdmin):
             'fields': ('email', 'password1', 'password2', 'first_name', 'last_name', 'is_staff', 'is_active'),
         }),
     )
+<<<<<<< HEAD
+=======
+    
+
+
+@admin.register(PendingUser)
+class PendingUserAdmin(admin.ModelAdmin):
+    list_display = ('email', 'created_at', 'is_verified')
+    search_fields = ('email',)
+    list_filter = ('is_verified', 'created_at')
+>>>>>>> sara-.D

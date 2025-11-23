@@ -7,6 +7,10 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+<<<<<<< HEAD
+=======
+import VerifyEmail from "./pages/VerifyEmail";
+>>>>>>> sara-.D
 import Courses from "./pages/Courses";
 import CourseDetail from "./pages/CourseDetail";
 import Profile from "./pages/Profile";
@@ -25,6 +29,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+<<<<<<< HEAD
+=======
+            <Route path="/verify-email" element={<VerifyEmail />} />
+>>>>>>> sara-.D
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseDetail />} />
             <Route 

@@ -81,6 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         last_name: lastName,
       });
       
+<<<<<<< HEAD
       // Auto-login after registration
       await login(email, password);
       
@@ -102,6 +103,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     variant: "destructive",
   });
 }
+=======
+      // Don't auto-login - user needs to verify email first
+      // Success is handled in Auth.tsx
+    } catch (error: any) {
+      console.error("Registration error:", error.response?.data || error.message);
+
+      const message = error.response?.data?.email?.[0] || 
+                     error.response?.data?.password?.[0] ||
+                     error.response?.data?.non_field_errors?.[0] ||
+                     "فشل إنشاء الحساب. حاول مرة أخرى.";
+
+      toast({
+        title: "خطأ في التسجيل",
+        description: message,
+        variant: "destructive",
+      });
+      throw error;
+    }
+>>>>>>> sara-.D
   };
 
   const logout = () => {

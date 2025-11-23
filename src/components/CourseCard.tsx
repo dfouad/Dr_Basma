@@ -1,6 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Clock, PlayCircle } from "lucide-react";
+<<<<<<< HEAD
+=======
+import freeBadge from "@/assets/free-badge.png";
+>>>>>>> sara-.D
 
 // Utility function to get full image URL
 const getFullImageUrl = (url: string): string => {
@@ -31,8 +35,14 @@ interface CourseCardProps {
   description: string;
   duration: string;
   videoCount: number;
+<<<<<<< HEAD
   thumbnail?: string; // optional image
   price?: number | null;
+=======
+  thumbnail?: string;
+  price?: number | null;
+  is_free?: boolean;
+>>>>>>> sara-.D
 }
 
 const CourseCard = ({
@@ -43,7 +53,13 @@ const CourseCard = ({
   videoCount,
   thumbnail,
   price,
+<<<<<<< HEAD
 }: CourseCardProps) => {
+=======
+  is_free,
+}: CourseCardProps) => {
+  const isFree = is_free || price === null || price === 0;
+>>>>>>> sara-.D
   return (
     <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
       {/* 🖼 Course image area */}
@@ -60,6 +76,18 @@ const CourseCard = ({
         {/* 🌗 Always-visible gradient overlay for contrast */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
 
+<<<<<<< HEAD
+=======
+        {/* 🏷️ Free badge for free courses - top right corner */}
+        {isFree && (
+          <img 
+            src={freeBadge} 
+            alt="مجاني" 
+            className="absolute top-0 right-0 w-16 h-16 z-10"
+          />
+        )}
+
+>>>>>>> sara-.D
         {/* 📝 Optional fallback text if no thumbnail */}
         {!thumbnail && (
           <div className="absolute inset-0 flex items-center justify-center text-white text-sm font-medium bg-black/30">
@@ -70,6 +98,7 @@ const CourseCard = ({
 
       {/* 📋 Course info */}
       <div className="p-6 space-y-4">
+<<<<<<< HEAD
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors flex-1">
             {title}
@@ -84,6 +113,11 @@ const CourseCard = ({
             </span>
           )}
         </div>
+=======
+        <h3 className="text-xl font-semibold text-card-foreground group-hover:text-primary transition-colors">
+          {title}
+        </h3>
+>>>>>>> sara-.D
 
         <p className="text-sm text-muted-foreground line-clamp-2">
           {description}

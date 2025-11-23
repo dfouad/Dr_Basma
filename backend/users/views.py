@@ -3,28 +3,17 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
-from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer
-=======
 from django.core.mail import send_mail
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, PendingUserSerializer
 from .models import PendingUser
->>>>>>> sara-.D
 
 User = get_user_model()
 
 
 class RegisterView(generics.CreateAPIView):
-<<<<<<< HEAD
-    """API endpoint for user registration."""
-    
-    queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
-=======
     """API endpoint for user registration - creates pending user and sends verification email."""
     
     queryset = PendingUser.objects.all()
@@ -72,7 +61,6 @@ class RegisterView(generics.CreateAPIView):
                 {'error': f'Failed to send verification email: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
->>>>>>> sara-.D
 
 
 class UserDetailView(generics.RetrieveUpdateAPIView):
@@ -116,8 +104,6 @@ class ChangePasswordView(generics.UpdateAPIView):
             )
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-<<<<<<< HEAD
-=======
 
 
 class VerifyEmailView(generics.GenericAPIView):
@@ -170,4 +156,3 @@ class VerifyEmailView(generics.GenericAPIView):
                 {'error': 'Invalid or expired verification token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
->>>>>>> sara-.D

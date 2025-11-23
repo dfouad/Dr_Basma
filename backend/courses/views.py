@@ -3,11 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
-from .models import Course, Video, Enrollment, Category, PDF, Certificate
-=======
 from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
->>>>>>> sara-.D
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -19,11 +15,7 @@ import uuid
 from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
-<<<<<<< HEAD
-    AdminAssignCourseSerializer, AdminUnassignCourseSerializer,
-=======
     AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer, ReviewPhotoSerializer,
->>>>>>> sara-.D
 )
 from .permissions import IsStaffUser
 
@@ -40,8 +32,6 @@ class CategoryListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
-<<<<<<< HEAD
-=======
 class AdminCategoryCreateView(generics.CreateAPIView):
     """Admin endpoint for creating categories."""
     
@@ -65,7 +55,6 @@ class AdminCategoryDeleteView(generics.DestroyAPIView):
     permission_classes = (IsStaffUser,)
 
 
->>>>>>> sara-.D
 class CourseListView(generics.ListAPIView):
     """API endpoint for listing all published courses."""
     
@@ -206,8 +195,6 @@ class FreeVideoListView(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
 
-<<<<<<< HEAD
-=======
 class MarkVideoWatchedView(APIView):
     """API endpoint to mark a video as watched and update progress."""
     
@@ -275,7 +262,6 @@ class MarkVideoWatchedView(APIView):
             )
 
 
->>>>>>> sara-.D
 # Admin Views
 class AdminCourseListView(generics.ListAPIView):
     """Admin endpoint for listing all courses (including unpublished)."""
@@ -289,11 +275,7 @@ class AdminCourseCreateView(generics.CreateAPIView):
     """Admin endpoint for creating courses."""
     
     queryset = Course.objects.all()
-<<<<<<< HEAD
-    serializer_class = CourseDetailSerializer
-=======
     serializer_class = CourseListSerializer
->>>>>>> sara-.D
     permission_classes = (IsStaffUser,)
 
 
@@ -301,11 +283,7 @@ class AdminCourseUpdateView(generics.UpdateAPIView):
     """Admin endpoint for updating courses."""
     
     queryset = Course.objects.all()
-<<<<<<< HEAD
-    serializer_class = CourseDetailSerializer
-=======
     serializer_class = CourseListSerializer
->>>>>>> sara-.D
     permission_classes = (IsStaffUser,)
 
 
@@ -440,43 +418,16 @@ class AdminPDFDeleteView(generics.DestroyAPIView):
     permission_classes = (IsStaffUser,)
 
 
-<<<<<<< HEAD
-class UserCertificateListView(generics.ListAPIView):
-    queryset = Certificate.objects.all()
-=======
 class UserCertificateListView(generics.ListCreateAPIView):
->>>>>>> sara-.D
     serializer_class = CertificateSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-<<<<<<< HEAD
-        # Only return current user's certificates
-=======
->>>>>>> sara-.D
         return Certificate.objects.filter(user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         user = request.user
         course_id = request.data.get("course_id")
-<<<<<<< HEAD
-
-        if not course_id:
-            return Response({"error": "Course ID required"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Check if already exists
-        existing = Certificate.objects.filter(user=user, course_id=course_id).first()
-        if existing:
-            return Response(
-                {"message": "Certificate already exists"},
-                status=status.HTTP_200_OK
-            )  
-
-        # Create new certificate
-        certificate = Certificate.objects.create(user=user, course_id=course_id)
-        serializer = self.get_serializer(certificate)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-=======
         full_name = request.data.get("full_name")
 
         if not course_id:
@@ -497,7 +448,6 @@ class UserCertificateListView(generics.ListCreateAPIView):
 
         serializer = self.get_serializer(certificate)
         return Response(serializer.data, status=201)
->>>>>>> sara-.D
 
 
 class AdminAssignCourseView(generics.CreateAPIView):
@@ -552,9 +502,6 @@ class AdminUserEnrollmentsView(generics.ListAPIView):
     
     def get_queryset(self):
         user_id = self.kwargs.get('user_id')
-<<<<<<< HEAD
-        return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')
-=======
         return Enrollment.objects.filter(user_id=user_id).select_related('course', 'last_watched')
 
 
@@ -614,4 +561,3 @@ class AdminReviewPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewPhotoSerializer
     permission_classes = (IsStaffUser,)
     queryset = ReviewPhoto.objects.all()
->>>>>>> sara-.D

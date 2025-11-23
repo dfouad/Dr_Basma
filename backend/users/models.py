@@ -1,11 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
-<<<<<<< HEAD
-=======
 from django.utils import timezone
 from datetime import timedelta
 import uuid
->>>>>>> sara-.D
 
 
 class UserManager(BaseUserManager):
@@ -59,8 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_full_name(self):
         """Return the user's full name."""
         return f'{self.first_name} {self.last_name}'.strip() or self.email
-<<<<<<< HEAD
-=======
 
 
 class PendingUser(models.Model):
@@ -90,4 +85,3 @@ class PendingUser(models.Model):
     def is_expired(self):
         """Check if the verification token has expired."""
         return timezone.now() > self.expires_at
->>>>>>> sara-.D

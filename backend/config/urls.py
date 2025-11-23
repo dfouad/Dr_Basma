@@ -7,16 +7,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-<<<<<<< HEAD
-    path('admin/', admin.site.urls),
-    path('api/auth/', include('users.urls')),
-    path('api/', include('courses.urls')),
-=======
     path("admin/", admin.site.urls),
     path("api/auth/", include("users.urls")),
     path("api/", include("courses.urls")),
    
->>>>>>> sara-.D
 ]
 
 # Serve media files in development

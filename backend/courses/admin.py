@@ -1,9 +1,5 @@
 from django.contrib import admin
-<<<<<<< HEAD
-from .models import Category, Course, Video, Enrollment, PDF, Certificate
-=======
 from .models import Category, Course, Video, Enrollment, PDF, Certificate, Feedback, ReviewPhoto
->>>>>>> sara-.D
 
 
 @admin.register(Category)
@@ -33,11 +29,7 @@ class CourseAdmin(admin.ModelAdmin):
     
     fieldsets = (
         ('Course Information', {
-<<<<<<< HEAD
-            'fields': ('title', 'description', 'thumbnail', 'category', 'duration', 'price')
-=======
             'fields': ('title', 'description', 'thumbnail', 'thumbnail_url', 'category', 'duration', 'duration_in_days', 'price', 'is_free')
->>>>>>> sara-.D
         }),
         ('Publishing', {
             'fields': ('is_published',)
@@ -98,9 +90,6 @@ class CertificateAdmin(admin.ModelAdmin):
     ordering = ('-issue_date',)
 
     # Optional: search bar for easier lookup
-<<<<<<< HEAD
-    search_fields = ( 'user__username', 'course__title')
-=======
     search_fields = ( 'user__username', 'course__title')
 
 
@@ -141,4 +130,3 @@ class ReviewPhotoAdmin(admin.ModelAdmin):
             'fields': ('uploaded_at',)
         }),
     )
->>>>>>> sara-.D

@@ -8,12 +8,9 @@ from .views import (
     AdminUserDeleteView, AdminStatsView, AdminPDFListView, AdminPDFCreateView,
     AdminPDFUpdateView, AdminPDFDeleteView, UserCertificateListView, FreeVideoListView,
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
-<<<<<<< HEAD
-=======
     FeedbackListCreateView, FeedbackDetailView, ReviewPhotoListView,
     AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView, MarkVideoWatchedView,
     AdminCategoryCreateView, AdminCategoryUpdateView, AdminCategoryDeleteView
->>>>>>> sara-.D
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -26,16 +23,6 @@ urlpatterns = [
     path('courses/<int:course_id>/videos/', CourseVideosView.as_view(), name='course_videos'),
     path('courses/<int:course_id>/pdfs/', CoursePDFsView.as_view(), name='course_pdfs'),
     path('courses/<int:course_id>/enroll/', EnrollmentCreateView.as_view(), name='course_enroll'),
-<<<<<<< HEAD
-    path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
-    path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
-    path('enrollments/<int:pk>/update/', EnrollmentUpdateView.as_view(), name='enrollment_update'),
-    path('<int:course_id>/generate/', UserCertificateListView.as_view(), name='generate-certificate'),
-    path('videos/free/', FreeVideoListView.as_view(), name='free_videos'),
-
-
-# Admin endpoints
-=======
     path('courses/<int:course_id>/videos/<int:video_id>/watch/', MarkVideoWatchedView.as_view(), name='mark_video_watched'),
     path('enrollments/', EnrollmentListView.as_view(), name='enrollment_list'),
     path('enrollments/create/', EnrollmentCreateView.as_view(), name='enrollment_create'),
@@ -54,7 +41,6 @@ urlpatterns = [
     path('admin/categories/create/', AdminCategoryCreateView.as_view(), name='admin_category_create'),
     path('admin/categories/<int:pk>/update/', AdminCategoryUpdateView.as_view(), name='admin_category_update'),
     path('admin/categories/<int:pk>/delete/', AdminCategoryDeleteView.as_view(), name='admin_category_delete'),
->>>>>>> sara-.D
     path('admin/courses/', AdminCourseListView.as_view(), name='admin_course_list'),
     path('admin/courses/create/', AdminCourseCreateView.as_view(), name='admin_course_create'),
     path('admin/courses/<int:pk>/update/', AdminCourseUpdateView.as_view(), name='admin_course_update'),
@@ -74,9 +60,6 @@ urlpatterns = [
     path('admin/assign-course/', AdminAssignCourseView.as_view(), name='admin_assign_course'),
     path('admin/unassign-course/', AdminUnassignCourseView.as_view(), name='admin_unassign_course'),
     path('admin/stats/', AdminStatsView.as_view(), name='admin_stats'),
-<<<<<<< HEAD
-=======
     path('admin/reviews/', AdminReviewPhotoListCreateView.as_view(), name='admin_review_list_create'),
     path('admin/reviews/<int:pk>/', AdminReviewPhotoDetailView.as_view(), name='admin_review_detail'),
->>>>>>> sara-.D
 ]+ router.urls

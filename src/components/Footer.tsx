@@ -38,7 +38,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
+            <h3 className="font-semibold text-foreground mb-4">تواصلي معنا</h3>
             <div className="flex gap-4">
               <a
                 href="https://www.facebook.com/profile.php?id=100088086409991"

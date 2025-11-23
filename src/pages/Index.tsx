@@ -94,6 +94,9 @@ const Index = () => {
     "الإرشاد الأسري: حلول عملية للتعامل مع التحديات الأسرية",
     "مهارات الحياة: أفكار مبتكرة لتطوير الذات وبناء علاقات صحية",
     "دعم الأمهات: نصائح للتعامل مع المراهقين وتربية جيل واثق ومبدع",
+    "تنمية المراهقات" ,
+    "التزكية النفسية"
+
   ];
 
   return (
@@ -112,16 +115,26 @@ const Index = () => {
               
               <div className="flex flex-wrap gap-4">
                 <Link to="/courses">
-                  <Button size="lg" variant="hero">
-                    تصفح الدورات
+                  <Button size="lg" variant="hero">تصفحي الدورات
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/auth">
                   <Button size="lg" variant="outline">
-                    ابدأ مجاناً
+                    ابدأي مجاناً
                   </Button>
                 </Link>
+                 <a
+                  href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                 >
+                  <Button size="lg" variant="outline">
+                   احجزي جلستك الآن
+                  </Button>
+                </a>
+                  
+               
               </div>
             </div>
 
@@ -163,7 +176,7 @@ const Index = () => {
               <>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
+                  اكتشفي دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
                 </p>
               </>
             )}
@@ -248,7 +261,7 @@ const Index = () => {
                               className="block"
                             >
                               <Button className="w-full" variant="default">
-                                شاهد الآن
+                                شاهدى الآن
                               </Button>
                             </a>
                           )}
@@ -268,7 +281,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختار دوراتنا؟</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختاري دوراتنا؟</h2>
               <p className="text-lg text-muted-foreground">
               نقدم لك محتوى مميز يهتم بدعم الأمهات والنساء في رحلتهن اليومية
               </p>
@@ -314,10 +327,12 @@ const Index = () => {
             </div>
             
             <p className="text-lg text-muted-foreground leading-relaxed text-center">
-              مع أكثر من 15 عاماً من الخبرة في التدريب والتطوير الشخصي، ساعدت آلاف الأفراد
-              على تحويل حياتهم وتحقيق نتائج استثنائية. مهمتي هي تزويدك بالأدوات والاستراتيجيات
-              والدعم الذي تحتاجه لإطلاق إمكاناتك الكاملة.
-            </p>
+ هي
+مدرِّبة أسرية وتربوية تهتم بتمكين المرأة والأم والفتاة من العيش بسلام داخلي وثقة في نفسها، من خلال تقديم برامج عملية تمزج بين العلم النفسي الحديث والإرشاد والهدي النبوي  والفطرة الإنسانية.
+بدايه من ٢٠١٧ قدّمت بسمه عشرات الورش والبرامج الموجهة للأمهات والفتيات والمقبلات على الزواج، وتتميّز بأسلوب قريب، بسيط، وعملي يساعد الحاضرات على فهم أنفسهن وبناء علاقات صحية في بيوتهن.
+وهي صاحبة مجموعة برامج قوية، منها: رُشد – احتواء – افضل نسخة منهم – حورية   – رابطة أمومة – خططي بنعومة – عطاء آمن 
+
+تؤمن أن كل امرأة تستحق أن تعيش بخفة، وسلام، ورسالة، وأن تهذب روحها لتخدم بيتها ونفسها دون جلد أو قسوة.</p>
 
             <div className="bg-card p-8 rounded-xl border border-border">
               <h4 className="text-xl font-bold mb-6 text-center">الشهادات والمؤهلات</h4>
@@ -325,38 +340,58 @@ const Index = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">دكتوراه في علم النفس التطبيقي</p>
-                    <p className="text-sm text-muted-foreground">جامعة القاهرة</p>
+                    <p className="font-semibold">معالج نفسي إسلامي معتمد </p>
+                    <p className="text-sm text-muted-foreground">البورد المصري</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">مدرب معتمد في البرمجة اللغوية العصبية</p>
-                    <p className="text-sm text-muted-foreground">المعهد الدولي للتدريب</p>
+                    <p className="font-semibold">ماجستير مهني صحة نفسية </p>
+                    <p className="text-sm text-muted-foreground">جامعة سوهاج</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">مستشار تطوير القيادة</p>
-                    <p className="text-sm text-muted-foreground">معهد القيادة الاستراتيجية</p>
+                    <p className="font-semibold">مدرب دولي معتمد </p>
+                    <p className="text-sm text-muted-foreground">جامعة الأسكندرية</p>
                   </div>
                 </div>
+
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">خبير في التنمية البشرية</p>
-                    <p className="text-sm text-muted-foreground">أكثر من 15 عاماً من الخبرة</p>
+                    <p className="font-semibold">مستشار اسري وتربوي واخصائي تعديل سلوك</p>
                   </div>
                 </div>
-              </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">مدرب مهارات الحياه للمراهقين والكبار</p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold"> معالج بالمدارس العلاجيه المختلفه ( علاج معرفي سلوكي - علاج جدلي سلوكي )</p>
+                  </div>
+                 
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">وكيل للمعهد العربي للصحة النفسيه </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">عضو في الجمعيه المصرية للمعالجين النفسيين</p>
+                  </div>
             </div>
+          </div>
 
             <div className="text-center">
               <Link to="/auth">
                 <Button size="lg" variant="default">
-                  ابدأ رحلتك اليوم
+                  ابدأى رحلتك اليوم
                 </Button>
               </Link>
             </div>

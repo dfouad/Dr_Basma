@@ -8,8 +8,7 @@ const Footer = () => {
 
   const handleWhatsAppClick = () => {
     // Open WhatsApp in a new tab – no href involved
-    window.open("https://wa.me/message/IFEAWYSTJ2DUE1", "_blank");
-    
+    window.open("https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0", "_blank", "noopener,noreferrer");
   };
 
   return (

@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-
-=======
->>>>>>> sara-.D
 import { useState, useEffect } from "react";
 import {
   Dialog,

@@ -3,18 +3,11 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
-import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download } from "lucide-react";
-import { coursesAPI, enrollmentsAPI } from "@/lib/api";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/hooks/use-toast";
-=======
 import { Clock, PlayCircle, CheckCircle, ArrowRight, FileText, Download, Star } from "lucide-react";
 import { coursesAPI, enrollmentsAPI, videosAPI, feedbackAPI } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
        
->>>>>>> sara-.D
 
 interface Video {
   id: number;
@@ -25,15 +18,12 @@ interface Video {
   video_url_display: string;
 }
 
-<<<<<<< HEAD
-=======
 interface Enrollment {
   id: number;
   progress: number;
   watched_video_ids: number[];
 }
 
->>>>>>> sara-.D
 interface PDF {
   id: number;
   title: string;
@@ -52,8 +42,6 @@ interface Course {
   thumbnail_url?: string;
   is_enrolled?: boolean;
   price?: number | null;
-<<<<<<< HEAD
-=======
   is_free?: boolean;
 }
 
@@ -67,7 +55,6 @@ interface Review {
   rating: number;
   comment: string;
   created_at: string;
->>>>>>> sara-.D
 }
 
 // Utility function to convert YouTube URL to embed format
@@ -126,18 +113,12 @@ const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [videos, setVideos] = useState<Video[]>([]);
   const [pdfs, setPdfs] = useState<PDF[]>([]);
-<<<<<<< HEAD
-  const [loading, setLoading] = useState(true);
-  const [enrolled, setEnrolled] = useState(false);
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
-=======
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [enrolled, setEnrolled] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [enrollment, setEnrollment] = useState<Enrollment | null>(null);
   const [watchedVideoIds, setWatchedVideoIds] = useState<number[]>([]);
->>>>>>> sara-.D
 
   useEffect(() => {
     const fetchCourseData = async () => {
@@ -145,8 +126,6 @@ const CourseDetail = () => {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
         
-<<<<<<< HEAD
-=======
         // Fetch reviews for the course
         try {
           const reviewsResponse = await feedbackAPI.getAll(Number(id));
@@ -158,13 +137,10 @@ const CourseDetail = () => {
           console.log("Error fetching reviews:", error);
         }
         
->>>>>>> sara-.D
         // Set enrollment status from course data
         if (isAuthenticated && courseResponse.data.is_enrolled) {
           setEnrolled(true);
           
-<<<<<<< HEAD
-=======
           // Fetch enrollment data to get watched videos
           try {
             const enrollmentsResponse = await enrollmentsAPI.getAll();
@@ -182,7 +158,6 @@ const CourseDetail = () => {
             console.log("Error fetching enrollment data:", error);
           }
           
->>>>>>> sara-.D
           // Fetch videos and PDFs for enrolled users
           try {
             const videosResponse = await coursesAPI.getVideos(Number(id));
@@ -210,11 +185,7 @@ const CourseDetail = () => {
       } catch (error) {
         toast({
           title: "خطأ في تحميل الدورة",
-<<<<<<< HEAD
-          description: "حاول مرة أخرى لاحقاً",
-=======
           description: "حاولي مرة أخرى لاحقاً",
->>>>>>> sara-.D
           variant: "destructive",
         });
       } finally {
@@ -225,8 +196,6 @@ const CourseDetail = () => {
     fetchCourseData();
   }, [id, isAuthenticated, toast]);
 
-<<<<<<< HEAD
-=======
   const handleVideoSelect = async (video: Video) => {
     setSelectedVideo(video);
     
@@ -265,7 +234,6 @@ const CourseDetail = () => {
     }
   };
 
->>>>>>> sara-.D
   const handleEnrollClick = async () => {
     if (!isAuthenticated) {
       navigate('/auth');
@@ -274,13 +242,8 @@ const CourseDetail = () => {
     
     if (enrolled) return;
     
-<<<<<<< HEAD
-    // Check if course is free or paid
-    const isFree = !course?.price || course.price === 0;
-=======
     // Check if course is free or paid using is_free field
     const isFree = course?.is_free === true;
->>>>>>> sara-.D
     
     if (isFree) {
       // Free course - enroll directly via API
@@ -297,8 +260,6 @@ const CourseDetail = () => {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
         setEnrolled(true);
-<<<<<<< HEAD
-=======
 
          toast({
           title:"تنشيط الصفحة",
@@ -321,7 +282,6 @@ const CourseDetail = () => {
         } catch (error) {
           console.log("Error fetching enrollment data:", error);
         }
->>>>>>> sara-.D
         
         // Fetch videos and PDFs
         try {
@@ -341,11 +301,7 @@ const CourseDetail = () => {
       } catch (error: any) {
         toast({
           title: "خطأ في التسجيل",
-<<<<<<< HEAD
-          description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
-=======
           description: error.response?.data?.message || "حاولي مرة أخرى لاحقاً",
->>>>>>> sara-.D
           variant: "destructive",
         });
       } finally {
@@ -353,11 +309,7 @@ const CourseDetail = () => {
       }
     } else {
       // Paid course - redirect to WhatsApp
-<<<<<<< HEAD
-      const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
-=======
       const whatsappUrl = `https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
->>>>>>> sara-.D
       window.open(whatsappUrl, '_blank');
     }
   };
@@ -456,21 +408,12 @@ const CourseDetail = () => {
                     disabled={enrolled || loading}
                   >
                     {enrolled
-<<<<<<< HEAD
-                      ? "مسجل بالفعل"
-                      : !isAuthenticated
-                        ? "سجل الآن"
-                        : (!course?.price || course.price === 0)
-                          ? "ابدأ التعلم الآن"
-                          : "اشترك الآن في الدورة"}
-=======
                       ? "مسجله بالفعل"
                       : !isAuthenticated
                         ? "سجلي الآن"
                         : course?.is_free
                           ? "ابدأي التعلم الآن"
                           : "اشتركي الآن في الدورة"}
->>>>>>> sara-.D
                   </Button>
                   {enrolled && (
                     <Link to="/profile">
@@ -491,10 +434,7 @@ const CourseDetail = () => {
             <div className="container mx-auto px-4 max-w-6xl">
               <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>
               
-<<<<<<< HEAD
-=======
               
->>>>>>> sara-.D
               {/* Videos Section */}
               {Array.isArray(videos) && videos.length > 0 && (
                 <div className="mb-12">
@@ -556,27 +496,6 @@ const CourseDetail = () => {
                               <p className="font-semibold text-sm">الوحدة {Number(moduleIndex) + 1}</p>
                             </div>
                             <div className="divide-y divide-border">
-<<<<<<< HEAD
-                              {moduleVideos.map((video) => (
-                                <div
-                                  key={video.id}
-                                  className={`p-4 hover:bg-muted/30 transition-colors cursor-pointer ${
-                                    selectedVideo?.id === video.id ? 'bg-primary/10 border-r-4 border-primary' : ''
-                                  }`}
-                                  onClick={() => setSelectedVideo(video)}
-                                >
-                                  <div className="flex items-start gap-3">
-                                    <PlayCircle className={`h-5 w-5 mt-0.5 flex-shrink-0 ${
-                                      selectedVideo?.id === video.id ? 'text-primary' : 'text-muted-foreground'
-                                    }`} />
-                                    <div className="flex-1 min-w-0">
-                                      <p className="font-medium text-sm mb-1 line-clamp-2">{video.title}</p>
-                                      <span className="text-xs text-muted-foreground">{video.duration}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-=======
                               {moduleVideos.map((video) => {
                                 const isWatched = watchedVideoIds.includes(video.id);
                                 return (
@@ -603,7 +522,6 @@ const CourseDetail = () => {
                                   </div>
                                 );
                               })}
->>>>>>> sara-.D
                             </div>
                           </div>
                         ))}
@@ -651,8 +569,6 @@ const CourseDetail = () => {
                   </div>
                 </div>
               )}
-<<<<<<< HEAD
-=======
 
               {/* Reviews Section */}
               {reviews.length > 0 && (
@@ -705,7 +621,6 @@ const CourseDetail = () => {
                   </div>
                 </div>
               )}
->>>>>>> sara-.D
             </div>
           </section>
         )}

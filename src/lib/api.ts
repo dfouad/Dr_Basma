@@ -68,11 +68,7 @@ export const authAPI = {
   getProfile: () =>
     api.get('/auth/profile/'),
   
-<<<<<<< HEAD
-  updateProfile: (data: { first_name?: string; last_name?: string }) =>
-=======
   updateProfile: (data: { email: string;first_name?: string; last_name?: string }) =>
->>>>>>> sara-.D
     api.patch('/auth/profile/', data),
   
   changePassword: (oldPassword: string, newPassword: string) =>
@@ -121,12 +117,9 @@ export const videosAPI = {
   getFreeVideos: () =>
     api.get('/videos/free/'),
   
-<<<<<<< HEAD
-=======
   markVideoWatched: (courseId: number, videoId: number) =>
     api.post(`/courses/${courseId}/videos/${videoId}/watch/`),
   
->>>>>>> sara-.D
   create: (data: any) =>
     api.post('/admin/videos/create/', data),
   
@@ -198,22 +191,6 @@ export const pdfsAPI = {
 
 // Certificates API
 export const certificatesAPI = {
-<<<<<<< HEAD
-  getUserCertificates: () =>
-    api.get('/certificates/'),
-  
-  getAllAdmin: () =>
-    api.get('/admin/certificates/'),
-  
-  create: (data: { user: number; course: number; enrollment?: number; template_text?: string }) =>
-    api.post('/admin/certificates/create/', data),
-  
-  update: (id: number, data: { template_text?: string }) =>
-    api.put(`/admin/certificates/${id}/update/`, data),
-  
-  delete: (id: number) =>
-    api.delete(`/admin/certificates/${id}/delete/`),
-=======
   getUserCertificates: () => api.get('/certificates/'),
   
   getAllAdmin: () => api.get('/admin/certificates/'),
@@ -226,7 +203,6 @@ export const certificatesAPI = {
   
   delete: (id: number) =>
     api.delete(`/admin/certificates/${id}/`),
->>>>>>> sara-.D
 };
 
 export const feedbackAPI = {

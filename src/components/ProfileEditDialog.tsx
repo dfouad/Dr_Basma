@@ -1,7 +1,4 @@
 import { useState } from "react";
-<<<<<<< HEAD
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-=======
 import {
   Dialog,
   DialogContent,
@@ -10,22 +7,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
->>>>>>> sara-.D
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { authAPI } from "@/lib/api";
-<<<<<<< HEAD
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-=======
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
->>>>>>> sara-.D
 
 interface User {
   id: number;
@@ -43,14 +35,6 @@ interface ProfileEditDialogProps {
 const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
-<<<<<<< HEAD
-  const [loading, setLoading] = useState(false);
-  
-  // Profile form state
-  const [firstName, setFirstName] = useState(user.first_name || "");
-  const [lastName, setLastName] = useState(user.last_name || "");
-  
-=======
 
   // separate loading for each tab (optional but nicer UX)
   const [profileLoading, setProfileLoading] = useState(false);
@@ -61,7 +45,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
   const [firstName, setFirstName] = useState(user.first_name || "");
   const [lastName, setLastName] = useState(user.last_name || "");
 
->>>>>>> sara-.D
   // Password form state
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -69,9 +52,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-<<<<<<< HEAD
-    setLoading(true);
-=======
 
     // basic email validation
     if (!email.trim()) {
@@ -94,16 +74,12 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
     }
 
     setProfileLoading(true);
->>>>>>> sara-.D
 
     try {
       await authAPI.updateProfile({
         first_name: firstName,
         last_name: lastName,
-<<<<<<< HEAD
-=======
         email: email.trim(),
->>>>>>> sara-.D
       });
 
       toast({
@@ -111,18 +87,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         description: "تم حفظ التغييرات بنجاح",
       });
 
-<<<<<<< HEAD
-      onUpdate();
-      setOpen(false);
-    } catch (error: any) {
-      toast({
-        title: "خطأ في التحديث",
-        description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-=======
       onUpdate();    // refresh profile data in parent
       setOpen(false);
     } catch (error: any) {
@@ -140,7 +104,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       });
     } finally {
       setProfileLoading(false);
->>>>>>> sara-.D
     }
   };
 
@@ -165,11 +128,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       return;
     }
 
-<<<<<<< HEAD
-    setLoading(true);
-=======
     setPasswordLoading(true);
->>>>>>> sara-.D
 
     try {
       await authAPI.changePassword(oldPassword, newPassword);
@@ -183,15 +142,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       setNewPassword("");
       setConfirmPassword("");
     } catch (error: any) {
-<<<<<<< HEAD
-      toast({
-        title: "خطأ في تغيير كلمة المرور",
-        description: error.response?.data?.old_password?.[0] || error.response?.data?.message || "حاول مرة أخرى لاحقاً",
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
-=======
       const data = error?.response?.data;
       const msg =
         data?.old_password?.[0] ||
@@ -206,7 +156,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
       });
     } finally {
       setPasswordLoading(false);
->>>>>>> sara-.D
     }
   };
 
@@ -219,11 +168,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         <DialogHeader>
           <DialogTitle>تعديل الملف الشخصي</DialogTitle>
           <DialogDescription>
-<<<<<<< HEAD
-            قم بتحديث معلوماتك الشخصية أو تغيير كلمة المرور
-=======
             حدثي معلوماتك الشخصية أو تغيير كلمة المرور
->>>>>>> sara-.D
           </DialogDescription>
         </DialogHeader>
 
@@ -233,10 +178,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
             <TabsTrigger value="password">كلمة المرور</TabsTrigger>
           </TabsList>
 
-<<<<<<< HEAD
-=======
           {/* معلومات شخصية */}
->>>>>>> sara-.D
           <TabsContent value="profile" className="space-y-4 pt-4">
             <form onSubmit={handleUpdateProfile} className="space-y-4">
               <div className="space-y-2">
@@ -244,13 +186,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                 <Input
                   id="email"
                   type="email"
-<<<<<<< HEAD
-                  value={user.email}
-                  disabled
-                  className="bg-muted"
-                />
-                <p className="text-xs text-muted-foreground">
-=======
                   value={email}
                   disabled
                   className="bg-muted"
@@ -258,7 +193,6 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   
                 />
                   <p className="text-xs text-muted-foreground">
->>>>>>> sara-.D
                   لا يمكن تغيير البريد الإلكتروني
                 </p>
               </div>
@@ -270,11 +204,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-<<<<<<< HEAD
-                  placeholder="أدخل الاسم الأول"
-=======
                   placeholder="أدخلي الاسم الأول"
->>>>>>> sara-.D
                 />
               </div>
 
@@ -285,29 +215,17 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-<<<<<<< HEAD
-                  placeholder="أدخل اسم العائلة"
-                />
-              </div>
-
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "جاري الحفظ..." : "حفظ التغييرات"}
-=======
                   placeholder="أدخلي اسم العائلة"
                 />
               </div>
 
               <Button type="submit" className="w-full" disabled={profileLoading}>
                 {profileLoading ? "جاري الحفظ..." : "حفظ التغييرات"}
->>>>>>> sara-.D
               </Button>
             </form>
           </TabsContent>
 
-<<<<<<< HEAD
-=======
           {/* تغيير كلمة المرور */}
->>>>>>> sara-.D
           <TabsContent value="password" className="space-y-4 pt-4">
             <form onSubmit={handleChangePassword} className="space-y-4">
               <div className="space-y-2">
@@ -317,11 +235,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-<<<<<<< HEAD
-                  placeholder="أدخل كلمة المرور الحالية"
-=======
                   placeholder="أدخلي كلمة المرور الحالية"
->>>>>>> sara-.D
                   required
                 />
               </div>
@@ -333,11 +247,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-<<<<<<< HEAD
-                  placeholder="أدخل كلمة المرور الجديدة"
-=======
                   placeholder="أدخلي كلمة المرور الجديدة"
->>>>>>> sara-.D
                   required
                 />
               </div>
@@ -349,22 +259,13 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-<<<<<<< HEAD
-                  placeholder="أعد إدخال كلمة المرور الجديدة"
-=======
                   placeholder="أعيدي إدخال كلمة المرور الجديدة"
->>>>>>> sara-.D
                   required
                 />
               </div>
 
-<<<<<<< HEAD
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "جاري التغيير..." : "تغيير كلمة المرور"}
-=======
               <Button type="submit" className="w-full" disabled={passwordLoading}>
                 {passwordLoading ? "جاري التغيير..." : "تغيير كلمة المرور"}
->>>>>>> sara-.D
               </Button>
             </form>
           </TabsContent>

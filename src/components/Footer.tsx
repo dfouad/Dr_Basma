@@ -1,14 +1,9 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
-<<<<<<< HEAD
-import logo from "@/assets/logo.png";
-
-=======
 import { FaWhatsapp } from "react-icons/fa";
 import logo from "@/assets/logo.png";
 
 
->>>>>>> sara-.D
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
@@ -29,73 +24,20 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
-<<<<<<< HEAD
-=======
                 <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   العودة للرئيسية
                 </Link>
               </li>
               <li>
->>>>>>> sara-.D
                 <Link to="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   تصفح الدورات
                 </Link>
               </li>
-<<<<<<< HEAD
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  عن المنصة
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  تواصل معنا
-                </Link>
-              </li>
-=======
               
->>>>>>> sara-.D
             </ul>
           </div>
 
           <div>
-<<<<<<< HEAD
-            <h3 className="font-semibold text-foreground mb-4">الدعم</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  مركز المساعدة
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  شروط الاستخدام
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  سياسة الخصوصية
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
-            <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
-=======
             <h3 className="font-semibold text-foreground mb-4">تواصلي معنا</h3>
             <div className="flex gap-4">
               <a
@@ -128,7 +70,6 @@ const Footer = () => {
                 <Instagram className="h-5 w-5" />
               </a>
              
->>>>>>> sara-.D
             </div>
           </div>
         </div>

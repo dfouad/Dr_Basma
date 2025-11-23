@@ -135,7 +135,7 @@ const Auth = () => {
             </Link>
             <h1 className="text-3xl font-bold">{register ? "مرحباً بعودتك" : "إنشاء حساب جديد"}</h1>
             <p className="text-muted-foreground">
-              {isLogin ? "سجّل دخولك للوصول إلى دوراتك" : "ابدأ رحلة التعلم اليوم"}
+              {isLogin ? "سجّلي دخولك للوصول إلى دوراتك" : "ابدأي رحلة التعلم اليوم"}
             </p>
           </div>
 
@@ -153,7 +153,7 @@ const Auth = () => {
                   يرجى التحقق من بريدك الإلكتروني والنقر على رابط التأكيد لإكمال عملية التسجيل.
                   <br />
                   <span className="text-xs text-green-600 mt-2 block">
-                    (تحقق من مجلد الرسائل غير المرغوب فيها إذا لم تجد الرسالة)
+                    (تحققي من مجلد الرسائل غير المرغوب فيها إذا لم تجدي الرسالة)
                   </span>
                 </p>
               </div>
@@ -256,8 +256,8 @@ const Auth = () => {
               }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              {isLogin ? "ليس لديك حساب؟ " : "لديك حساب بالفعل؟ "}
-              <span className="text-primary font-semibold">{isLogin ? "سجّل الآن" : "تسجيل الدخول"}</span>
+              {isLogin ? "ليس لديكي حساب؟ " : "لديكي حساب بالفعل؟ "}
+              <span className="text-primary font-semibold">{isLogin ? "سجّلي الآن" : "تسجيل الدخول"}</span>
             </button>
           </div>
             </>

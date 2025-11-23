@@ -184,7 +184,7 @@ const CourseDetail = () => {
       } catch (error) {
         toast({
           title: "خطأ في تحميل الدورة",
-          description: "حاول مرة أخرى لاحقاً",
+          description: "حاولي مرة أخرى لاحقاً",
           variant: "destructive",
         });
       } finally {
@@ -262,7 +262,7 @@ const CourseDetail = () => {
 
          toast({
           title:"تنشيط الصفحة",
-          description: "قم بتنشيط الصفحة لتحميل محتوي الدورة",
+          description: "نشطي الصفحة لتحميل محتوي الدورة",
         });
         
         // Fetch enrollment data
@@ -300,7 +300,7 @@ const CourseDetail = () => {
       } catch (error: any) {
         toast({
           title: "خطأ في التسجيل",
-          description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
+          description: error.response?.data?.message || "حاولي مرة أخرى لاحقاً",
           variant: "destructive",
         });
       } finally {
@@ -407,12 +407,12 @@ const CourseDetail = () => {
                     disabled={enrolled || loading}
                   >
                     {enrolled
-                      ? "مسجل بالفعل"
+                      ? "مسجله بالفعل"
                       : !isAuthenticated
-                        ? "سجل الآن"
+                        ? "سجلي الآن"
                         : course?.is_free
-                          ? "ابدأ التعلم الآن"
-                          : "اشترك الآن في الدورة"}
+                          ? "ابدأي التعلم الآن"
+                          : "اشتركي الآن في الدورة"}
                   </Button>
                   {enrolled && (
                     <Link to="/profile">
@@ -574,7 +574,7 @@ const CourseDetail = () => {
                 <div className="mt-12">
                   <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
                     <Star className="h-6 w-6 text-primary" />
-                    آراء الطلاب
+                 آراء الطالبات
                   </h3>
                   <div className="space-y-4">
                     {reviews.map((review) => (

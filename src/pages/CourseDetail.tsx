@@ -42,6 +42,7 @@ interface Course {
   thumbnail_url?: string;
   is_enrolled?: boolean;
   price?: number | null;
+  is_free?: boolean;
 }
 
 interface Review {
@@ -184,7 +185,7 @@ const CourseDetail = () => {
       } catch (error) {
         toast({
           title: "خطأ في تحميل الدورة",
-          description: "حاول مرة أخرى لاحقاً",
+          description: "حاولي مرة أخرى لاحقاً",
           variant: "destructive",
         });
       } finally {
@@ -241,8 +242,8 @@ const CourseDetail = () => {
     
     if (enrolled) return;
     
-    // Check if course is free or paid
-    const isFree = !course?.price || course.price === 0;
+    // Check if course is free or paid using is_free field
+    const isFree = course?.is_free === true;
     
     if (isFree) {
       // Free course - enroll directly via API
@@ -259,6 +260,28 @@ const CourseDetail = () => {
         const courseResponse = await coursesAPI.getById(Number(id));
         setCourse(courseResponse.data);
         setEnrolled(true);
+
+         toast({
+          title:"تنشيط الصفحة",
+          description: "نشطي الصفحة لتحميل محتوي الدورة",
+        });
+        
+        // Fetch enrollment data
+        try {
+          const enrollmentsResponse = await enrollmentsAPI.getAll();
+          const userEnrollments = Array.isArray(enrollmentsResponse.data) 
+            ? enrollmentsResponse.data 
+            : enrollmentsResponse.data?.results || [];
+          const courseEnrollment = userEnrollments.find(
+            (e: Enrollment) => e.id === Number(id) || (e as any).course?.id === Number(id)
+          );
+          if (courseEnrollment) {
+            setEnrollment(courseEnrollment);
+            setWatchedVideoIds(courseEnrollment.watched_video_ids || []);
+          }
+        } catch (error) {
+          console.log("Error fetching enrollment data:", error);
+        }
         
         // Fetch videos and PDFs
         try {
@@ -278,7 +301,7 @@ const CourseDetail = () => {
       } catch (error: any) {
         toast({
           title: "خطأ في التسجيل",
-          description: error.response?.data?.message || "حاول مرة أخرى لاحقاً",
+          description: error.response?.data?.message || "حاولي مرة أخرى لاحقاً",
           variant: "destructive",
         });
       } finally {
@@ -286,7 +309,7 @@ const CourseDetail = () => {
       }
     } else {
       // Paid course - redirect to WhatsApp
-      const whatsappUrl = `https://wa.me/201119186190?text=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
+      const whatsappUrl = `https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0=أرغب%20بالاشتراك%20في%20الدورة:%20${encodeURIComponent(course?.title || '')}`;
       window.open(whatsappUrl, '_blank');
     }
   };
@@ -385,12 +408,12 @@ const CourseDetail = () => {
                     disabled={enrolled || loading}
                   >
                     {enrolled
-                      ? "مسجل بالفعل"
+                      ? "مسجله بالفعل"
                       : !isAuthenticated
-                        ? "سجل الآن"
-                        : (!course?.price || course.price === 0)
-                          ? "ابدأ التعلم الآن"
-                          : "اشترك الآن في الدورة"}
+                        ? "سجلي الآن"
+                        : course?.is_free
+                          ? "ابدأي التعلم الآن"
+                          : "اشتركي الآن في الدورة"}
                   </Button>
                   {enrolled && (
                     <Link to="/profile">
@@ -410,6 +433,7 @@ const CourseDetail = () => {
           <section className="py-16">
             <div className="container mx-auto px-4 max-w-6xl">
               <h2 className="text-3xl font-bold mb-8">محتوى الدورة</h2>
+              
               
               {/* Videos Section */}
               {Array.isArray(videos) && videos.length > 0 && (
@@ -551,7 +575,7 @@ const CourseDetail = () => {
                 <div className="mt-12">
                   <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
                     <Star className="h-6 w-6 text-primary" />
-                    آراء الطلاب
+                 آراء الطالبات
                   </h3>
                   <div className="space-y-4">
                     {reviews.map((review) => (

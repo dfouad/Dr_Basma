@@ -32,8 +32,9 @@ interface CourseCardProps {
   description: string;
   duration: string;
   videoCount: number;
-  thumbnail?: string; // optional image
+  thumbnail?: string;
   price?: number | null;
+  is_free?: boolean;
 }
 
 const CourseCard = ({
@@ -44,7 +45,9 @@ const CourseCard = ({
   videoCount,
   thumbnail,
   price,
+  is_free,
 }: CourseCardProps) => {
+  const isFree = is_free || price === null || price === 0;
   return (
     <div className="group bg-card rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-border">
       {/* 🖼 Course image area */}
@@ -62,11 +65,11 @@ const CourseCard = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent opacity-90 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* 🏷️ Free badge for free courses - top right corner */}
-        {(price === null || price === 0) && (
+        {isFree && (
           <img 
             src={freeBadge} 
             alt="مجاني" 
-            className="absolute top-3 right-3 w-16 h-16 z-10"
+            className="absolute top-0 right-0 w-16 h-16 z-10"
           />
         )}
 

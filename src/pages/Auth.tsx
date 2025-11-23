@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate ,useSearchParams} from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import logo from "@/assets/logo.jpg";
+
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -21,14 +23,25 @@ const Auth = () => {
 
   const { login, register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    const mode = searchParams.get("mode");
+    if (mode === "register") {
+      setIsLogin(false);
+    } else if (mode === "login") {
+      setIsLogin(true);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (isAuthenticated && isLogin) {
       navigate('/profile');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isLogin, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+ /* const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
@@ -38,7 +51,13 @@ const Auth = () => {
         navigate('/profile');
       } else {
         if (formData.password !== formData.confirmPassword) {
-          throw new Error("كلمات المرور غير متطابقة");
+          toast({
+            title: "خطأ في التسجيل",
+            description: "كلمات المرور غير متطابقة",
+            variant: "destructive",
+          });
+          setLoading(false);
+          return;
         }
         await register(formData.email, formData.password, formData.firstName, formData.lastName);
         // Show success message instead of navigating
@@ -47,6 +66,55 @@ const Auth = () => {
       }
     } catch (error) {
       console.error("Authentication error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+*/
+    console.log("render: isLogin =", isLogin);
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+     console.log("SUBMIT: login handler");
+    setLoading(true);
+
+    try {
+      await login(formData.email, formData.password);
+      navigate("/profile");
+    } catch (error) {
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("SUBMIT: register handler");
+    setLoading(true);
+
+    try {
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: "خطأ في التسجيل",
+          description: "كلمات المرور غير متطابقة",
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      await register(
+        formData.email,
+        formData.password,
+        formData.firstName,
+        formData.lastName
+      );
+
+      setRegistrationSuccess(true);
+      setRegisteredEmail(formData.email);
+    } catch (error) {
+      console.error("Register error:", error);
     } finally {
       setLoading(false);
     }
@@ -65,9 +133,9 @@ const Auth = () => {
               <img src={logo} alt="دكتور سعادة" className="h-16 w-auto" />
               <span className="text-2xl font-bold">دكتور سعادة</span>
             </Link>
-            <h1 className="text-3xl font-bold">{isLogin ? "مرحباً بعودتك" : "إنشاء حساب جديد"}</h1>
+            <h1 className="text-3xl font-bold">{register ? "مرحباً بعودتك" : "إنشاء حساب جديد"}</h1>
             <p className="text-muted-foreground">
-              {isLogin ? "سجّل دخولك للوصول إلى دوراتك" : "ابدأ رحلة التعلم اليوم"}
+              {isLogin ? "سجّلي دخولك للوصول إلى دوراتك" : "ابدأي رحلة التعلم اليوم"}
             </p>
           </div>
 
@@ -85,7 +153,7 @@ const Auth = () => {
                   يرجى التحقق من بريدك الإلكتروني والنقر على رابط التأكيد لإكمال عملية التسجيل.
                   <br />
                   <span className="text-xs text-green-600 mt-2 block">
-                    (تحقق من مجلد الرسائل غير المرغوب فيها إذا لم تجد الرسالة)
+                    (تحققي من مجلد الرسائل غير المرغوب فيها إذا لم تجدي الرسالة)
                   </span>
                 </p>
               </div>
@@ -102,91 +170,94 @@ const Auth = () => {
             </div>
           ) : (
             <>
-              <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
-              <>
-                <div className="space-y-2">
-                  <Label htmlFor="firstName">الاسم الأول</Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    placeholder="الاسم الأول"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName">اسم العائلة</Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    placeholder="اسم العائلة"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                  />
-                </div>
-              </>
-            )}
-
+            <form
+               onSubmit={isLogin ? handleLoginSubmit : handleRegisterSubmit}
+               className="space-y-4"
+>
+        {!isLogin && (
+          <>
             <div className="space-y-2">
-              <Label htmlFor="email">البريد الإلكتروني</Label>
+              <Label htmlFor="firstName">الاسم الأول</Label>
               <Input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="email@example.com"
-                value={formData.email}
+                id="firstName"
+                name="firstName"
+                type="text"
+                placeholder="الاسم الأول"
+                value={formData.firstName}
                 onChange={handleChange}
-                required
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="password">كلمة المرور</Label>
+              <Label htmlFor="lastName">اسم العائلة</Label>
               <Input
-                id="password"
-                name="password"
-                type="password"
-                placeholder="••••••••"
-                value={formData.password}
+                id="lastName"
+                name="lastName"
+                type="text"
+                placeholder="اسم العائلة"
+                value={formData.lastName}
                 onChange={handleChange}
-                required
               />
             </div>
+          </>
+        )}
 
-            {!isLogin && (
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  placeholder="••••••••"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            )}
+        <div className="space-y-2">
+          <Label htmlFor="email">البريد الإلكتروني</Label>
+          <Input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="email@example.com"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "جاري التحميل..." : isLogin ? "تسجيل الدخول" : "إنشاء حساب"}
-            </Button>
-          </form>
+        <div className="space-y-2">
+          <Label htmlFor="password">كلمة المرور</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="••••••••"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {!isLogin && (
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">تأكيد كلمة المرور</Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
+              type="password"
+              placeholder="••••••••"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
+          </div>
+        )}
+
+  <Button type="submit" className="w-full" size="lg" disabled={loading}>
+    {loading ? "جاري التحميل..." : isLogin ? "تسجيل الدخول" : "إنشاء حساب"}
+  </Button>
+</form>
 
           <div className="text-center space-y-2">
             <button
               type="button"
               onClick={() => {
-                setIsLogin(!isLogin);
+                setIsLogin((prev) => !prev);
                 setRegistrationSuccess(false);
               }}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors"
             >
-              {isLogin ? "ليس لديك حساب؟ " : "لديك حساب بالفعل؟ "}
-              <span className="text-primary font-semibold">{isLogin ? "سجّل الآن" : "تسجيل الدخول"}</span>
+              {isLogin ? "ليس لديكي حساب؟ " : "لديكي حساب بالفعل؟ "}
+              <span className="text-primary font-semibold">{isLogin ? "سجّلي الآن" : "تسجيل الدخول"}</span>
             </button>
           </div>
             </>

@@ -95,7 +95,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         data?.email?.[0] ||
         data?.detail ||
         data?.message ||
-        "حاول مرة أخرى لاحقاً";
+        "حاولي مرة أخرى لاحقاً";
 
       toast({
         title: "خطأ في التحديث",
@@ -147,7 +147,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         data?.old_password?.[0] ||
         data?.detail ||
         data?.message ||
-        "حاول مرة أخرى لاحقاً";
+        "حاولي مرة أخرى لاحقاً";
 
       toast({
         title: "خطأ في تغيير كلمة المرور",
@@ -168,7 +168,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
         <DialogHeader>
           <DialogTitle>تعديل الملف الشخصي</DialogTitle>
           <DialogDescription>
-            قم بتحديث معلوماتك الشخصية أو تغيير كلمة المرور
+            حدثي معلوماتك الشخصية أو تغيير كلمة المرور
           </DialogDescription>
         </DialogHeader>
 
@@ -187,9 +187,14 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   id="email"
                   type="email"
                   value={email}
+                  disabled
+                  className="bg-muted"
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="أدخل البريد الإلكتروني"
+                  
                 />
+                  <p className="text-xs text-muted-foreground">
+                  لا يمكن تغيير البريد الإلكتروني
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -199,7 +204,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="text"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
-                  placeholder="أدخل الاسم الأول"
+                  placeholder="أدخلي الاسم الأول"
                 />
               </div>
 
@@ -210,7 +215,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="text"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
-                  placeholder="أدخل اسم العائلة"
+                  placeholder="أدخلي اسم العائلة"
                 />
               </div>
 
@@ -230,7 +235,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={oldPassword}
                   onChange={(e) => setOldPassword(e.target.value)}
-                  placeholder="أدخل كلمة المرور الحالية"
+                  placeholder="أدخلي كلمة المرور الحالية"
                   required
                 />
               </div>
@@ -242,7 +247,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="أدخل كلمة المرور الجديدة"
+                  placeholder="أدخلي كلمة المرور الجديدة"
                   required
                 />
               </div>
@@ -254,7 +259,7 @@ const ProfileEditDialog = ({ user, onUpdate }: ProfileEditDialogProps) => {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="أعد إدخال كلمة المرور الجديدة"
+                  placeholder="أعيدي إدخال كلمة المرور الجديدة"
                   required
                 />
               </div>

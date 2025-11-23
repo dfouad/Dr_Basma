@@ -68,6 +68,7 @@ class PendingUser(models.Model):
     token = models.UUIDField(default=uuid.uuid4, unique=True, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
+    is_verified = models.BooleanField(default=False)
     
     class Meta:
         verbose_name = 'Pending User'

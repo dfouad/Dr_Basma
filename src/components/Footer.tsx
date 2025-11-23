@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
+import { FaWhatsapp } from "react-icons/fa";
 import logo from "@/assets/logo.png";
+
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -22,59 +24,52 @@ const Footer = () => {
             <h3 className="font-semibold text-foreground mb-4">روابط سريعة</h3>
             <ul className="space-y-2">
               <li>
+                <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  العودة للرئيسية
+                </Link>
+              </li>
+              <li>
                 <Link to="/courses" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   تصفح الدورات
                 </Link>
               </li>
-              <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  عن المنصة
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  تواصل معنا
-                </Link>
-              </li>
+              
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">الدعم</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/help" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  مركز المساعدة
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  شروط الاستخدام
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  سياسة الخصوصية
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
+            <h3 className="font-semibold text-foreground mb-4">تواصلي معنا</h3>
             <div className="flex gap-4">
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+              <a
+                href="https://www.facebook.com/profile.php?id=100088086409991"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                
                 <Facebook className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
+                 </a>
+              <a
+                href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="WhatsApp"
+               className="text-muted-foreground hover:text-primary transition-colors"
+                 >
+               <FaWhatsapp className="h-5 w-5" />
+               </a>
+             
+              <a
+                href="https://www.instagram.com/dr.basmakamal?igsh=MTNiZGpybG1taXBrbQ%3D%3D&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Linkedin className="h-5 w-5" />
-              </a>
+             
             </div>
           </div>
         </div>

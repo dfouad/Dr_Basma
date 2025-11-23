@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Edit, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { usersAPI } from "@/lib/api";
+import { formatGregorianDate } from "@/lib/utils";
 
 interface User {
   id: number;
@@ -258,7 +259,7 @@ export const UserManagement = () => {
                       <span className="text-muted-foreground">لا توجد دورات</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-SA')}</TableCell>
+                  <TableCell className="text-right">{new Date(user.date_joined).toLocaleDateString('ar-EG')}</TableCell>
                   <TableCell className="text-left">
                     <div className="flex gap-2 justify-start">
                       

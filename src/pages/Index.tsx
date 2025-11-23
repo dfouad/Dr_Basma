@@ -3,12 +3,15 @@ import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CourseCard from "@/components/CourseCard";
+import ReviewsCarousel from "@/components/ReviewsCarousel"; 
 import { ArrowLeft, CheckCircle, Star, Play } from "lucide-react";
 import { useState, useEffect } from "react";
 import { videosAPI, reviewPhotosAPI, coursesAPI } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import heroImage from "@/assets/hero-image.jpg";
 import certifiedBadge from "@/assets/certified-badge.png";
+import { useRef } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 
 
@@ -19,6 +22,7 @@ const Index = () => {
   const [reviewPhotos, setReviewPhotos] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [loadingCourses, setLoadingCourses] = useState(false);
+
 
   useEffect(() => {
     if (activeTab === "videos") {
@@ -90,6 +94,9 @@ const Index = () => {
     "الإرشاد الأسري: حلول عملية للتعامل مع التحديات الأسرية",
     "مهارات الحياة: أفكار مبتكرة لتطوير الذات وبناء علاقات صحية",
     "دعم الأمهات: نصائح للتعامل مع المراهقين وتربية جيل واثق ومبدع",
+    "تنمية المراهقات" ,
+    "التزكية النفسية"
+
   ];
 
   return (
@@ -108,16 +115,26 @@ const Index = () => {
               
               <div className="flex flex-wrap gap-4">
                 <Link to="/courses">
-                  <Button size="lg" variant="hero">
-                    تصفح الدورات
+                  <Button size="lg" variant="hero">تصفحي الدورات
                     <ArrowLeft className="mr-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link to="/auth">
                   <Button size="lg" variant="outline">
-                    ابدأ مجاناً
+                    ابدأي مجاناً
                   </Button>
                 </Link>
+                 <a
+                  href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                 >
+                  <Button size="lg" variant="outline">
+                   احجزي جلستك الآن
+                  </Button>
+                </a>
+                  
+               
               </div>
             </div>
 
@@ -159,7 +176,7 @@ const Index = () => {
               <>
                 <h2 className="text-3xl md:text-4xl font-bold mb-4">الدورات المميزة</h2>
                 <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                  اكتشف دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
+                  اكتشفي دوراتنا الأكثر شعبية، المصممة بعناية لمساعدتك على تحقيق أهدافك.
                 </p>
               </>
             )}
@@ -244,7 +261,7 @@ const Index = () => {
                               className="block"
                             >
                               <Button className="w-full" variant="default">
-                                شاهد الآن
+                                شاهدى الآن
                               </Button>
                             </a>
                           )}
@@ -264,7 +281,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختار دوراتنا؟</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">لماذا تختاري دوراتنا؟</h2>
               <p className="text-lg text-muted-foreground">
               نقدم لك محتوى مميز يهتم بدعم الأمهات والنساء في رحلتهن اليومية
               </p>
@@ -298,94 +315,7 @@ const Index = () => {
       </section>
 
       {/* Reviews Section */}
-      <section className="py-20 bg-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">آراء المتدربين</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              تجارب حقيقية من متدربين نجحوا في تحقيق أهدافهم
-            </p>
-          </div>
-
-          <div className="overflow-x-auto pb-4">
-            <div className="flex gap-6 max-w-6xl mx-auto px-4">
-              {reviewPhotos.length > 0 ? (
-                reviewPhotos.map((photo) => (
-                  <div key={photo.id} className="flex-shrink-0 w-80 bg-card rounded-xl border border-border shadow-sm overflow-hidden">
-                    <img 
-                      src={photo.image_url} 
-                      alt={photo.title} 
-                      className="w-full h-auto object-cover"
-                    />
-                  </div>
-                ))
-              ) : (
-              <>
-                <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "دورة رائعة غيرت نظرتي للحياة. أسلوب د. بسمة في التدريب واضح وعملي ومؤثر جداً."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">م.س</span>
-                </div>
-                <div>
-                  <p className="font-semibold">أميرة إبراهيم</p>
-                  <p className="text-sm text-muted-foreground">رائدة أعمال</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "استفدت كثيراً من الدورات. المحتوى منظم وسهل المتابعة. شكراً د. بسمة على هذا الجهد الرائع."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">ن.ع</span>
-                </div>
-                <div>
-                  <p className="font-semibold">نور العتيبي</p>
-                  <p className="text-sm text-muted-foreground">مديرة تسويق</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-card p-8 rounded-xl border border-border shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="h-5 w-5 text-secondary fill-secondary" />
-                ))}
-              </div>
-              <p className="text-card-foreground mb-6 leading-relaxed">
-                "التدريب مع د. بسمة كان نقطة تحول في مسيرتي المهنية. أنصح به بشدة."
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center">
-                  <span className="text-primary font-bold">ع.م</span>
-                </div>
-                <div>
-                  <p className="font-semibold">دعاء فؤاد</p>
-                  <p className="text-sm text-muted-foreground">مهندسة برمجيات</p>
-                </div>
-              </div>
-            </div>
-              </>
-            )}
-            </div>
-          </div>
-        </div>
-      </section>
+<ReviewsCarousel reviewPhotos={reviewPhotos} />
 
       {/* About Coach Section */}
       <section className="py-20 bg-muted/30">
@@ -397,10 +327,12 @@ const Index = () => {
             </div>
             
             <p className="text-lg text-muted-foreground leading-relaxed text-center">
-              مع أكثر من 15 عاماً من الخبرة في التدريب والتطوير الشخصي، ساعدت آلاف الأفراد
-              على تحويل حياتهم وتحقيق نتائج استثنائية. مهمتي هي تزويدك بالأدوات والاستراتيجيات
-              والدعم الذي تحتاجه لإطلاق إمكاناتك الكاملة.
-            </p>
+ هي
+مدرِّبة أسرية وتربوية تهتم بتمكين المرأة والأم والفتاة من العيش بسلام داخلي وثقة في نفسها، من خلال تقديم برامج عملية تمزج بين العلم النفسي الحديث والإرشاد والهدي النبوي  والفطرة الإنسانية.
+بدايه من ٢٠١٧ قدّمت بسمه عشرات الورش والبرامج الموجهة للأمهات والفتيات والمقبلات على الزواج، وتتميّز بأسلوب قريب، بسيط، وعملي يساعد الحاضرات على فهم أنفسهن وبناء علاقات صحية في بيوتهن.
+وهي صاحبة مجموعة برامج قوية، منها: رُشد – احتواء – افضل نسخة منهم – حورية   – رابطة أمومة – خططي بنعومة – عطاء آمن 
+
+تؤمن أن كل امرأة تستحق أن تعيش بخفة، وسلام، ورسالة، وأن تهذب روحها لتخدم بيتها ونفسها دون جلد أو قسوة.</p>
 
             <div className="bg-card p-8 rounded-xl border border-border">
               <h4 className="text-xl font-bold mb-6 text-center">الشهادات والمؤهلات</h4>
@@ -408,38 +340,58 @@ const Index = () => {
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">دكتوراه في علم النفس التطبيقي</p>
-                    <p className="text-sm text-muted-foreground">جامعة القاهرة</p>
+                    <p className="font-semibold">معالج نفسي إسلامي معتمد </p>
+                    <p className="text-sm text-muted-foreground">البورد المصري</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">مدرب معتمد في البرمجة اللغوية العصبية</p>
-                    <p className="text-sm text-muted-foreground">المعهد الدولي للتدريب</p>
+                    <p className="font-semibold">ماجستير مهني صحة نفسية </p>
+                    <p className="text-sm text-muted-foreground">جامعة سوهاج</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">مستشار تطوير القيادة</p>
-                    <p className="text-sm text-muted-foreground">معهد القيادة الاستراتيجية</p>
+                    <p className="font-semibold">مدرب دولي معتمد </p>
+                    <p className="text-sm text-muted-foreground">جامعة الأسكندرية</p>
                   </div>
                 </div>
+
                 <div className="flex items-start gap-3">
                   <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
                   <div>
-                    <p className="font-semibold">خبير في التنمية البشرية</p>
-                    <p className="text-sm text-muted-foreground">أكثر من 15 عاماً من الخبرة</p>
+                    <p className="font-semibold">مستشار اسري وتربوي واخصائي تعديل سلوك</p>
                   </div>
                 </div>
-              </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">مدرب مهارات الحياه للمراهقين والكبار</p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold"> معالج بالمدارس العلاجيه المختلفه ( علاج معرفي سلوكي - علاج جدلي سلوكي )</p>
+                  </div>
+                 
+                <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">وكيل للمعهد العربي للصحة النفسيه </p>
+                  </div>
+
+                  <div className="flex items-start gap-3">
+                  <CheckCircle className="h-6 w-6 text-primary flex-shrink-0 mt-1" />
+                    <p className="font-semibold">عضو في الجمعيه المصرية للمعالجين النفسيين</p>
+                  </div>
             </div>
+          </div>
 
             <div className="text-center">
               <Link to="/auth">
                 <Button size="lg" variant="default">
-                  ابدأ رحلتك اليوم
+                  ابدأى رحلتك اليوم
                 </Button>
               </Link>
             </div>

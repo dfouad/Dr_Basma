@@ -34,28 +34,70 @@ class VideoSerializer(serializers.ModelSerializer):
 class CourseListSerializer(serializers.ModelSerializer):
     """Serializer for course list view."""
     
-  #  category_name = serializers.CharField(source='category.name', read_only=True)
     category = CategorySerializer(read_only=True)
     category_id = serializers.PrimaryKeyRelatedField(
         source="category",
         queryset=Category.objects.all(),
         write_only=True
     )
-
-    thumbnail_url = serializers.SerializerMethodField()
+    thumbnail_url_display = serializers.SerializerMethodField(read_only=True)
     
     class Meta:
-     model = Course
-      #  fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'video_count', 'created_at')
-     fields = ["id", "title", "description", "thumbnail_url", "duration", "price", "is_published", "category", "category_id", "video_count", "created_at"]
-    def get_thumbnail_url(self, obj):
-        """Return the full thumbnail URL."""
+        model = Course
+        fields = ["id", "title", "description", "thumbnail", "thumbnail_url", "thumbnail_url_display", 
+                  "duration", "duration_in_days", "price", "is_free", "is_published", "category", "category_id", "video_count", "created_at"]
+        extra_kwargs = {
+            'thumbnail': {'required': False, 'allow_null': True},
+            'thumbnail_url': {'required': False, 'allow_null': True, 'allow_blank': True},
+        }
+    
+    def get_thumbnail_url_display(self, obj):
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
         if obj.thumbnail:
             request = self.context.get('request')
             if request:
                 return request.build_absolute_uri(obj.thumbnail.url)
             return obj.thumbnail.url
         return None
+    
+    def create(self, validated_data):
+        """Handle creation - ensure only one thumbnail type is used."""
+        # If thumbnail_url is provided and not empty, don't save thumbnail file
+        thumbnail_url = validated_data.get('thumbnail_url', '').strip()
+        if thumbnail_url:
+            validated_data.pop('thumbnail', None)
+            validated_data['thumbnail_url'] = thumbnail_url
+        # If thumbnail file is provided, don't save thumbnail_url
+        elif validated_data.get('thumbnail'):
+            validated_data['thumbnail_url'] = None
+        
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        """Handle update to clear thumbnail when thumbnail_url is provided and vice versa."""
+        # If thumbnail_url is provided, handle it
+        if 'thumbnail_url' in validated_data:
+            thumbnail_url = validated_data.pop('thumbnail_url', None)
+            if thumbnail_url:
+                # User is setting a URL, clear any existing file
+                if instance.thumbnail:
+                    instance.thumbnail.delete(save=False)
+                    instance.thumbnail = None
+                instance.thumbnail_url = thumbnail_url
+            else:
+                # Empty URL provided, clear it
+                instance.thumbnail_url = None
+        
+        # If thumbnail file is provided, clear the thumbnail_url
+        if 'thumbnail' in validated_data and validated_data.get('thumbnail'):
+            # User is uploading a file, clear URL
+            instance.thumbnail_url = None
+        
+        return super().update(instance, validated_data)
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):
@@ -68,11 +110,15 @@ class CourseDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Course
-        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'price', 'video_count', 
+        fields = ('id', 'title', 'description', 'thumbnail_url', 'category_name', 'duration', 'price', 'is_free', 'video_count', 
                   'videos', 'is_enrolled', 'created_at', 'updated_at')
     
     def get_thumbnail_url(self, obj):
-        """Return the full thumbnail URL."""
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        # First check if there's a direct URL
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        # Otherwise check for uploaded file
         if obj.thumbnail:
             request = self.context.get('request')
             if request:

@@ -204,4 +204,43 @@ export const certificatesAPI = {
     api.delete(`/admin/certificates/${id}/delete/`),
 };
 
+export const feedbackAPI = {
+  getAll: (courseId?: number) =>
+    api.get('/feedbacks/', { params: courseId ? { course: courseId } : {} }),
+  
+  create: (data: { course: number; rating: number; comment: string }) =>
+    api.post('/feedbacks/', data),
+  
+  update: (id: number, data: { rating?: number; comment?: string }) =>
+    api.patch(`/feedbacks/${id}/`, data),
+  
+  delete: (id: number) =>
+    api.delete(`/feedbacks/${id}/`),
+};
+
+export const reviewPhotosAPI = {
+  getAll: () =>
+    api.get('/reviews/'),
+  
+  getAllAdmin: () =>
+    api.get('/admin/reviews/'),
+  
+  create: (data: FormData) =>
+    api.post('/admin/reviews/', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  update: (id: number, data: FormData) =>
+    api.patch(`/admin/reviews/${id}/`, data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+  
+  delete: (id: number) =>
+    api.delete(`/admin/reviews/${id}/`),
+};
+
 export default api;

@@ -5,10 +5,8 @@ Django settings for Arabic Online Course Platform.
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
-import os
-import dj_database_url
-from dotenv import load_dotenv
-load_dotenv()
+
+    
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

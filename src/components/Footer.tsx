@@ -50,10 +50,12 @@ const Footer = () => {
                 
                 <Facebook className="h-5 w-5" />
                  </a>
-              <a
-                 href="https://wa.me/201555676851"
-                  target="_blank"
-                  rel="noopener noreferrer"
+               <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    window.open("https://wa.me/201555676851", "_blank", "noopener,noreferrer");
+                  }}
                   aria-label="WhatsApp"
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >

@@ -10,10 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import ProfileEditDialog from "@/components/ProfileEditDialog";
 import CourseCard from "@/components/CourseCard";
 import CertificateDownloadDialog from "@/components/CertificateDownloadDialog";
-<<<<<<< HEAD
-=======
 import FeedbackDialog from "@/components/FeedbackDialog";
->>>>>>> sara-.D
 
 interface EnrolledCourse {
   id: number;
@@ -121,11 +118,7 @@ const Profile = () => {
         console.error("Failed to fetch data:", error);
         toast({
           title: "خطأ في تحميل البيانات",
-<<<<<<< HEAD
-          description: "حاول مرة أخرى لاحقاً",
-=======
           description: "حاولي مرة أخرى لاحقاً",
->>>>>>> sara-.D
           variant: "destructive",
         });
       } finally {
@@ -176,15 +169,9 @@ const Profile = () => {
                 </div>
               ) : enrolledCourses.length === 0 ? (
                 <div className="text-center py-16 bg-card rounded-lg border border-border">
-<<<<<<< HEAD
-                  <p className="text-lg text-muted-foreground mb-4">لم تسجل في أي دورة بعد</p>
-                  <Link to="/courses">
-                    <Button>تصفح الدورات</Button>
-=======
                   <p className="text-lg text-muted-foreground mb-4">لم تسجلي في أي دورة بعد</p>
                   <Link to="/courses">
                     <Button>تصفحي الدورات</Button>
->>>>>>> sara-.D
                   </Link>
                 </div>
               ) : (
@@ -236,8 +223,6 @@ const Profile = () => {
                               </Button>
                             </Link>
 
-<<<<<<< HEAD
-=======
                             {/* Feedback Button */}
                             <div className="mt-2">
                               <FeedbackDialog
@@ -246,7 +231,6 @@ const Profile = () => {
                               />
                             </div>
 
->>>>>>> sara-.D
                             {/* ✅ Show certificate only when progress = 100 AND not already issued */}
                             {enrollment.progress === 100 && !hasCertificate && (
                               <CertificateDownloadDialog
@@ -276,11 +260,7 @@ const Profile = () => {
               <div>
                 <div className="flex items-center gap-2 mb-6">
                   <Sparkles className="h-6 w-6 text-primary" />
-<<<<<<< HEAD
-                  <h2 className="text-2xl font-bold">دورات موصى بها لك</h2>
-=======
                   <h2 className="text-2xl font-bold">دورات موصى بها لكي</h2>
->>>>>>> sara-.D
                 </div>
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {recommendedCourses.map((course) => (
@@ -300,15 +280,6 @@ const Profile = () => {
 
             {/* Browse More */}
             <div className="bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl p-8 text-center">
-<<<<<<< HEAD
-              <h2 className="text-2xl font-bold mb-4">مستعد لتعلم المزيد؟</h2>
-              <p className="text-muted-foreground mb-6">
-                استكشف كتالوجنا الكامل من الدورات لمواصلة رحلة نموك.
-              </p>
-              <Link to="/courses">
-                <Button size="lg" variant="hero">
-                  تصفح جميع الدورات
-=======
               <h2 className="text-2xl font-bold mb-4">مستعدة لتعلم المزيد؟</h2>
               <p className="text-muted-foreground mb-6">
                 استكشفي كتالوجنا الكامل من الدورات لمواصلة رحلة نموك.
@@ -316,7 +287,6 @@ const Profile = () => {
               <Link to="/courses">
                 <Button size="lg" variant="hero">
                   تصفحي جميع الدورات
->>>>>>> sara-.D
                 </Button>
               </Link>
             </div>

@@ -4,8 +4,6 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-<<<<<<< HEAD
-=======
 
 export function formatGregorianDate(dateString: string): string {
   const date = new Date(dateString);
@@ -14,4 +12,3 @@ export function formatGregorianDate(dateString: string): string {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
->>>>>>> sara-.D

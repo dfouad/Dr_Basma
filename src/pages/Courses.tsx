@@ -14,14 +14,9 @@ interface Course {
   duration: string;
   video_count: number;
   thumbnail: string;
-<<<<<<< HEAD
-  thumbnail_url?: string;  // Add this if API sends thumbnail_url
-  price?: number | null;
-=======
   thumbnail_url?: string;
   price?: number | null;
   is_free?: boolean;
->>>>>>> sara-.D
 }
 
 const Courses = () => {
@@ -116,10 +111,7 @@ const Courses = () => {
                     videoCount={course.video_count}
                     thumbnail={course.thumbnail_url || `http://localhost:8000${course.thumbnail}`}
                     price={course.price}
-<<<<<<< HEAD
-=======
                     is_free={course.is_free}
->>>>>>> sara-.D
                   />
                 ))}
               </div>

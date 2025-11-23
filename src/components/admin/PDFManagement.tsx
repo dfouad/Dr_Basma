@@ -258,24 +258,6 @@ export function PDFManagement() {
               </div>
               <div>
                 <Label htmlFor="course">الدورة *</Label>
-<<<<<<< HEAD
-                <Select
-                  value={formData.course}
-                  onValueChange={(value) => setFormData({ ...formData, course: value })}
-                  required
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="اختر دورة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {courses.map((course) => (
-                      <SelectItem key={course.id} value={course.id.toString()}>
-                        {course.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-=======
               <Select
   value={formData.course}
   onValueChange={(value) => setFormData({ ...formData, course: value })}
@@ -304,7 +286,6 @@ export function PDFManagement() {
 
 
                 
->>>>>>> sara-.D
               </div>
               <div>
                 <Label htmlFor="order">الترتيب</Label>

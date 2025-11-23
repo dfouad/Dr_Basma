@@ -6,18 +6,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-<<<<<<< HEAD
-import { Edit, Trash2, Plus } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import api, { coursesAPI } from "@/lib/api";
-import { Checkbox } from "@/components/ui/checkbox";
-=======
 import { Edit, Trash2, Plus, Upload, Link as LinkIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import api, { coursesAPI } from "@/lib/api";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
->>>>>>> sara-.D
 
 interface Course {
   id: number;
@@ -26,15 +19,10 @@ interface Course {
   thumbnail: string;
   category: { id: number; name: string };
   duration: string;
-<<<<<<< HEAD
-  is_published: boolean;
-  price?: number;
-=======
   duration_in_days: number;
   is_published: boolean;
   price?: number;
   is_free: boolean;
->>>>>>> sara-.D
 }
 
 interface Category {
@@ -48,11 +36,8 @@ export const CourseManagement = () => {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
-<<<<<<< HEAD
-=======
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
->>>>>>> sara-.D
   const { toast } = useToast();
 
   const [formData, setFormData] = useState({
@@ -61,12 +46,6 @@ export const CourseManagement = () => {
     thumbnail: "",
     category: "",
     duration: "",
-<<<<<<< HEAD
-    price: "",
-    is_published: true,
-  });
-
-=======
     duration_in_days: "1",
     price: "",
     is_published: true,
@@ -78,7 +57,6 @@ export const CourseManagement = () => {
   const [thumbnailMode, setThumbnailMode] = useState<"upload" | "link">("upload");
   const [imageLoadError, setImageLoadError] = useState(false);
 
->>>>>>> sara-.D
   useEffect(() => {
     fetchCourses();
     fetchCategories();
@@ -99,27 +77,6 @@ export const CourseManagement = () => {
     }
   };*/
   const fetchCourses = async () => {
-<<<<<<< HEAD
-  try {
-    const response = await api.get("/courses/");
-    
-    // Handle both paginated and non-paginated responses
-    const courseList = Array.isArray(response.data)
-      ? response.data
-      : response.data.results || [];
-    
-    setCourses(courseList);
-  } catch (error) {
-    toast({
-      title: "خطأ",
-      description: "فشل تحميل الدورات",
-      variant: "destructive",
-    });
-  } finally {
-    setLoading(false);
-  }
-};
-=======
     try {
       const response = await api.get("/admin/courses/");
       
@@ -145,7 +102,6 @@ export const CourseManagement = () => {
       setLoading(false);
     }
   };
->>>>>>> sara-.D
 
 
   const fetchCategories = async () => {
@@ -161,25 +117,6 @@ export const CourseManagement = () => {
     }
   };
 
-<<<<<<< HEAD
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const payload = {
-        ...formData,
-        category: parseInt(formData.category),
-        price: formData.price ? parseFloat(formData.price) : null,
-      };
-
-      if (editingCourse) {
-        await coursesAPI.update(editingCourse.id, payload);
-        toast({ title: "تم التحديث", description: "تم تحديث الدورة بنجاح" });
-      } else {
-        await coursesAPI.create(payload);
-        toast({ title: "تم الإنشاء", description: "تم إنشاء الدورة بنجاح" });
-      }
-
-=======
   const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -303,7 +240,6 @@ export const CourseManagement = () => {
         description: editingCourse ? "تم تحديث الدورة بنجاح" : "تم إنشاء الدورة بنجاح" 
       });
 
->>>>>>> sara-.D
       setDialogOpen(false);
       resetForm();
       fetchCourses();
@@ -334,8 +270,6 @@ export const CourseManagement = () => {
     }
   };
 
-<<<<<<< HEAD
-=======
   const handleTogglePublish = async (course: Course) => {
     try {
       const payload = {
@@ -398,7 +332,6 @@ export const CourseManagement = () => {
     }
   };
 
->>>>>>> sara-.D
   const openEditDialog = (course: Course) => {
     setEditingCourse(course);
     setFormData({
@@ -407,11 +340,6 @@ export const CourseManagement = () => {
       thumbnail: course.thumbnail,
       category: course.category.id.toString(),
       duration: course.duration,
-<<<<<<< HEAD
-      price: course.price?.toString() || "",
-      is_published: course.is_published,
-    });
-=======
       duration_in_days: course.duration_in_days?.toString() || "1",
       price: course.price?.toString() || "",
       is_published: course.is_published,
@@ -424,7 +352,6 @@ export const CourseManagement = () => {
       setThumbnailPreview("");
       setImageLoadError(false);
     }
->>>>>>> sara-.D
     setDialogOpen(true);
   };
 
@@ -436,11 +363,6 @@ export const CourseManagement = () => {
       thumbnail: "",
       category: "",
       duration: "",
-<<<<<<< HEAD
-      price: "",
-      is_published: true,
-    });
-=======
       duration_in_days: "1",
       price: "",
       is_published: true,
@@ -471,7 +393,6 @@ export const CourseManagement = () => {
     setThumbnailFile(null); // Clear file when using URL
     setThumbnailPreview("");
     setImageLoadError(false); // Reset error when URL changes
->>>>>>> sara-.D
   };
 
   return (
@@ -488,19 +409,11 @@ export const CourseManagement = () => {
               إضافة دورة
             </Button>
           </DialogTrigger>
-<<<<<<< HEAD
-          <DialogContent className="max-w-2xl" dir="rtl">
-            <DialogHeader>
-              <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-=======
           <DialogContent className="max-w-2xl max-h-[90vh]" dir="rtl">
             <DialogHeader>
               <DialogTitle className="text-right">{editingCourse ? "تعديل دورة" : "إضافة دورة جديدة"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 overflow-y-auto max-h-[calc(90vh-120px)] px-1">
->>>>>>> sara-.D
               <div>
                 <Label htmlFor="title">عنوان الدورة</Label>
                 <Input
@@ -521,43 +434,6 @@ export const CourseManagement = () => {
                 />
               </div>
               <div>
-<<<<<<< HEAD
-                <Label htmlFor="thumbnail">رابط الصورة</Label>
-                <Input
-                  id="thumbnail"
-                  value={formData.thumbnail}
-                  onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
-                  placeholder="https://example.com/image.jpg"
-                />
-                {formData.thumbnail && (
-                  <div className="mt-2">
-                    <Label className="text-sm text-muted-foreground">معاينة الصورة:</Label>
-                    <img 
-                      src={formData.thumbnail} 
-                      alt="معاينة" 
-                      className="mt-1 h-32 w-full object-cover rounded-lg border"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
-                  </div>
-                )}
-              </div>
-              <div>
-                <Label htmlFor="category">الفئة</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
-                  <SelectTrigger id="category">
-                    <SelectValue placeholder="اختر فئة" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-=======
                 <Label>صورة الدورة</Label>
                 <Tabs value={thumbnailMode} onValueChange={(value) => setThumbnailMode(value as "upload" | "link")} className="mt-2">
                   <TabsList className="grid w-full grid-cols-2">
@@ -680,7 +556,6 @@ export const CourseManagement = () => {
                     </DialogContent>
                   </Dialog>
                 </div>
->>>>>>> sara-.D
               </div>
               <div>
                 <Label htmlFor="duration">المدة</Label>
@@ -693,8 +568,6 @@ export const CourseManagement = () => {
                 />
               </div>
               <div>
-<<<<<<< HEAD
-=======
                 <Label htmlFor="duration_in_days">مدة الدورة بالأيام</Label>
                 <Input
                   id="duration_in_days"
@@ -710,7 +583,6 @@ export const CourseManagement = () => {
                 </p>
               </div>
               <div>
->>>>>>> sara-.D
                 <Label htmlFor="price">السعر (اختياري)</Label>
                 <Input
                   id="price"
@@ -750,11 +622,8 @@ export const CourseManagement = () => {
                 <TableHead className="text-right">العنوان</TableHead>
                 <TableHead className="text-right">الفئة</TableHead>
                 <TableHead className="text-right">المدة</TableHead>
-<<<<<<< HEAD
-=======
                 <TableHead className="text-center">مجاني</TableHead>
                 <TableHead className="text-center">نشر</TableHead>
->>>>>>> sara-.D
                 <TableHead className="text-right">الحالة</TableHead>
                 <TableHead className="text-right">الإجراءات</TableHead>
               </TableRow>
@@ -766,10 +635,6 @@ export const CourseManagement = () => {
                   <TableCell className="text-right">{course.category?.name || "بدون فئة"}</TableCell>
                   <TableCell className="text-right">{course.duration}</TableCell>
                   <TableCell className="text-right">
-<<<<<<< HEAD
-                    <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                      {course.is_published ? 'منشور' : 'مسودة'}
-=======
                     <div className="flex items-center gap-2 justify-center">
                       <Checkbox
                         checked={course.is_free}
@@ -791,7 +656,6 @@ export const CourseManagement = () => {
                   <TableCell className="text-right">
                     <span className={`px-2 py-1 rounded text-xs ${course.is_published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                       {course.is_published ? 'منشور' : 'غير منشور'}
->>>>>>> sara-.D
                     </span>
                   </TableCell>
                   <TableCell className="text-left">

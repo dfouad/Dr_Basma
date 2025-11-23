@@ -125,7 +125,7 @@ const Index = () => {
                   </Button>
                 </Link>
                  <a
-                  href="https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
+                  href="https://wa.me/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0"
                   target="_blank"
                   rel="noopener noreferrer"
                  >

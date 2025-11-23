@@ -51,7 +51,7 @@ const Footer = () => {
                 <Facebook className="h-5 w-5" />
                  </a>
               <a
-                  href="https://wa.me/message/IFEAWYSTJ2DUE1"
+                  href="https://wa.me/https://wa.me/+201555676851"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp"

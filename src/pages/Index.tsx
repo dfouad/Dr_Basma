@@ -125,7 +125,8 @@ const Index = () => {
                   </Button>
                 </Link>
                  <a
-                   href="https://wa.me/message/IFEAWYSTJ2DUE1"
+                 //  href="https://wa.me/message/IFEAWYSTJ2DUE1"
+                  href="https://wa.me/+201555676851"
                   target="_blank"
                   rel="noopener noreferrer"
                  >

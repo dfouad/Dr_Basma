@@ -309,8 +309,8 @@ const CourseDetail = () => {
       }
     } else {
       // Paid course - redirect to WhatsApp
-      const whatsappUrl = `https:/wa.me/message/IFEAWYSTJ2DUE1?autoload=1${encodeURIComponent(course?.title || '')}`;
-      window.open(whatsappUrl, '_blank');
+      const whatsappUrl = "https://wa.me/message/IFEAWYSTJ2DUE1";
+      window.open(whatsappUrl, "_blank");
     }
   };
 

@@ -51,15 +51,15 @@ const Footer = () => {
                 <Facebook className="h-5 w-5" />
                  </a>
               <button
-  type="button"
-  onClick={() =>
-    window.open("https://wa.me/201555676851", "_blank", "noopener,noreferrer")
-  }
-  aria-label="WhatsApp"
-  className="text-muted-foreground hover:text-primary transition-colors"
->
-  <FaWhatsapp className="h-5 w-5" />
-</button>
+                      type="button"
+                      onClick={() =>
+                        window.open("https://wa.me/message/IFEAWYSTJ2DUE1", "_blank", "noopener,noreferrer")
+                      }
+                      aria-label="WhatsApp"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      <FaWhatsapp className="h-5 w-5" />
+                    </button>
 
 
               <a

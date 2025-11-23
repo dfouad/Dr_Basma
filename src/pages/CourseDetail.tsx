@@ -309,7 +309,7 @@ const CourseDetail = () => {
       }
     } else {
       // Paid course - redirect to WhatsApp
-      const whatsappUrl = "https://wa.me/message/IFEAWYSTJ2DUE1";
+      const whatsappUrl = "https://wa.me/201555676851";
       window.open(whatsappUrl, "_blank");
     }
   };

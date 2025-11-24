@@ -8,7 +8,19 @@ const Footer = () => {
 
   const handleWhatsAppClick = () => {
     // Open WhatsApp in a new tab – no href involved
-    window.open("https://api.whatsapp.com/message/IFEAWYSTJ2DUE1?autoload=1&app_absent=0", "_blank", "noopener,noreferrer");
+    const url ="https://wa.me/201555676851";
+    
+  // Simple mobile detection
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // On mobile, navigate in the same tab – more reliable
+    window.location.href = url;
+  } else {
+    // On desktop, open in new tab
+    window.open(url, "_blank", "noopener,noreferrer");
+  }
+    
   };
 
   return (

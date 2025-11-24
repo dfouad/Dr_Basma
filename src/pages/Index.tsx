@@ -81,6 +81,8 @@ const Index = () => {
       const videosData = Array.isArray(response.data) 
         ? response.data 
         : (response.data?.results || []);
+      console.log("Free videos data:", videosData);
+      console.log("First video thumbnail_url_display:", videosData[0]?.thumbnail_url_display);
       setFreeVideos(videosData);
     } catch (error) {
       console.error("Failed to fetch free videos", error);

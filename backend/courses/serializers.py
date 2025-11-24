@@ -15,11 +15,12 @@ class VideoSerializer(serializers.ModelSerializer):
     """Serializer for course videos."""
     
     video_url_display = serializers.SerializerMethodField()
+    thumbnail_url_display = serializers.SerializerMethodField()
     course_title = serializers.CharField(source='course.title', read_only=True)
     
     class Meta:
         model = Video
-        fields = ('id', 'title', 'description', 'video_url', 'video_url_display', 'duration', 'order', 'course', 'course_title', 'is_free', 'created_at')
+        fields = ('id', 'title', 'description', 'thumbnail', 'thumbnail_url', 'thumbnail_url_display', 'video_url', 'video_url_display', 'duration', 'order', 'course', 'course_title', 'is_free', 'created_at')
     
     def get_video_url_display(self, obj):
         """Return the appropriate video URL (file or external)."""
@@ -29,6 +30,17 @@ class VideoSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(obj.video_file.url)
             return obj.video_file.url
         return obj.video_url
+    
+    def get_thumbnail_url_display(self, obj):
+        """Return the full thumbnail URL (prioritize URL over file)."""
+        if obj.thumbnail_url:
+            return obj.thumbnail_url
+        if obj.thumbnail:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.thumbnail.url)
+            return obj.thumbnail.url
+        return None
 
 
 class CourseListSerializer(serializers.ModelSerializer):

@@ -233,11 +233,26 @@ const Index = () => {
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {freeVideos.map((video) => (
                     <Card key={video.id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                      <CardHeader>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Play className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-medium text-primary">مجاني</span>
+                      {video.thumbnail_url_display && (
+                        <div className="relative w-full h-48 overflow-hidden">
+                          <img 
+                            src={video.thumbnail_url_display} 
+                            alt={video.title}
+                            className="w-full h-full object-cover"
+                          />
+                          <div className="absolute top-2 left-2 bg-primary/90 text-primary-foreground px-3 py-1 rounded-full flex items-center gap-1">
+                            <Play className="h-4 w-4" />
+                            <span className="text-sm font-medium">مجاني</span>
+                          </div>
                         </div>
+                      )}
+                      <CardHeader>
+                        {!video.thumbnail_url_display && (
+                          <div className="flex items-center gap-2 mb-2">
+                            <Play className="h-5 w-5 text-primary" />
+                            <span className="text-sm font-medium text-primary">مجاني</span>
+                          </div>
+                        )}
                         <CardTitle className="text-right">{video.title}</CardTitle>
                         {video.course_title && (
                           <CardDescription className="text-right">

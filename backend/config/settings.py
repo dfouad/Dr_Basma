@@ -12,11 +12,9 @@ from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-#load_dotenv(os.path.join(BASE_DIR, "config", ".env"))
 load_dotenv(os.path.join(BASE_DIR,".env"))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-#SECRET_KEY = config('SECRET_KEY', default='django-insecure-change-this-in-production')
 SECRET_KEY = os.getenv("SECRET_KEY", "fallback-secret-key")
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
@@ -24,9 +22,8 @@ DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-#ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='https://drbasma-production.up.railway.app/,localhost,127.0.0.1').split(',')
-#ALLOWED_HOSTS = ["*", os.getenv("RAILWAY_PUBLIC_DOMAIN", "")]
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,drbasma-production.up.railway.app").split(",")
+# Allow all hosts for development, specify in production
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1,drbasma-production.up.railway.app,basmakamal.com,www.basmakamal.com,api.basmakamal.com").split(",")
 
 # Application definition
 
@@ -200,7 +197,7 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://drbasma.vercel.app/',  
+    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://your-frontend.lovable.app,https://drbasma.vercel.app/,https://basmakamal.com,https://www.basmakamal.com,https://api.basmakamal.com',  
 ).split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -217,8 +214,11 @@ CORS_ALLOW_METHODS = [
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://drbasma-production.up.railway.app",
-    "https://drbasma.vercel.app",
+   # "https://drbasma-production.up.railway.app",
+   # "https://drbasma.vercel.app",
+    "https://basmakamal.com",
+    "https://www.basmakamal.com",
+    "https://api.basmakamal.com",
 ]
 
 # Email Configuration for Gmail SMTP

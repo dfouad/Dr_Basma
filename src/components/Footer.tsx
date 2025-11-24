@@ -38,7 +38,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-4">تواصل معنا</h3>
+            <h3 className="font-semibold text-foreground mb-4">تواصلي معنا</h3>
             <div className="flex gap-4">
               <a
                 href="https://www.facebook.com/profile.php?id=100088086409991"
@@ -61,7 +61,7 @@ const Footer = () => {
                </a>
              
               <a
-                href="https://www.instagram.com/"
+                href="https://www.instagram.com/dr.basmakamal?igsh=MTNiZGpybG1taXBrbQ%3D%3D&utm_source=qr"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
@@ -69,15 +69,7 @@ const Footer = () => {
               >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a
-                href="https://www.linkedin.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                <Linkedin className="h-5 w-5" />
-              </a>
+             
             </div>
           </div>
         </div>

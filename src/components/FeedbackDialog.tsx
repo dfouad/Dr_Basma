@@ -133,7 +133,7 @@ const FeedbackDialog = ({ courseId, courseTitle }: FeedbackDialogProps) => {
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="gap-2">
           <MessageSquare className="h-4 w-4" />
-          اكتب تقييماً
+          اكتبي تقييماً
         </Button>
       </DialogTrigger>
 
@@ -175,7 +175,7 @@ const FeedbackDialog = ({ courseId, courseTitle }: FeedbackDialogProps) => {
             </label>
             <Textarea
               id="comment"
-              placeholder="شاركنا رأيك في الدورة (لمرة واحدة فقط)..."
+              placeholder="شاركينا رأيك في الدورة (لمرة واحدة فقط)..."
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={5}

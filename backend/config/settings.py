@@ -47,6 +47,9 @@ INSTALLED_APPS = [
     #hosting cloud for media files
     'cloudinary',
     'cloudinary_storage',
+    
+    #email handling service
+    "anymail",
 ]
 
 MIDDLEWARE = [
@@ -236,3 +239,12 @@ DEFAULT_FROM_EMAIL = os.getenv(
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", 10))
 # Frontend URL for email verification links
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://www.basmakamal.com')
+
+# Anymail configuration for Sendinblue
+EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": os.environ.get("SENDINBLUE_API_KEY"),
+}
+
+DEFAULT_FROM_EMAIL = "Dr Basma <no-reply@basmakamal.com>"

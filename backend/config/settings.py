@@ -197,7 +197,8 @@ SIMPLE_JWT = {
 # CORS settings
 CORS_ALLOWED_ORIGINS = config(
     'CORS_ALLOWED_ORIGINS',
-    default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://drbasma.vercel.app/,https://basmakamal.com,https://www.basmakamal.com,https://api.basmakamal.com,https://www.basmakamal.com:8080'
+   # default='http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8080,http://localhost:8080,https://drbasma.vercel.app/,https://basmakamal.com,https://www.basmakamal.com,https://api.basmakamal.com,https://www.basmakamal.com:8080'
+    default='https://www.basmakamal.com'
 ).split(',')
 
 CORS_ALLOW_ALL_ORIGINS = True

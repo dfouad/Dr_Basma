@@ -10,6 +10,7 @@ from django.utils.html import strip_tags
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, PendingUserSerializer
 from .models import PendingUser
 
+
 User = get_user_model()
 
 
@@ -25,18 +26,51 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         pending_user = serializer.save()
         
-    # Send verification email
-    try:
-        send_mail(
-            subject="تأكيد البريد الإلكتروني",
-            message=f"اضغطي على الرابط لتفعيل حسابك: {verification_url}",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[pending_user.email],
-            fail_silently=False,
-        )
-    except Exception as e:
-        # Log the error so you can see it in Railway logs
-        pass
+        # Send verification email
+        try:
+            print(f"Frontend URL: {settings.FRONTEND_URL}")
+            print(f"User Email: {pending_user.email}")
+            print(f"User Token: {pending_user.token}")
+            print(f"User First Name: {pending_user.first_name}")
+            
+            verification_url = f"{settings.FRONTEND_URL}/verify-email?token={pending_user.token}"
+            print(f"Verification URL: {settings.FRONTEND_URL}")
+            # Render HTML email template
+            
+            html_message = render_to_string('users/verification_email.html', {
+                'verification_url': verification_url,
+                'email': pending_user.email,
+                'first_name': pending_user.first_name or 'User',
+            })
+            plain_message = strip_tags(html_message)
+
+
+
+            send_mail(
+                subject='تأكيد البريد الإلكتروني - دكتور سعادة',
+                message=plain_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[pending_user.email],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            
+            return Response(
+                {
+                    'message': 'Registration successful. Please check your email to verify your account.',
+                    'email': pending_user.email
+                },
+                status=status.HTTP_201_CREATED
+            )
+        except Exception as e:
+            # If email fails, delete the pending user
+            pending_user.delete()
+            return Response(
+                {'error': f'Failed to send verification email: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class UserDetailView(generics.RetrieveUpdateAPIView):
     """API endpoint for viewing and updating user profile."""
     

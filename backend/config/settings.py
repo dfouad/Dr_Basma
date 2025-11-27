@@ -231,3 +231,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', EMAIL_HOST_USER)
 
 # Frontend URL for email verification links
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'http://localhost:8080')
+
+# File upload settings - allow up to 50MB uploads
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB

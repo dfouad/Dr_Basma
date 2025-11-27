@@ -2,6 +2,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from .models import PendingUser
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
@@ -73,6 +74,8 @@ class PendingUserSerializer(serializers.ModelSerializer):
         PendingUser.objects.filter(email=attrs['email']).delete()
         
         return attrs
+    def validate_email(self, value):
+        return value.lower()
     
     def create(self, validated_data):
         validated_data.pop('password2')
@@ -85,3 +88,10 @@ class PendingUserSerializer(serializers.ModelSerializer):
             **validated_data
         )
         return pending_user
+
+
+class LowercaseEmailTokenSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # Force email to lowercase BEFORE authentication
+        attrs['email'] = attrs['email'].lower()
+        return super().validate(attrs)

@@ -80,7 +80,11 @@ class PendingUser(models.Model):
     def save(self, *args, **kwargs):
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(hours=24)
+        if self.email:
+            self.email = self.email.lower()
         super().save(*args, **kwargs)
+    
+    
     
     def is_expired(self):
         """Check if the verification token has expired."""

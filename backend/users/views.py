@@ -9,6 +9,8 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .serializers import RegisterSerializer, UserSerializer, ChangePasswordSerializer, PendingUserSerializer
 from .models import PendingUser
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import LowercaseEmailTokenSerializer
 
 
 User = get_user_model()
@@ -26,15 +28,14 @@ class RegisterView(generics.CreateAPIView):
         serializer.is_valid(raise_exception=True)
         pending_user = serializer.save()
         
+        
+
+        
         # Send verification email
         try:
-            print(f"Frontend URL: {settings.FRONTEND_URL}")
-            print(f"User Email: {pending_user.email}")
-            print(f"User Token: {pending_user.token}")
-            print(f"User First Name: {pending_user.first_name}")
-            
+           
             verification_url = f"{settings.FRONTEND_URL}/verify-email?token={pending_user.token}"
-            print(f"Verification URL: {settings.FRONTEND_URL}")
+            
             # Render HTML email template
             
             html_message = render_to_string('users/verification_email.html', {
@@ -164,3 +165,6 @@ class VerifyEmailView(generics.GenericAPIView):
                 {'error': 'Invalid or expired verification token.'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+class LowercaseEmailTokenView(TokenObtainPairView):
+    serializer_class = LowercaseEmailTokenSerializer

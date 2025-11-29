@@ -2,7 +2,7 @@ name: Railway DB Backup
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # Daily at 3 AM UTC
+    - cron: "0 3 * * *"
   workflow_dispatch:
 
 jobs:
@@ -11,7 +11,11 @@ jobs:
 
     steps:
       - name: Install PostgreSQL 17 Client
-        run: sudo apt-get update && sudo apt-get install postgresql-client-17 -y
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ noble-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install postgresql-client-17 -y
 
       - name: Dump database
         run: |

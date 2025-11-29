@@ -10,8 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install PostgreSQL
-        run: sudo apt-get install postgresql-client -y
+      - name: Install PostgreSQL 17 Client
+        run: sudo apt-get update && sudo apt-get install postgresql-client-17 -y
 
       - name: Dump database
         run: |

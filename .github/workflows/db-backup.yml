@@ -3,7 +3,7 @@ name: Railway DB Backup
 on:
   schedule:
     - cron: "0 3 * * *"   # Daily at 3 AM UTC
-  workflow_dispatch:       # Allow manual run
+  workflow_dispatch:
 
 jobs:
   backup:
@@ -16,12 +16,11 @@ jobs:
       - name: Dump database
         run: |
           pg_dump --format=custom "$DATABASE_URL" > backup.dump
-
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Upload backup
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: railway-db-backup
           path: backup.dump

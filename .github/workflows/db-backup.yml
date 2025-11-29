@@ -1,0 +1,27 @@
+name: Railway DB Backup
+
+on:
+  schedule:
+    - cron: "0 3 * * *"   # Daily at 3 AM UTC
+  workflow_dispatch:       # Allow manual run
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install PostgreSQL
+        run: sudo apt-get install postgresql-client -y
+
+      - name: Dump database
+        run: |
+          pg_dump --format=custom "$DATABASE_URL" > backup.dump
+
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v3
+        with:
+          name: railway-db-backup
+          path: backup.dump

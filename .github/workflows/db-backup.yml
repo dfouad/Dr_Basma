@@ -1,17 +1,40 @@
-name: Railway DB Backup  # workflow name
+name: Railway DB Backup
 
 on:
   schedule:
-    - cron: "0 3 * * *"  # daily at 3AM UTC
-  workflow_dispatch:      # allow manual run
+    - cron: "0 3 * * *"   # Daily at 3 AM UTC
+  workflow_dispatch:       # Allows manual run
 
 jobs:
   backup:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout repo (needed for Actions)
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run a test
-        run: echo "Hello GitHub Actions"
+      # Step 2: Create backup directory
+      - name: Prepare backup
+        run: mkdir -p backup
+
+      # Step 3: Dump database using Docker (PostgreSQL 17)
+      - name: Dump database
+        run: |
+          docker run --rm \
+            -e PGPASSWORD="$PGPASSWORD" \
+            postgres:17 \
+            pg_dump -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE --format=custom > backup/backup.dump
+        env:
+          PGHOST: ${{ secrets.PGHOST }}
+          PGPORT: ${{ secrets.PGPORT }}
+          PGUSER: ${{ secrets.PGUSER }}
+          PGPASSWORD: ${{ secrets.PGPASSWORD }}
+          PGDATABASE: ${{ secrets.PGDATABASE }}
+
+      # Step 4: Upload backup as artifact
+      - name: Upload backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: railway-db-backup
+          path: backup/backup.dump

@@ -22,7 +22,7 @@ class VideoInline(admin.TabularInline):
 class CourseAdmin(admin.ModelAdmin):
     """Admin for Course model."""
 
-    list_display = ('title', 'category', 'duration', 'video_count', 'is_published', 'created_at', 'price')
+    list_display = ('title', 'category', 'duration', 'video_count', 'is_published', 'created_at', 'price','is_free')
     list_filter = ('is_published', 'category', 'created_at')
     search_fields = ('title', 'description')
     inlines = [VideoInline]

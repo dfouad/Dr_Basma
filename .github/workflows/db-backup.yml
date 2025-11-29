@@ -1,40 +1,56 @@
-name: Railway DB Backup
+name: Daily PostgreSQL Database Backup
 
 on:
   schedule:
-    - cron: "0 3 * * *"   # Daily at 3 AM UTC
-  workflow_dispatch:       # Allows manual run
+    # Run every day at 2:00 AM UTC
+    # You can adjust the time using cron syntax (e.g., '0 5 * * *' for 5 AM UTC)
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allows you to trigger the workflow manually from the GitHub Actions tab
 
 jobs:
   backup:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Checkout repo (needed for Actions)
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      # Step 2: Create backup directory
-      - name: Prepare backup
-        run: mkdir -p backup
+      - name: Install PostgreSQL client tools
+        # The runner needs pg_dump installed to perform the backup
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
 
-      # Step 3: Dump database using Docker (PostgreSQL 17)
-      - name: Dump database
-        run: |
-          docker run --rm \
-            -e PGPASSWORD="$PGPASSWORD" \
-            postgres:17 \
-            pg_dump -h $PGHOST -p $PGPORT -U $PGUSER -d $PGDATABASE --format=custom > backup/backup.dump
+      - name: Set dynamic filename for backup
+        run: echo "BACKUP_FILE_NAME=db_backup_$(date +'%Y-%m-%d_%H-%M-%S').sql.gz" >> $GITHUB_ENV
+
+      - name: Run pg_dump and compress the database
+        # Uses environment variables (secrets) to connect to the Railway DB
         env:
           PGHOST: ${{ secrets.PGHOST }}
-          PGPORT: ${{ secrets.PGPORT }}
           PGUSER: ${{ secrets.PGUSER }}
           PGPASSWORD: ${{ secrets.PGPASSWORD }}
           PGDATABASE: ${{ secrets.PGDATABASE }}
+          PGPORT: ${{ secrets.PGPORT }}
+        run: pg_dump -h $PGHOST -U $PGUSER -d $PGDATABASE -p $PGPORT | gzip > ${{ env.BACKUP_FILE_NAME }}
 
-      # Step 4: Upload backup as artifact
-      - name: Upload backup
+      - name: Upload backup as a GitHub artifact (Temporary Storage)
         uses: actions/upload-artifact@v4
         with:
-          name: railway-db-backup
-          path: backup/backup.dump
+          name: postgres-backup-${{ github.run_id }}
+          path: ${{ env.BACKUP_FILE_NAME }}
+          retention-days: 7 # Backups are deleted after 7 days
+
+      # --- Optional: Uncomment the steps below to upload to AWS S3 for permanent storage ---
+      #
+      # - name: Configure AWS Credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: ${{ secrets.AWS_S3_REGION }}
+      #
+      # - name: Upload backup file to S3 bucket
+      #   run: aws s3 cp ${{ env.BACKUP_FILE_NAME }} s3://${{ secrets.AWS_S3_BUCKET }}/backups/
+      #
+      # --------------------------------------------------------------------------------------
+
+   

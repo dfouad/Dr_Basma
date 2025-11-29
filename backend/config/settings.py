@@ -239,6 +239,8 @@ DEFAULT_FROM_EMAIL = os.getenv(
 EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", 10))
 # Frontend URL for email verification links
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://www.basmakamal.com')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 
 # Anymail configuration for Sendinblue
 EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"

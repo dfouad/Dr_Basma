@@ -1,3 +1,4 @@
 release: python manage.py migrate && python manage.py collectstatic --noinput
-web: gunicorn config.wsgi:application 
+
+web: gunicorn config.wsgi:application --timeout 300 --limit-request-line 0 --limit-request-fields 32768 --limit-request-field_size 0
 

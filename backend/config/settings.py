@@ -241,6 +241,7 @@ EMAIL_TIMEOUT = int(os.getenv("EMAIL_TIMEOUT", 10))
 FRONTEND_URL = os.getenv('FRONTEND_URL', 'https://www.basmakamal.com')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
 FILE_UPLOAD_MAX_MEMORY_SIZE = 52428800  # 50MB
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
 
 # Anymail configuration for Sendinblue
 EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"

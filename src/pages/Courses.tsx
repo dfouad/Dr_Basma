@@ -109,7 +109,7 @@ const Courses = () => {
                     description={course.description}
                     duration={course.duration}
                     videoCount={course.video_count}
-                    thumbnail={course.thumbnail_url || `http://localhost:8000${course.thumbnail}`}
+                    thumbnail={course.thumbnail_url || course.thumbnail}
                     price={course.price}
                     is_free={course.is_free}
                   />

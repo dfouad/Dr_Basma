@@ -55,6 +55,8 @@ class Video(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='videos', null=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
+    thumbnail = models.ImageField(upload_to='video_thumbnails/', blank=True, null=True)
+    thumbnail_url = models.URLField(blank=True, null=True, help_text='Alternative to uploading thumbnail file')
     video_file = models.FileField(upload_to='course_videos/', blank=True, null=True)
     video_url = models.URLField(blank=True, help_text='Alternative to uploading file')
     duration = models.CharField(max_length=20, help_text='e.g., 15:30')

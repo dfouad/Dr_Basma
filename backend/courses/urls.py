@@ -10,7 +10,8 @@ from .views import (
     AdminAssignCourseView, AdminUnassignCourseView, AdminUserEnrollmentsView,
     FeedbackListCreateView, FeedbackDetailView, ReviewPhotoListView,
     AdminReviewPhotoListCreateView, AdminReviewPhotoDetailView, MarkVideoWatchedView,
-    AdminCategoryCreateView, AdminCategoryUpdateView, AdminCategoryDeleteView
+    AdminCategoryCreateView, AdminCategoryUpdateView, AdminCategoryDeleteView,
+    ContactMessageCreateView, AdminContactMessageListView,
 )
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -34,8 +35,7 @@ urlpatterns = [
     
     path('reviews/', ReviewPhotoListView.as_view(), name='review_photo_list'),
     path("certificates/", UserCertificateListView.as_view(), name="user_certificates"),
-    
-
+    path('contact/', ContactMessageCreateView.as_view(), name='contact_message_create'),
 
 # Admin endpoints
     path('admin/categories/create/', AdminCategoryCreateView.as_view(), name='admin_category_create'),

@@ -1,5 +1,14 @@
 from rest_framework import serializers
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto, ContactMessage
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    """Serializer for contact messages."""
+    
+    class Meta:
+        model = ContactMessage
+        fields = ['id', 'subject', 'message', 'created_at']
+        read_only_fields = ['id', 'created_at']
 
 
 class CategorySerializer(serializers.ModelSerializer):

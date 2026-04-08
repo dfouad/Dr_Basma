@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import get_user_model
-from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto
+from .models import Course, Video, Enrollment, Category, PDF, Certificate, Feedback, ReviewPhoto, ContactMessage
 from django.http import FileResponse, HttpResponseBadRequest
 from rest_framework.views import APIView
 from courses.models import Course
@@ -16,6 +16,7 @@ from .serializers import (
     CourseListSerializer, CourseDetailSerializer, VideoSerializer,
     EnrollmentSerializer, EnrollmentCreateSerializer, CategorySerializer, PDFSerializer, CertificateSerializer,
     AdminAssignCourseSerializer, AdminUnassignCourseSerializer, FeedbackSerializer, ReviewPhotoSerializer,
+    ContactMessageSerializer,
 )
 from .permissions import IsStaffUser
 
@@ -561,3 +562,21 @@ class AdminReviewPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewPhotoSerializer
     permission_classes = (IsStaffUser,)
     queryset = ReviewPhoto.objects.all()
+
+
+class ContactMessageCreateView(generics.CreateAPIView):
+    """API endpoint for users to send contact messages."""
+    
+    serializer_class = ContactMessageSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class AdminContactMessageListView(generics.ListAPIView):
+    """Admin API endpoint for viewing all contact messages."""
+    
+    serializer_class = ContactMessageSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ContactMessage.objects.all()

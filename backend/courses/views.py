@@ -562,3 +562,21 @@ class AdminReviewPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ReviewPhotoSerializer
     permission_classes = (IsStaffUser,)
     queryset = ReviewPhoto.objects.all()
+
+
+class ContactMessageCreateView(generics.CreateAPIView):
+    """API endpoint for users to send contact messages."""
+    
+    serializer_class = ContactMessageSerializer
+    permission_classes = (IsAuthenticated,)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+
+class AdminContactMessageListView(generics.ListAPIView):
+    """Admin API endpoint for viewing all contact messages."""
+    
+    serializer_class = ContactMessageSerializer
+    permission_classes = (IsStaffUser,)
+    queryset = ContactMessage.objects.all()

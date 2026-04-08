@@ -11,6 +11,7 @@ import ProfileEditDialog from "@/components/ProfileEditDialog";
 import CourseCard from "@/components/CourseCard";
 import CertificateDownloadDialog from "@/components/CertificateDownloadDialog";
 import FeedbackDialog from "@/components/FeedbackDialog";
+import ContactDialog from "@/components/ContactDialog";
 
 interface EnrolledCourse {
   id: number;
@@ -156,7 +157,10 @@ const Profile = () => {
                   </h1>
                   <p className="text-sm sm:text-base text-muted-foreground mb-4">{user?.email}</p>
                                 
-                  {user && <ProfileEditDialog user={user} onUpdate={handleProfileUpdate} />}
+                  <div className="flex items-center gap-3">
+                    {user && <ProfileEditDialog user={user} onUpdate={handleProfileUpdate} />}
+                    <ContactDialog />
+                  </div>
                 </div>
               </div>
             </div>
